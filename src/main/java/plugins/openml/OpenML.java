@@ -21,15 +21,22 @@ public class OpenML {
 			DataSetDescription data = client.dataGet(62);
 			File url = client.datasetGetCsv(data);
 			
-//			System.out.println(url.getAbsolutePath());
-			
 			ArrayList<HashMap<String, String>> dataset = readCSV(url);
 			ValueMapper mapper = new ValueMapper(dataset);
 			
 			for (String k : dataset.get(0).keySet()) {
 				System.out.println(String.format("Feature %s", k));
-				mapper.analyzeValues(k);
-				//break;
+				mapper.reportUnits(k);
+			}
+			
+			UnitReport report = mapper.getReport();
+			
+			for (HashMap<String, String> input : dataset) {
+				for (String key : input.keySet()) {
+					Integer innerValue = report.getInnerValue(key, input.get(key));
+					System.out.print(String.format("%s-> %s, ", key, innerValue));
+				}
+				System.out.println();
 			}
 			
 		} catch (Exception e) {

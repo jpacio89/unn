@@ -5,12 +5,14 @@ import java.util.HashMap;
 
 public class ValueMapper {
 	ArrayList<HashMap<String, String>> dataset;
+	UnitReport report;
 	
 	public ValueMapper(ArrayList<HashMap<String, String>> dataset) {
 		this.dataset = dataset;
+		this.report = new UnitReport(); 
 	}
 	
-	public void analyzeValues(String feature) {
+	public void reportUnits(String feature) {
 		boolean isNumeric = true;
 		double minVal = Double.MAX_VALUE;
 		double maxVal = Double.MIN_VALUE;
@@ -38,8 +40,14 @@ public class ValueMapper {
 		
 		if (isNumeric) {
 			System.out.println(String.format("Numeric: [%f; %f]", minVal, maxVal));
+			this.report.addRange(feature, minVal, maxVal);
 		} else {
 			System.out.println(String.format("%d discrete values", vals.size()));
+			this.report.addDiscreteSet(feature, new ArrayList<String>(vals.keySet()));
 		}
+	}
+	
+	public UnitReport getReport() {
+		return this.report;
 	}
 }
