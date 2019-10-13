@@ -35,7 +35,9 @@ public class Miner {
 		
 		ArrayList<Integer> allTimesLow  = dataset.getTimesByReward(Config.STIMULI_MIN_VALUE, dataset.count(Config.STIMULI_MIN_VALUE) / ratio);
 		ArrayList<Integer> allTimesNull  = dataset.getTimesByReward(Config.STIMULI_NULL_VALUE, dataset.count(Config.STIMULI_NULL_VALUE) / ratio);
-		allTimesLow.addAll(allTimesNull);
+		if (allTimesNull != null) {
+			allTimesLow.addAll(allTimesNull);
+		}
 		Collections.shuffle(allTimesLow);
 		
 		ArrayList<Integer> allTimesHigh = dataset.getTimesByReward(Config.STIMULI_MAX_VALUE, dataset.count(Config.STIMULI_MAX_VALUE));		

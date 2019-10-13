@@ -2,6 +2,7 @@ package plugins.openml;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class ValueMapper {
 	ArrayList<HashMap<String, String>> dataset;
@@ -49,5 +50,9 @@ public class ValueMapper {
 	
 	public UnitReport getReport() {
 		return this.report;
+	}
+	
+	public Set<String> getFeatures() {
+		return this.dataset.get(0).keySet();
 	}
 }

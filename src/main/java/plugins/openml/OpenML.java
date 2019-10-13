@@ -5,9 +5,16 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.DataSetDescription;
+
+import unn.Dataset;
+import unn.IOperator;
+import unn.OperatorDescriptor;
+import unn.RAW;
+import unn.VTR;
 
 public class OpenML {
 	OpenmlConnector client;
@@ -16,33 +23,74 @@ public class OpenML {
 		this.client = new OpenmlConnector("afd8250e50b774f1cd0b4a4534a1ae90");
 	}
 	
-	public void getDataset() {
+	public Dataset getDataset() {
+		Dataset dataset = new Dataset();
+		
 		try {
 			DataSetDescription data = client.dataGet(62);
 			File url = client.datasetGetCsv(data);
 			
-			ArrayList<HashMap<String, String>> dataset = readCSV(url);
-			ValueMapper mapper = new ValueMapper(dataset);
+			ArrayList<HashMap<String, String>> datasetMap = readCSV(url);
+			ValueMapper mapper = new ValueMapper(datasetMap);
 			
-			for (String k : dataset.get(0).keySet()) {
+			for (String k : mapper.getFeatures()) {
 				System.out.println(String.format("Feature %s", k));
 				mapper.reportUnits(k);
 			}
 			
+			ArrayList<IOperator> leaves = getOperators(mapper.getFeatures(), DatasetConfig.className, true);
 			UnitReport report = mapper.getReport();
+			dataset.setTrainingLeaves(getOperators(mapper.getFeatures(), DatasetConfig.className, false));
+			dataset.setAllLeaves(leaves);
+			int n = 0;
 			
-			for (HashMap<String, String> input : dataset) {
+			for (HashMap<String, String> input : datasetMap) {
+				Integer rewardInnerValue = report.getInnerValue(DatasetConfig.className, input.get(DatasetConfig.className));
+				rewardInnerValue = DatasetConfig.mapReward(rewardInnerValue);
+				
 				for (String key : input.keySet()) {
 					Integer innerValue = report.getInnerValue(key, input.get(key));
 					System.out.print(String.format("%s-> %s, ", key, innerValue));
+					
+					VTR vtr = new VTR(dataset.getOperatorByClassName(key), innerValue, n, rewardInnerValue);
+					dataset.add(vtr);
 				}
+				
+				VTR vtr = new VTR(dataset.getOperatorByClassName(DatasetConfig.className), rewardInnerValue, n, rewardInnerValue);
+				dataset.add(vtr);
+				
 				System.out.println();
+				n++;
 			}
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		return dataset;
+	}
+	
+	public static ArrayList<IOperator> getOperators(Set<String> features, String rewardFeature, boolean includeReward) {
+		ArrayList<IOperator> operators = new ArrayList<IOperator>();
+		int n = 0;
+		for (String feature : features) {
+			if (feature.equals(rewardFeature)) {
+				continue;
+			}
+    		RAW bop = new RAW ();
+    		bop.setDescriptor(new OperatorDescriptor (".", feature, n));
+    		operators.add(bop);
+    		n++;
+    	}
+		
+		if (includeReward) {
+			RAW bop = new RAW ();
+			bop.setDescriptor(new OperatorDescriptor (".", rewardFeature, n));
+			operators.add(bop);	
+		}
+		
+		return operators;
 	}
 	
 	public ArrayList<HashMap<String, String>> readCSV(File csv) {

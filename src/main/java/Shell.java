@@ -3,6 +3,7 @@ import java.util.logging.Logger;
 
 import plugins.crypto.trade.bot.TradeEnvironment;
 import plugins.openml.OpenML;
+import plugins.openml.OpenMLEnvironment;
 import server.RESTApi;
 import unn.Config;
 import unn.IEnvironment;
@@ -16,10 +17,10 @@ public class Shell {
 		ml.init();
 		ml.getDataset();
 		
-		//IEnvironment env = new TradeEnvironment();
-		//env.init();
+		IEnvironment env = new OpenMLEnvironment();
+		env.init();
 		
-		//startServer(env);
+		startServer(env);
 		
 		/*Scanner scanner = new Scanner(System.in);
 		while (true) {

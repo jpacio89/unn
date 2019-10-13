@@ -26,7 +26,7 @@ public class DatasetParser {
 		    		localArgs = new IOperator[cols.length];
 
 		    		dataset.setTrainingLeaves(args);
-		    		dataset.setAllLeaves(localArgs);
+		    		// dataset.setAllLeaves(localArgs);
 
 		    		int k = -1;
 

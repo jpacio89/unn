@@ -47,7 +47,7 @@ public class PostgresManager // implements IDatabaseManager
 	static Connection c = null;
 
 	static ArrayList<IOperator> operators;
-	static IOperator[] operatorsWithReward;
+	static ArrayList<IOperator> operatorsWithReward;
 
 	public static void init () {
 		if (c != null) {
@@ -198,7 +198,7 @@ public class PostgresManager // implements IDatabaseManager
 	        		for (VTR vtr : vtrs) {
 	    				dataset.add(vtr);
 	    			}
-	        		VTR vtr = new VTR(operatorsWithReward[operatorsWithReward.length - 1], reward, time, reward);
+	        		VTR vtr = new VTR(operatorsWithReward.get(operatorsWithReward.size() - 1), reward, time, reward);
 		        	dataset.add(vtr);
 	        	}
 	        }
@@ -228,20 +228,20 @@ public class PostgresManager // implements IDatabaseManager
 		return operators;
 	}
 	
-	public static IOperator[] getAllOperators() {
-		IOperator[] operators = new RAW[inputs.length + 1];
+	public static ArrayList<IOperator> getAllOperators() {
+		ArrayList<IOperator> operators = new ArrayList<IOperator>();
 		int n = 0;
 		for (String input : inputs) {
     		RAW bop = new RAW ();
     		bop.setDescriptor(new OperatorDescriptor (".", input.replace("m", "-"), n));
-    		operators[n] = bop;
+    		operators.add(bop);
     		n++;
     	}
 		
 		RAW bop = new RAW ();
 		bop.setDescriptor(new OperatorDescriptor (".", "action", n));
 		
-		operators[operators.length - 1] = bop;
+		operators.add(bop);
 		return operators;
 	}
 	

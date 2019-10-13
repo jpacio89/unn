@@ -104,8 +104,8 @@ public class Dataset {
 		this.args = leaves;
 	}
 	
-	public void setAllLeaves(IOperator[] leaves) {
-		this.localArgs = leaves;
+	public void setAllLeaves(ArrayList<IOperator> leaves) {
+		this.localArgs = leaves.toArray(new IOperator[leaves.size()]);
 	}
 
 	public int count(int reward) {
@@ -115,5 +115,14 @@ public class Dataset {
 		}
 		return times.size();
 		
+	}
+	
+	public IOperator getOperatorByClassName(String className) {
+		for(IOperator op : this.localArgs) {
+			if (op.getDescriptor().getVtrName().equals(className)) {
+				return op;
+			}
+		}
+		return null;
 	}
 }
