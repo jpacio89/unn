@@ -29,7 +29,10 @@ public class OpenMLEnvironment implements IEnvironment {
 	
 	
 	public void init() throws Exception {
-		Dataset dbDataset = new OpenML().getDataset();
+		OpenML ml = new OpenML();
+		ml.init();
+		
+		Dataset dbDataset = ml.getDataset();
 		
 		System.out.println(String.format(" Initializing miner"));
 		

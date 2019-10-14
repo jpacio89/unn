@@ -13,10 +13,6 @@ public class Shell {
 	
 	@SuppressWarnings("resource")
 	public static void main(String[] args) throws Exception {
-		OpenML ml = new OpenML();
-		ml.init();
-		ml.getDataset();
-		
 		IEnvironment env = new OpenMLEnvironment();
 		env.init();
 		

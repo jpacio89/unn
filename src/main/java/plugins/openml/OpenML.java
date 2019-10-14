@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.DataSetDescription;
 
@@ -49,6 +51,9 @@ public class OpenML {
 				rewardInnerValue = DatasetConfig.mapReward(rewardInnerValue);
 				
 				for (String key : input.keySet()) {
+					if (Arrays.stream(DatasetConfig.featureBlacklist).anyMatch(key::equals)) {
+						continue;
+					}
 					Integer innerValue = report.getInnerValue(key, input.get(key));
 					System.out.print(String.format("%s-> %s, ", key, innerValue));
 					
@@ -75,6 +80,9 @@ public class OpenML {
 		ArrayList<IOperator> operators = new ArrayList<IOperator>();
 		int n = 0;
 		for (String feature : features) {
+			if (Arrays.stream(DatasetConfig.featureBlacklist).anyMatch(feature::equals)) {
+				continue;
+			}
 			if (feature.equals(rewardFeature)) {
 				continue;
 			}

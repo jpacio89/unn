@@ -38,14 +38,15 @@ public class Miner {
 		if (allTimesNull != null) {
 			allTimesLow.addAll(allTimesNull);
 		}
-		Collections.shuffle(allTimesLow);
 		
-		ArrayList<Integer> allTimesHigh = dataset.getTimesByReward(Config.STIMULI_MAX_VALUE, dataset.count(Config.STIMULI_MAX_VALUE));		
-		Collections.shuffle(allTimesHigh);
+		ArrayList<Integer> allTimesHigh = dataset.getTimesByReward(Config.STIMULI_MAX_VALUE, dataset.count(Config.STIMULI_MAX_VALUE));
 		
 		if (allTimesLow == null || allTimesHigh == null) {
 			return;
 		}
+		
+		Collections.shuffle(allTimesLow);
+		Collections.shuffle(allTimesHigh);
 		
 		int midPointLow = allTimesLow.size() / 2;
 		int midPointHigh = allTimesHigh.size() / 2;
