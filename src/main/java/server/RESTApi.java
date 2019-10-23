@@ -4,19 +4,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.javalin.Javalin;
+import plugins.openml.OpenMLEnvironment;
 import unn.IEnvironment;
 import unn.IOperator;
 
 public class RESTApi extends Thread {
 	IEnvironment env;
 	
-	public RESTApi(IEnvironment env) {
-		this.env = env;
-	}
+	public RESTApi() {}
 	
 	public void run() {
 		Javalin app = Javalin.create().start(7000);
         app.get("/", ctx -> ctx.result("UNN server running."));
+        
+        app.post("/dataset/load/:id", ctx -> {
+        	String datasetId = ctx.pathParam("id");
+    		IEnvironment env = new OpenMLEnvironment(Integer.parseInt(datasetId));
+    		this.env = env;
+    		env.init();
+        });
         
         app.get("/predict", ctx -> {
         	String spaceId = ctx.queryParam("spaceId");

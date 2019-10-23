@@ -14,9 +14,11 @@ import unn.ModelRefinery;
 
 public class OpenMLEnvironment implements IEnvironment {
 	HashMap<String, Model> models;
+	int datasetId; 
 	
-	public OpenMLEnvironment() {
+	public OpenMLEnvironment(int datasetId) {
 		this.models = new HashMap<String, Model>();
+		this.datasetId = datasetId;
 	}
 	
 	@Override
@@ -32,7 +34,7 @@ public class OpenMLEnvironment implements IEnvironment {
 		OpenML ml = new OpenML();
 		ml.init();
 		
-		Dataset dbDataset = ml.getDataset();
+		Dataset dbDataset = ml.getDataset(this.datasetId);
 		
 		System.out.println(String.format(" Initializing miner"));
 		

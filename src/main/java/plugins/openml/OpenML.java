@@ -25,11 +25,11 @@ public class OpenML {
 		this.client = new OpenmlConnector("afd8250e50b774f1cd0b4a4534a1ae90");
 	}
 	
-	public Dataset getDataset() {
+	public Dataset getDataset(int datasetId) {
 		Dataset dataset = new Dataset();
 		
 		try {
-			DataSetDescription data = client.dataGet(62);
+			DataSetDescription data = client.dataGet(datasetId);
 			File url = client.datasetGetCsv(data);
 			
 			ArrayList<HashMap<String, String>> datasetMap = readCSV(url);

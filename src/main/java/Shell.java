@@ -12,11 +12,8 @@ public class Shell {
 	private static Logger logger = Logger.getLogger(Shell.class.toString());
 	
 	@SuppressWarnings("resource")
-	public static void main(String[] args) throws Exception {
-		IEnvironment env = new OpenMLEnvironment();
-		env.init();
-		
-		startServer(env);
+	public static void main(String[] args) throws Exception {		
+		startServer();
 		
 		/*Scanner scanner = new Scanner(System.in);
 		while (true) {
@@ -33,8 +30,8 @@ public class Shell {
 		}*/
 	}
 	
-	private static void startServer(IEnvironment env) {
-		RESTApi api = new RESTApi(env);
+	private static void startServer() {
+		RESTApi api = new RESTApi();
 		api.start();
 	}
 }
