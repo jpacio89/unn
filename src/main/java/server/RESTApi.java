@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.javalin.Javalin;
+import plugins.openml.DiscreteSet;
 import plugins.openml.OpenMLEnvironment;
 import unn.IEnvironment;
 import unn.IOperator;
@@ -21,7 +22,24 @@ public class RESTApi extends Thread {
         	String datasetId = ctx.pathParam("id");
     		IEnvironment env = new OpenMLEnvironment(Integer.parseInt(datasetId));
     		this.env = env;
-    		env.init();
+    		new Thread(new Runnable() {
+				@Override
+				public void run() {
+		    		try {
+						env.init();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}					
+				}
+    		}).start();
+
+        });
+        
+        app.get("/dataset/features/:jobId", ctx -> {
+        	String jobId = ctx.pathParam("jobId");
+        	ctx.json(this.env.getUnitReport());
+        	//ctx.json(new User());
         });
         
         app.get("/predict", ctx -> {
@@ -48,10 +66,20 @@ public class RESTApi extends Thread {
         	}
         	
         	Double action = env.predict(spaceId, values);
-        	
         	ctx.result(Double.toString(action));
         });
 	}
 	
 	
+	public class User {
+	    public final int id = 1;
+	    public final String name = "Hi!";
+	    public final HashMap<String, String> cenas;
+	    
+	    public User() {
+	    	cenas = new HashMap<String, String>();
+	    	cenas.put("Alpha", "Beta");
+	    }
+	    // constructors
+	}
 }

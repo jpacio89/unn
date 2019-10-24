@@ -14,7 +14,8 @@ import unn.ModelRefinery;
 
 public class OpenMLEnvironment implements IEnvironment {
 	HashMap<String, Model> models;
-	int datasetId; 
+	int datasetId;
+	UnitReport unitReport;
 	
 	public OpenMLEnvironment(int datasetId) {
 		this.models = new HashMap<String, Model>();
@@ -35,6 +36,7 @@ public class OpenMLEnvironment implements IEnvironment {
 		ml.init();
 		
 		Dataset dbDataset = ml.getDataset(this.datasetId);
+		this.unitReport = ml.getUnitReport();
 		
 		System.out.println(String.format(" Initializing miner"));
 		
@@ -66,6 +68,10 @@ public class OpenMLEnvironment implements IEnvironment {
 		dbDataset.shrink();
 		
 		refined.getStatsWalker().printTimes();
+	}
+	
+	public UnitReport getUnitReport() {
+		return unitReport;
 	}
 	
 	public Double predict(String key, HashMap<IOperator, Integer> inputs) {

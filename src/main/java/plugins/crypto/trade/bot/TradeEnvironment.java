@@ -3,6 +3,7 @@ package plugins.crypto.trade.bot;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import plugins.openml.UnitReport;
 import unn.Config;
 import unn.Dataset;
 import unn.DatasetParser;
@@ -88,6 +89,11 @@ public class TradeEnvironment implements IEnvironment {
 			
 		double value = Double.parseDouble(inputString);
 		return DatasetParser.mapPrice(value);
+	}
+
+	@Override
+	public UnitReport getUnitReport() {
+		return null;
 	}
 
 

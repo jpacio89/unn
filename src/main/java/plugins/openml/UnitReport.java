@@ -7,7 +7,7 @@ import java.util.HashMap;
 import unn.Config;
 
 public class UnitReport {
-	HashMap<String, OuterValueType> units;
+	public final HashMap<String, OuterValueType> units;
 	
 	public UnitReport() {
 		this.units = new HashMap<String, OuterValueType>();
@@ -49,31 +49,9 @@ public class UnitReport {
 		return null;
 	}
 	
-	private class OuterValueType {}
-	
-	private class DiscreteSet extends OuterValueType {
-		ArrayList<String> values;
-		
-		public DiscreteSet(ArrayList _values) {
-			this.values = _values;
-		}
-		
-		public Integer getIndex(String _value) {
-			int index = this.values.indexOf(_value);
-			if (index < 0) {
-				return null;
-			}
-			return index;
-		}
-		
-		public int cardinal() {
-			return this.values.size();
-		}
-	}
-	
 	private class Range extends OuterValueType {
-		double lb;
-		double ub;
+		public final double lb;
+		public final double ub;
 		
 		public Range(double lb, double ub) {
 			this.lb = lb;
