@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.javalin.Javalin;
+import io.javalin.core.JavalinConfig;
 import plugins.openml.DiscreteSet;
 import plugins.openml.OpenMLEnvironment;
 import unn.IEnvironment;
@@ -15,7 +16,10 @@ public class RESTApi extends Thread {
 	public RESTApi() {}
 	
 	public void run() {
-		Javalin app = Javalin.create().start(7000);
+		Javalin app = Javalin.create(config -> {
+            config.enableCorsForOrigin("http://localhost:8080/");
+        });
+		app.start(7000);
         app.get("/", ctx -> ctx.result("UNN server running."));
         
         app.post("/dataset/load/:id", ctx -> {
@@ -36,7 +40,7 @@ public class RESTApi extends Thread {
 
         });
         
-        app.get("/dataset/features/:jobId", ctx -> {
+        app.get("/dataset/units/:jobId", ctx -> {
         	String jobId = ctx.pathParam("jobId");
         	ctx.json(this.env.getUnitReport());
         	//ctx.json(new User());
