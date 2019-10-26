@@ -21,6 +21,7 @@ import unn.VTR;
 public class OpenML {
 	OpenmlConnector client;
 	private UnitReport unitReport;
+	private String[] features;
 
 	public void init() {
 		this.client = new OpenmlConnector("afd8250e50b774f1cd0b4a4534a1ae90");
@@ -44,6 +45,7 @@ public class OpenML {
 			ArrayList<IOperator> leaves = getOperators(mapper.getFeatures(), DatasetConfig.className, true);
 			UnitReport report = mapper.getReport();
 			this.unitReport = report;
+			this.unitReport.setFeatures(this.features);
 			
 			dataset.setTrainingLeaves(getOperators(mapper.getFeatures(), DatasetConfig.className, false));
 			dataset.setAllLeaves(leaves);
@@ -111,8 +113,8 @@ public class OpenML {
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(csv));
 			String line = reader.readLine();
-			String[] features = line.split(SEPARATOR);
-			
+			this.features = line.split(SEPARATOR);
+
 			while (line != null) {
 				line = reader.readLine();
 				if (line == null) {

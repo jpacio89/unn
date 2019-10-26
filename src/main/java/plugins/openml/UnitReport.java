@@ -8,6 +8,7 @@ import unn.Config;
 
 public class UnitReport {
 	public final HashMap<String, OuterValueType> units;
+	public String[] features;
 	
 	public UnitReport() {
 		this.units = new HashMap<String, OuterValueType>();
@@ -57,6 +58,11 @@ public class UnitReport {
 			this.lb = lb;
 			this.ub = ub;
 		}
+	}
+
+	public void setFeatures(String[] features) {
+		this.features = features;
+		
 	}
 	
 	
