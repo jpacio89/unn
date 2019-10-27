@@ -22,8 +22,10 @@ public class OpenML {
 	OpenmlConnector client;
 	private UnitReport unitReport;
 	private String[] features;
+	private JobConfig config;
 
-	public void init() {
+	public void init(JobConfig config) {
+		this.config = config;
 		this.client = new OpenmlConnector("afd8250e50b774f1cd0b4a4534a1ae90");
 	}
 	
@@ -42,21 +44,23 @@ public class OpenML {
 				mapper.reportUnits(k);
 			}
 			
-			ArrayList<IOperator> leaves = getOperators(mapper.getFeatures(), DatasetConfig.className, true);
+			ArrayList<IOperator> leaves = getOperators(mapper.getFeatures(), this.config.targetFeature, true);
 			UnitReport report = mapper.getReport();
 			this.unitReport = report;
 			this.unitReport.setFeatures(this.features);
 			
-			dataset.setTrainingLeaves(getOperators(mapper.getFeatures(), DatasetConfig.className, false));
+			dataset.setTrainingLeaves(getOperators(mapper.getFeatures(), this.config.targetFeature, false));
 			dataset.setAllLeaves(leaves);
 			int n = 0;
 			
 			for (HashMap<String, String> input : datasetMap) {
-				Integer rewardInnerValue = report.getInnerValue(DatasetConfig.className, input.get(DatasetConfig.className));
+				Integer rewardInnerValue = report.getInnerValue(this.config.targetFeature, input.get(this.config.targetFeature));
+				
+				// TODO: fix this
 				rewardInnerValue = DatasetConfig.mapReward(rewardInnerValue);
 				
 				for (String key : input.keySet()) {
-					if (Arrays.stream(DatasetConfig.featureBlacklist).anyMatch(key::equals)) {
+					if (Arrays.stream(this.config.featureBlacklist).anyMatch(key::equals)) {
 						continue;
 					}
 					Integer innerValue = report.getInnerValue(key, input.get(key));
@@ -66,7 +70,7 @@ public class OpenML {
 					dataset.add(vtr);
 				}
 				
-				VTR vtr = new VTR(dataset.getOperatorByClassName(DatasetConfig.className), rewardInnerValue, n, rewardInnerValue);
+				VTR vtr = new VTR(dataset.getOperatorByClassName(this.config.targetFeature), rewardInnerValue, n, rewardInnerValue);
 				dataset.add(vtr);
 				
 				System.out.println();
@@ -81,11 +85,11 @@ public class OpenML {
 		return dataset;
 	}
 	
-	public static ArrayList<IOperator> getOperators(Set<String> features, String rewardFeature, boolean includeReward) {
+	public ArrayList<IOperator> getOperators(Set<String> features, String rewardFeature, boolean includeReward) {
 		ArrayList<IOperator> operators = new ArrayList<IOperator>();
 		int n = 0;
 		for (String feature : features) {
-			if (Arrays.stream(DatasetConfig.featureBlacklist).anyMatch(feature::equals)) {
+			if (Arrays.stream(this.config.featureBlacklist).anyMatch(feature::equals)) {
 				continue;
 			}
 			if (feature.equals(rewardFeature)) {

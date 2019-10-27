@@ -13,9 +13,11 @@ import unn.Model;
 import unn.ModelRefinery;
 
 public class OpenMLEnvironment implements IEnvironment {
-	HashMap<String, Model> models;
-	int datasetId;
-	UnitReport unitReport;
+	private HashMap<String, Model> models;
+	private int datasetId;
+	private UnitReport unitReport;
+	private Dataset dbDataset;
+	private JobConfig config;
 	
 	public OpenMLEnvironment(int datasetId) {
 		this.models = new HashMap<String, Model>();
@@ -31,15 +33,19 @@ public class OpenMLEnvironment implements IEnvironment {
 	}
 	
 	
-	public void init() throws Exception {
-		OpenML ml = new OpenML();
-		ml.init();
+	public void init(JobConfig config) {
+		this.config = config;
 		
-		Dataset dbDataset = ml.getDataset(this.datasetId);
-		this.unitReport = ml.getUnitReport();
+		OpenML ml = new OpenML();
+		ml.init(config);
 		
 		System.out.println(String.format(" Initializing miner"));
 		
+		this.dbDataset = ml.getDataset(this.datasetId);
+		this.unitReport = ml.getUnitReport();
+	}
+	
+	public void mine() throws Exception {		
 		Miner miner = new Miner(dbDataset);
 		miner.init();
 		

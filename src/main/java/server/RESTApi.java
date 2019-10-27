@@ -2,16 +2,24 @@ package server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import io.javalin.Javalin;
 import io.javalin.core.JavalinConfig;
+import io.javalin.plugin.json.JavalinJackson;
+import io.javalin.plugin.json.JavalinJson;
 import plugins.openml.DiscreteSet;
+import plugins.openml.JobConfig;
 import plugins.openml.OpenMLEnvironment;
 import unn.IEnvironment;
 import unn.IOperator;
 
 public class RESTApi extends Thread {
 	IEnvironment env;
+	String datasetId;
 	
 	public RESTApi() {}
 	
@@ -23,27 +31,37 @@ public class RESTApi extends Thread {
         app.get("/", ctx -> ctx.result("UNN server running."));
         
         app.post("/dataset/load/:id", ctx -> {
-        	String datasetId = ctx.pathParam("id");
+        	this.datasetId = ctx.pathParam("id");
     		IEnvironment env = new OpenMLEnvironment(Integer.parseInt(datasetId));
     		this.env = env;
-    		new Thread(new Runnable() {
-				@Override
-				public void run() {
-		    		try {
-						env.init();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}					
-				}
-    		}).start();
-
+			env.init(JobConfig.DEFAULT);
         });
         
         app.get("/dataset/units/:jobId", ctx -> {
         	String jobId = ctx.pathParam("jobId");
         	ctx.json(this.env.getUnitReport());
         	//ctx.json(new User());
+        });
+        
+        app.post("/dataset/mine/:jobId", ctx -> {
+        	String jobId = ctx.pathParam("jobId");
+        	JobConfig conf = ctx.bodyAsClass(JobConfig.class);
+        	
+        	// IEnvironment env = new OpenMLEnvironment(Integer.parseInt(this.datasetId));
+    		// this.env = env;
+    		
+    		new Thread(new Runnable() {
+				@Override
+				public void run() {
+		    		try {
+		    			env.init(conf);
+		    			env.mine();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}					
+				}
+    		}).start();
         });
         
         app.get("/predict", ctx -> {

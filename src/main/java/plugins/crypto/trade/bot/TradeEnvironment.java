@@ -3,6 +3,7 @@ package plugins.crypto.trade.bot;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import plugins.openml.JobConfig;
 import plugins.openml.UnitReport;
 import unn.Config;
 import unn.Dataset;
@@ -94,6 +95,18 @@ public class TradeEnvironment implements IEnvironment {
 	@Override
 	public UnitReport getUnitReport() {
 		return null;
+	}
+
+	@Override
+	public void init(JobConfig config) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mine() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 
