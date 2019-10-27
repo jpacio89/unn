@@ -94,6 +94,11 @@ public class OpenMLEnvironment implements IEnvironment {
 		double value = Double.parseDouble(inputString);
 		return DatasetParser.mapPrice(value);
 	}
+	
+	public MiningReport getMiningReport() {
+		return null;
+	}
+	
 
 
 }

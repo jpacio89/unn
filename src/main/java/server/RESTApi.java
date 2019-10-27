@@ -46,9 +46,6 @@ public class RESTApi extends Thread {
         app.post("/dataset/mine/:jobId", ctx -> {
         	String jobId = ctx.pathParam("jobId");
         	JobConfig conf = ctx.bodyAsClass(JobConfig.class);
-        	
-        	// IEnvironment env = new OpenMLEnvironment(Integer.parseInt(this.datasetId));
-    		// this.env = env;
     		
     		new Thread(new Runnable() {
 				@Override
@@ -57,9 +54,25 @@ public class RESTApi extends Thread {
 		    			env.init(conf);
 		    			env.mine();
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
-					}					
+					}
+				}
+    		}).start();
+        });
+        
+        app.post("/mine/report/:jobId", ctx -> {
+        	String jobId = ctx.pathParam("jobId");
+        	JobConfig conf = ctx.bodyAsClass(JobConfig.class);
+    		
+    		new Thread(new Runnable() {
+				@Override
+				public void run() {
+		    		try {
+		    			env.init(conf);
+		    			env.mine();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
     		}).start();
         });
