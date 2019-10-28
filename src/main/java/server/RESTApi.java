@@ -16,6 +16,7 @@ import plugins.openml.JobConfig;
 import plugins.openml.OpenMLEnvironment;
 import unn.IEnvironment;
 import unn.IOperator;
+import unn.StatsWalker;
 
 public class RESTApi extends Thread {
 	IEnvironment env;
@@ -60,21 +61,11 @@ public class RESTApi extends Thread {
     		}).start();
         });
         
-        app.post("/mine/report/:jobId", ctx -> {
+        app.get("/mine/report/:jobId", ctx -> {
         	String jobId = ctx.pathParam("jobId");
-        	JobConfig conf = ctx.bodyAsClass(JobConfig.class);
-    		
-    		new Thread(new Runnable() {
-				@Override
-				public void run() {
-		    		try {
-		    			env.init(conf);
-		    			env.mine();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-    		}).start();
+        	IEnvironment env = this.env;
+        	StatsWalker stats = env.getStatsWalker();
+			ctx.json(stats);
         });
         
         app.get("/predict", ctx -> {

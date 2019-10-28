@@ -17,7 +17,9 @@ public interface IEnvironment {
 	
 	void init(JobConfig config);
 	
-	void mine() throws Exception;
+	StatsWalker mine() throws Exception;
 
 	UnitReport getUnitReport();
+
+	StatsWalker getStatsWalker();
 }

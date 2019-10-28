@@ -13,6 +13,7 @@ import unn.IOperator;
 import unn.Miner;
 import unn.Model;
 import unn.ModelRefinery;
+import unn.StatsWalker;
 
 public class TradeEnvironment implements IEnvironment {
 	HashMap<String, Model> models;
@@ -104,9 +105,15 @@ public class TradeEnvironment implements IEnvironment {
 	}
 
 	@Override
-	public void mine() throws Exception {
+	public StatsWalker mine() throws Exception {
 		// TODO Auto-generated method stub
-		
+		return null;
+	}
+
+	@Override
+	public StatsWalker getStatsWalker() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

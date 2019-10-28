@@ -23,6 +23,10 @@ public class StatsWalker {
 		this.times = new ArrayList<Integer>();
 	}
 	
+	public int getOutlier() {
+		return this.outlier;
+	}
+	
 	public int[][] getHitMatrix() {
 		return this.hitMatrix;
 	}

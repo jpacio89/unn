@@ -3,6 +3,7 @@ package plugins.openml;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import plugins.openml.MiningReport.ConfusionMatrix;
 import unn.Config;
 import unn.Dataset;
 import unn.DatasetParser;
@@ -11,6 +12,7 @@ import unn.IOperator;
 import unn.Miner;
 import unn.Model;
 import unn.ModelRefinery;
+import unn.StatsWalker;
 
 public class OpenMLEnvironment implements IEnvironment {
 	private HashMap<String, Model> models;
@@ -18,6 +20,7 @@ public class OpenMLEnvironment implements IEnvironment {
 	private UnitReport unitReport;
 	private Dataset dbDataset;
 	private JobConfig config;
+	private Model refinedModel;
 	
 	public OpenMLEnvironment(int datasetId) {
 		this.models = new HashMap<String, Model>();
@@ -45,13 +48,15 @@ public class OpenMLEnvironment implements IEnvironment {
 		this.unitReport = ml.getUnitReport();
 	}
 	
-	public void mine() throws Exception {		
+	public StatsWalker mine() throws Exception {
+		this.refinedModel = null;
+		
 		Miner miner = new Miner(dbDataset);
 		miner.init();
 		
 		if (!miner.ready()) {
 			System.out.println(String.format(" Not enough data. Skipping..."));
-			return;
+			return null;
 		}
 		
 		System.out.println(String.format(" Mining"));
@@ -61,7 +66,7 @@ public class OpenMLEnvironment implements IEnvironment {
 		Model model = miner.getModel();
 		
 		ModelRefinery refinery = new ModelRefinery(miner, model);
-		Model refined = refinery.refine();
+		this.refinedModel = refinery.refine();
 		
 		int countMin = dbDataset.count(Config.STIMULI_MIN_VALUE);
 		int countNull = dbDataset.count(Config.STIMULI_NULL_VALUE);
@@ -73,7 +78,15 @@ public class OpenMLEnvironment implements IEnvironment {
 		
 		dbDataset.shrink();
 		
-		refined.getStatsWalker().printTimes();
+		// refined.getStatsWalker().printTimes();
+		return this.refinedModel.getStatsWalker();
+	}
+	
+	public StatsWalker getStatsWalker() {
+		if (this.refinedModel != null) {
+			return this.refinedModel.getStatsWalker();
+		}
+		return null;
 	}
 	
 	public UnitReport getUnitReport() {
