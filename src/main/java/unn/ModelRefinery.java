@@ -18,7 +18,7 @@ public class ModelRefinery {
 		ArrayList<Artifact> artifacts = this.model.getArtifacts();
 		Dataset dataset = this.model.getDataset();
 		
-		Model bestModel = null;
+		Model bestModel = new Model(dataset);
 		double bestRatio = 0;
 		int bestHighs = 0;
 		int runCount = 100;

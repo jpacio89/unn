@@ -3,7 +3,7 @@ import java.util.logging.Logger;
 
 import plugins.crypto.trade.bot.TradeEnvironment;
 import plugins.openml.OpenML;
-import plugins.openml.OpenMLEnvironment;
+import plugins.openml.MiningEnvironment;
 import server.RESTApi;
 import unn.Config;
 import unn.IEnvironment;

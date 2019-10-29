@@ -15,6 +15,7 @@ public class Model {
 	public Model(Dataset dataset) {
 		this.dataset = dataset;
 		this.artifacts = new ArrayList<Artifact>();
+		this.walker = new StatsWalker();
 	}
 	
 	public Model(Dataset dataset, ArrayList<Artifact> sublist) {

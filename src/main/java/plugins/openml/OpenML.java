@@ -53,11 +53,12 @@ public class OpenML {
 			dataset.setAllLeaves(leaves);
 			int n = 0;
 			
+			Integer refInnerValue = report.getInnerValue(config.targetFeature, config.targetOuterValue);
+			
 			for (HashMap<String, String> input : datasetMap) {
 				Integer rewardInnerValue = report.getInnerValue(this.config.targetFeature, input.get(this.config.targetFeature));
 				
-				// TODO: fix this
-				rewardInnerValue = DatasetConfig.mapReward(rewardInnerValue);
+				rewardInnerValue = JobConfig.mapReward(refInnerValue, rewardInnerValue);
 				
 				for (String key : input.keySet()) {
 					if (Arrays.stream(this.config.featureBlacklist).anyMatch(key::equals)) {

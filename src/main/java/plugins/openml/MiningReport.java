@@ -2,16 +2,13 @@ package plugins.openml;
 
 import java.util.HashMap;
 
+import unn.StatsWalker;
+
 public class MiningReport {
 	public boolean isFinished;
-	public HashMap<String, ConfusionMatrix> confusionMatrixes;
+	public HashMap<String, StatsWalker> confusionMatrixes;
 
-	public MiningReport() {}
-	
-	public class ConfusionMatrix {
-		public int[] hits;
-		public int unknowns;
-		
-		public ConfusionMatrix() {}
+	public MiningReport() {
+		this.confusionMatrixes = new HashMap<String, StatsWalker>();
 	}
 }

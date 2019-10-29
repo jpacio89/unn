@@ -12,13 +12,16 @@ import io.javalin.core.JavalinConfig;
 import io.javalin.plugin.json.JavalinJackson;
 import io.javalin.plugin.json.JavalinJson;
 import plugins.openml.DiscreteSet;
+import plugins.openml.EnvironmentGroup;
 import plugins.openml.JobConfig;
-import plugins.openml.OpenMLEnvironment;
+import plugins.openml.MiningEnvironment;
+import plugins.openml.MiningReport;
 import unn.IEnvironment;
 import unn.IOperator;
 import unn.StatsWalker;
 
 public class RESTApi extends Thread {
+	EnvironmentGroup group;
 	IEnvironment env;
 	String datasetId;
 	
@@ -33,7 +36,7 @@ public class RESTApi extends Thread {
         
         app.post("/dataset/load/:id", ctx -> {
         	this.datasetId = ctx.pathParam("id");
-    		IEnvironment env = new OpenMLEnvironment(Integer.parseInt(datasetId));
+    		IEnvironment env = new MiningEnvironment(Integer.parseInt(datasetId));
     		this.env = env;
 			env.init(JobConfig.DEFAULT);
         });
@@ -41,20 +44,20 @@ public class RESTApi extends Thread {
         app.get("/dataset/units/:jobId", ctx -> {
         	String jobId = ctx.pathParam("jobId");
         	ctx.json(this.env.getUnitReport());
-        	//ctx.json(new User());
         });
         
         app.post("/dataset/mine/:jobId", ctx -> {
         	String jobId = ctx.pathParam("jobId");
         	JobConfig conf = ctx.bodyAsClass(JobConfig.class);
-    		
+        	this.group = new EnvironmentGroup(Integer.parseInt(datasetId));
+        	
     		new Thread(new Runnable() {
 				@Override
 				public void run() {
 		    		try {
-		    			env.init(conf);
-		    			env.mine();
-					} catch (Exception e) {
+		    			group.mine(conf);
+					} 
+		    		catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
@@ -64,8 +67,8 @@ public class RESTApi extends Thread {
         app.get("/mine/report/:jobId", ctx -> {
         	String jobId = ctx.pathParam("jobId");
         	IEnvironment env = this.env;
-        	StatsWalker stats = env.getStatsWalker();
-			ctx.json(stats);
+        	MiningReport report = group.getReport();
+			ctx.json(report);
         });
         
         app.get("/predict", ctx -> {

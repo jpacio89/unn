@@ -3,7 +3,6 @@ package plugins.openml;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import plugins.openml.MiningReport.ConfusionMatrix;
 import unn.Config;
 import unn.Dataset;
 import unn.DatasetParser;
@@ -14,7 +13,7 @@ import unn.Model;
 import unn.ModelRefinery;
 import unn.StatsWalker;
 
-public class OpenMLEnvironment implements IEnvironment {
+public class MiningEnvironment implements IEnvironment {
 	private HashMap<String, Model> models;
 	private int datasetId;
 	private UnitReport unitReport;
@@ -22,7 +21,7 @@ public class OpenMLEnvironment implements IEnvironment {
 	private JobConfig config;
 	private Model refinedModel;
 	
-	public OpenMLEnvironment(int datasetId) {
+	public MiningEnvironment(int datasetId) {
 		this.models = new HashMap<String, Model>();
 		this.datasetId = datasetId;
 	}

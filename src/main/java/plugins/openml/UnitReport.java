@@ -19,6 +19,10 @@ public class UnitReport {
 		this.units.put(feature, new DiscreteSet(values));
 	}
 	
+	public OuterValueType getValues(String feature) {
+		return this.units.get(feature);
+	}
+	
 	public void addRange(String feature, double lb, double ub) {
 		this.units.put(feature, new Range(lb, ub));
 	}
