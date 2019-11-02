@@ -14,7 +14,6 @@ import unn.ModelRefinery;
 import unn.StatsWalker;
 
 public class MiningEnvironment implements IEnvironment {
-	private HashMap<String, Model> models;
 	private int datasetId;
 	private UnitReport unitReport;
 	private Dataset dbDataset;
@@ -22,16 +21,12 @@ public class MiningEnvironment implements IEnvironment {
 	private Model refinedModel;
 	
 	public MiningEnvironment(int datasetId) {
-		this.models = new HashMap<String, Model>();
 		this.datasetId = datasetId;
 	}
 	
 	@Override
 	public ArrayList<IOperator> getInputs(String market) {
-		if (!this.models.containsKey(market)) {
-			return null;
-		}
-		return this.models.get(market).getInputs();
+		return this.refinedModel.getInputs();
 	}
 	
 	
@@ -93,10 +88,10 @@ public class MiningEnvironment implements IEnvironment {
 	}
 	
 	public Double predict(String key, HashMap<IOperator, Integer> inputs) {
-		if (!this.models.containsKey(key)) {
+		if (this.refinedModel == null) {
 			return null;
 		}
-		return this.models.get(key).predict(inputs);
+		return this.refinedModel.predict(inputs);
 	}
 
 	@Override

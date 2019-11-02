@@ -6,6 +6,7 @@ import unn.StatsWalker;
 public class EnvironmentGroup {
 	private int datasetId;
 	private HashMap<String, MiningEnvironment> envs;
+	private JobConfig config;
 	
 	public EnvironmentGroup(int datasetId) {
 		this.envs = new HashMap<String, MiningEnvironment>();
@@ -13,6 +14,8 @@ public class EnvironmentGroup {
 	}
 
 	public void mine(JobConfig config) {
+		this.config = config;
+		
 		MiningEnvironment seedEnv = new MiningEnvironment(this.datasetId);
 		seedEnv.init(config);
 		
@@ -39,6 +42,10 @@ public class EnvironmentGroup {
 		}
 	}
 	
+	public JobConfig getConfig() {
+		return this.config;
+	}
+	
 	public MiningReport getReport() {
 		MiningReport report = new MiningReport();
 		
@@ -49,5 +56,9 @@ public class EnvironmentGroup {
 		}
 	
 		return report;
+	}
+	
+	public HashMap<String, MiningEnvironment> getEnvironments() {
+		return this.envs;
 	}
 }

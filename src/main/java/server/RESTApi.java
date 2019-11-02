@@ -16,6 +16,8 @@ import plugins.openml.EnvironmentGroup;
 import plugins.openml.JobConfig;
 import plugins.openml.MiningEnvironment;
 import plugins.openml.MiningReport;
+import plugins.openml.OpenML;
+import plugins.openml.SimulationConfig;
 import unn.IEnvironment;
 import unn.IOperator;
 import unn.StatsWalker;
@@ -71,6 +73,27 @@ public class RESTApi extends Thread {
 			ctx.json(report);
         });
         
+        app.post("/simulate/:jobId", ctx -> {
+        	String jobId = ctx.pathParam("jobId");
+        	SimulationConfig conf = ctx.bodyAsClass(SimulationConfig.class);
+
+        	Simulation simulation = new Simulation();
+        	simulation.init(conf, this.group);
+        	simulation.run();
+        	SimulationReport report = simulation.getReport();
+        	
+        	ctx.json(report);
+        });
+        
+        app.get("/dataset/raw/:jobId", ctx -> {
+        	String jobId = ctx.pathParam("jobId");
+        	OpenML ml = new OpenML();
+        	ml.init(this.group.getConfig());
+        	ArrayList<HashMap<String, String>> rawDataset = ml.getRawDataset(Integer.parseInt(this.datasetId));
+			ctx.json(rawDataset);
+        });
+        
+        // DEPRECATED
         app.get("/predict", ctx -> {
         	String spaceId = ctx.queryParam("spaceId");
         	String version = ctx.queryParam("version");
