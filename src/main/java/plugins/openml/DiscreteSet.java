@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class DiscreteSet extends OuterValueType {
 	public final ArrayList<String> values;
 	
-	public DiscreteSet(ArrayList _values) {
+	public DiscreteSet(ArrayList<String> _values) {
 		this.values = _values;
 	}
 	

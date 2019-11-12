@@ -12,13 +12,11 @@ class CachedResult
 	String signature_;
 	String md5_signature_;
 	
-	CachedResult () 
-	{
+	CachedResult () {
 		clear ();
 	}
 	
-	void clear () 
-	{
+	void clear () {
 		signature_ = "";
 		value_ = 0;
 		defined_ = false;
@@ -26,35 +24,30 @@ class CachedResult
 		md5_signature_ = null;
 	}
 	
-	void setResult (int v)
-	{
+	void setResult (int v) {
 		value_ = v;
 		defined_ = true;
 	}
 	
-	void setSignature (String v)
-	{
+	void setSignature (String v) {
 		signature_ = v;
 		sigdefined_ = true;
 		md5_signature_ = null;
 	}		
 	
-	int getResult () throws Exception 
-	{
+	int getResult () throws Exception {
 		if (!defined_) throw new Exception("Result not defined.");
 		
 		return value_;
 	}
 	
-	String getSignature () throws Exception 
-	{
+	String getSignature () throws Exception {
 		if(!sigdefined_) throw new Exception("Signature not defined.");
 		
 		return signature_;
 	}
 	
-	String getMD5 () 
-	{
+	String getMD5 () {
 		if(!sigdefined_) return null;
 		
 		if (md5_signature_ == null) {
@@ -64,35 +57,27 @@ class CachedResult
 		return md5_signature_;
 	}
 	
-	boolean isDefined ()
-	{
+	boolean isDefined () {
 		return defined_; 
 	}
 	
-	boolean isSigDefined ()
-	{
+	boolean isSigDefined () {
 		return sigdefined_; 
 	}
 
 	@Override
-	protected Object clone () throws CloneNotSupportedException
-	{
+	protected Object clone () throws CloneNotSupportedException {
 		CachedResult res = new CachedResult();
-		try
-		{
-			if (this.isDefined ()) 
-			{
+		try {
+			if (this.isDefined ()) {
 				res.setResult (getResult ());
 			}
 			
-			if (isSigDefined ()) 
-			{
+			if (isSigDefined ()) {
 				res.setSignature (new String (this.getSignature ()));
 			}
-		} 
-		catch (Exception e) 
-		{
 		}
+		catch (Exception e) {}
 		
 		return res;
 	}

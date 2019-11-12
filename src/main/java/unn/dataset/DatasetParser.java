@@ -10,8 +10,6 @@ import unn.operations.RAW;
 import unn.structures.Config;
 import unn.structures.VTR;
 
-import java.io.PrintStream;
-
 public class DatasetParser {
 
 	public static Dataset parseFromFile(String filePath) {

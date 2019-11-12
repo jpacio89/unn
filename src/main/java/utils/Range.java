@@ -1,7 +1,5 @@
 package utils;
 
-import java.util.Iterator;
-
 public class Range 
 {
 	int lb_;

@@ -5,15 +5,10 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.xml.bind.JAXBElement.GlobalScope;
-
 import plugins.openml.EnvironmentGroup;
-import plugins.openml.JobConfig;
 import plugins.openml.MiningEnvironment;
-import plugins.openml.MiningReport;
 import plugins.openml.SimulationConfig;
 import plugins.openml.UnitReport;
-import unn.interfaces.IEnvironment;
 import unn.interfaces.IOperator;
 import unn.structures.Config;
 import utils.RandomManager;
@@ -31,7 +26,6 @@ public class Simulation {
 	public void run() {
 		HashMap<String, MiningEnvironment> envs = goup.getEnvironments();
 		this.report = new SimulationReport();
-		JobConfig config = goup.getConfig();
 		
 		for (Entry<String, MiningEnvironment> env : envs.entrySet()) {
 			ArrayList<IOperator> inputs = env.getValue().getInputs("");

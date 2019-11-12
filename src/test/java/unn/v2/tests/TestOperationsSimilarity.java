@@ -1,21 +1,5 @@
 package unn.v2.tests;
 
-
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-
-import org.junit.Test;
-
-import unn.*;
-import utils.IOperatorRunnable;
-import utils.MultiplesHashMap;
-import utils.Pair;
-import utils.RandomManager;
-import utils.Triplet;
-
-@SuppressWarnings({ "rawtypes", "unchecked" })
 public class TestOperationsSimilarity 
 {
 	/*private Integer similarity(Integer x, Integer y) {

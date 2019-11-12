@@ -55,12 +55,12 @@ public class UnitReport {
 	}
 	
 	private class Range extends OuterValueType {
-		public final double lb;
-		public final double ub;
+		// public final double lb;
+		// public final double ub;
 		
 		public Range(double lb, double ub) {
-			this.lb = lb;
-			this.ub = ub;
+			// this.lb = lb;
+			// this.ub = ub;
 		}
 	}
 

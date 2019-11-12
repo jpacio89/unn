@@ -2,16 +2,9 @@ package server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import io.javalin.Javalin;
-import io.javalin.core.JavalinConfig;
-import io.javalin.plugin.json.JavalinJackson;
-import io.javalin.plugin.json.JavalinJson;
-import plugins.openml.DiscreteSet;
+
 import plugins.openml.EnvironmentGroup;
 import plugins.openml.JobConfig;
 import plugins.openml.MiningEnvironment;
@@ -19,8 +12,6 @@ import plugins.openml.MiningReport;
 import plugins.openml.OpenML;
 import plugins.openml.SimulationConfig;
 import unn.interfaces.IEnvironment;
-import unn.interfaces.IOperator;
-import unn.mining.StatsWalker;
 import unn.simulation.Simulation;
 import unn.simulation.SimulationReport;
 
@@ -46,12 +37,12 @@ public class RESTApi extends Thread {
         });
         
         app.get("/dataset/units/:jobId", ctx -> {
-        	String jobId = ctx.pathParam("jobId");
+        	// String jobId = ctx.pathParam("jobId");
         	ctx.json(this.env.getUnitReport());
         });
         
         app.post("/dataset/mine/:jobId", ctx -> {
-        	String jobId = ctx.pathParam("jobId");
+        	// String jobId = ctx.pathParam("jobId");
         	JobConfig conf = ctx.bodyAsClass(JobConfig.class);
         	this.group = new EnvironmentGroup(Integer.parseInt(datasetId));
         	
@@ -69,14 +60,14 @@ public class RESTApi extends Thread {
         });
         
         app.get("/mine/report/:jobId", ctx -> {
-        	String jobId = ctx.pathParam("jobId");
-        	IEnvironment env = this.env;
+        	// String jobId = ctx.pathParam("jobId");
+        	// IEnvironment env = this.env;
         	MiningReport report = group.getReport();
 			ctx.json(report);
         });
         
         app.post("/simulate/:jobId", ctx -> {
-        	String jobId = ctx.pathParam("jobId");
+        	// String jobId = ctx.pathParam("jobId");
         	SimulationConfig conf = ctx.bodyAsClass(SimulationConfig.class);
 
         	Simulation simulation = new Simulation();
@@ -88,7 +79,7 @@ public class RESTApi extends Thread {
         });
         
         app.get("/dataset/raw/:jobId", ctx -> {
-        	String jobId = ctx.pathParam("jobId");
+        	// String jobId = ctx.pathParam("jobId");
         	OpenML ml = new OpenML();
         	ml.init(this.group.getConfig());
         	ArrayList<HashMap<String, String>> rawDataset = ml.getRawDataset(Integer.parseInt(this.datasetId));
@@ -96,7 +87,7 @@ public class RESTApi extends Thread {
         });
         
         // DEPRECATED
-        app.get("/predict", ctx -> {
+        /*app.get("/predict", ctx -> {
         	String spaceId = ctx.queryParam("spaceId");
         	String version = ctx.queryParam("version");
         	
@@ -121,7 +112,7 @@ public class RESTApi extends Thread {
         	
         	Double action = env.predict(spaceId, values);
         	ctx.result(Double.toString(action));
-        });
+        });*/
 	}
 	
 	

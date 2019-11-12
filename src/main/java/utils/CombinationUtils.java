@@ -2,9 +2,7 @@ package utils;
 
 import java.util.ArrayList;
 
-public class CombinationUtils {
-
-	
+public class CombinationUtils {	
 	public static long factorial(int n) {
 	    long fact = 1;
 	    for (int i = n; i > 1; i--) {

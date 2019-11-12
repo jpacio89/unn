@@ -1,6 +1,5 @@
 package utils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SquareHashMap<Key1, Key2, Value>

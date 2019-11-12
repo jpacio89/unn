@@ -168,7 +168,7 @@ public class TimeTable {
 		
 		assert weedFound == false; */
 		
-		int wheatCount = 0;
+		// int wheatCount = 0;
 		ArrayList<Integer> chosenSetWheatTimes = new ArrayList<Integer>();
 		
 		for (Integer time : goodTimes) {
@@ -181,7 +181,7 @@ public class TimeTable {
 				}
 			}
 			if (!isRemoved) {
-				wheatCount++;
+				// wheatCount++;
 				chosenSetWheatTimes.add(time);
 			}
 		}

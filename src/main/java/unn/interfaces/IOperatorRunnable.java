@@ -1,6 +1,4 @@
-package utils;
-
-import unn.interfaces.IOperator;
+package unn.interfaces;
 
 public interface IOperatorRunnable {
 	public void run(IOperator op);

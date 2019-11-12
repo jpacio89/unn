@@ -7,7 +7,6 @@ import java.util.PriorityQueue;
 
 import org.junit.Test;
 
-import unn.*;
 import unn.interfaces.IOperator;
 import unn.operations.OperatorDescriptor;
 import unn.operations.RAW;
@@ -161,7 +160,6 @@ public class TestOperationsXOR
 		}
 	}
 	
-	@SuppressWarnings("rawtypes")
 	class AccComparator implements Comparator<Pair>{ 
 		public int compare(Pair acc1, Pair acc2) { 
             if ((Double) acc1.second() < (Double) acc2.second()) {

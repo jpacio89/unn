@@ -17,7 +17,7 @@ public class MiningEnvironment implements IEnvironment {
 	private int datasetId;
 	private UnitReport unitReport;
 	private Dataset dbDataset;
-	private JobConfig config;
+	// private JobConfig config;
 	private Model refinedModel;
 	
 	public MiningEnvironment(int datasetId) {
@@ -31,7 +31,7 @@ public class MiningEnvironment implements IEnvironment {
 	
 	
 	public void init(JobConfig config) {
-		this.config = config;
+		// this.config = config;
 		
 		OpenML ml = new OpenML();
 		ml.init(config);

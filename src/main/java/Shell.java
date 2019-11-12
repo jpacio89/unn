@@ -1,17 +1,9 @@
-import java.util.Scanner;
-import java.util.logging.Logger;
-
-import plugins.crypto.trade.bot.TradeEnvironment;
-import plugins.openml.OpenML;
-import plugins.openml.MiningEnvironment;
+// import java.util.logging.Logger;
 import server.RESTApi;
-import unn.interfaces.IEnvironment;
-import unn.structures.Config;
 
 public class Shell {
-	private static Logger logger = Logger.getLogger(Shell.class.toString());
+	// private static Logger logger = Logger.getLogger(Shell.class.toString());
 	
-	@SuppressWarnings("resource")
 	public static void main(String[] args) throws Exception {		
 		startServer();
 		
