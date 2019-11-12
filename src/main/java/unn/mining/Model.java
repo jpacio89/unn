@@ -1,9 +1,12 @@
-package unn;
+package unn.mining;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
+
+import unn.dataset.Dataset;
+import unn.interfaces.IOperator;
 
 public class Model {
 	final int TEST_SAMPLE_COUNT = 1000;

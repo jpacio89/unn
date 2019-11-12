@@ -2,7 +2,7 @@ package plugins.openml;
 
 import java.util.HashMap;
 
-import unn.StatsWalker;
+import unn.mining.StatsWalker;
 
 public class MiningReport {
 	public boolean isFinished;

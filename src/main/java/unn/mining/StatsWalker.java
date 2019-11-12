@@ -1,8 +1,10 @@
-package unn;
+package unn.mining;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+
+import unn.structures.Config;
 
 public class StatsWalker {
 	ArrayList<Integer> possibleValues;

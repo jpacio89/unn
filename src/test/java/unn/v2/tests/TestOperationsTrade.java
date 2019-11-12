@@ -8,6 +8,11 @@ import org.junit.Test;
 
 import plugins.crypto.trade.bot.PostgresManager;
 import unn.*;
+import unn.dataset.Dataset;
+import unn.dataset.DatasetParser;
+import unn.mining.Miner;
+import unn.mining.Model;
+import unn.structures.Config;
 
 public class TestOperationsTrade 
 {

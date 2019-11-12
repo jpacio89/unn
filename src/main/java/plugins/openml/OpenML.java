@@ -12,11 +12,11 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.DataSetDescription;
 
-import unn.Dataset;
-import unn.IOperator;
-import unn.OperatorDescriptor;
-import unn.RAW;
-import unn.VTR;
+import unn.dataset.Dataset;
+import unn.interfaces.IOperator;
+import unn.operations.OperatorDescriptor;
+import unn.operations.RAW;
+import unn.structures.VTR;
 
 public class OpenML {
 	OpenmlConnector client;

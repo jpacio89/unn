@@ -8,13 +8,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import unn.Config;
-import unn.Dataset;
-import unn.IOperator;
-import unn.OperatorDescriptor;
-import unn.RAW;
-import unn.StatsWalker;
-import unn.VTR;
+import unn.dataset.Dataset;
+import unn.interfaces.IOperator;
+import unn.mining.StatsWalker;
+import unn.operations.OperatorDescriptor;
+import unn.operations.RAW;
+import unn.structures.Config;
+import unn.structures.VTR;
 
 public class PostgresManager // implements IDatabaseManager
 {

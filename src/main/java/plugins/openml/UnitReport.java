@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import unn.Config;
+import unn.structures.Config;
 
 public class UnitReport {
 	public final HashMap<String, OuterValueType> units;

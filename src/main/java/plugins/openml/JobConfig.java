@@ -3,7 +3,7 @@ package plugins.openml;
 import java.util.LinkedList;
 import java.util.List;
 
-import unn.Config;
+import unn.structures.Config;
 
 
 public class JobConfig {

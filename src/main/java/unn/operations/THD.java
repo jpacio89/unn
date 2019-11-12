@@ -1,6 +1,9 @@
-package unn;
+package unn.operations;
 
 import java.util.ArrayList;
+
+import unn.interfaces.IOperator;
+import unn.structures.Config;
 
 public class THD extends BaseOperator implements IOperator
 {

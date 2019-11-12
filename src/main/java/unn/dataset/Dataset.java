@@ -1,8 +1,10 @@
-package unn;
+package unn.dataset;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import unn.interfaces.IOperator;
+import unn.structures.VTR;
 import utils.MultiplesHashMap;
 import utils.RandomManager;
 

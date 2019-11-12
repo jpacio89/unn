@@ -1,4 +1,7 @@
-package unn;
+package unn.operations;
+
+import unn.interfaces.IOperator;
+import unn.structures.Config;
 
 public class PrimaryOperator {
 	public static int Threshold (int v, int lb, int ub) {

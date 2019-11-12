@@ -1,4 +1,4 @@
-package server;
+package unn.simulation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,9 +13,9 @@ import plugins.openml.MiningEnvironment;
 import plugins.openml.MiningReport;
 import plugins.openml.SimulationConfig;
 import plugins.openml.UnitReport;
-import unn.Config;
-import unn.IEnvironment;
-import unn.IOperator;
+import unn.interfaces.IEnvironment;
+import unn.interfaces.IOperator;
+import unn.structures.Config;
 import utils.RandomManager;
 
 public class Simulation {

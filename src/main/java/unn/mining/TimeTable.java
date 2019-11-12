@@ -1,8 +1,15 @@
-package unn;
+package unn.mining;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import unn.dataset.Dataset;
+import unn.interfaces.IOperator;
+import unn.operations.OperatorDescriptor;
+import unn.operations.RAW;
+import unn.operations.THD;
+import unn.structures.Config;
+import unn.structures.VTR;
 import utils.MultiplesHashMap;
 import utils.RandomManager;
 

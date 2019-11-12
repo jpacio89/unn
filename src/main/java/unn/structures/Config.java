@@ -1,4 +1,4 @@
-package unn;
+package unn.structures;
 
 public class Config {
 	public static int STIMULI_MIN_VALUE = -10;

@@ -1,4 +1,4 @@
-package unn;
+package unn.mining;
 
 import java.util.ArrayList;
 

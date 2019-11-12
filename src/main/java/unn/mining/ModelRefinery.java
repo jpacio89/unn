@@ -1,8 +1,9 @@
-package unn;
+package unn.mining;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
+import unn.dataset.Dataset;
 import utils.RandomManager;
 
 public class ModelRefinery {

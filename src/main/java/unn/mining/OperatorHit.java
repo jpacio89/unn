@@ -1,4 +1,6 @@
-package unn;
+package unn.mining;
+
+import unn.interfaces.IOperator;
 
 public class OperatorHit {
 	public IOperator operator;

@@ -18,9 +18,11 @@ import plugins.openml.MiningEnvironment;
 import plugins.openml.MiningReport;
 import plugins.openml.OpenML;
 import plugins.openml.SimulationConfig;
-import unn.IEnvironment;
-import unn.IOperator;
-import unn.StatsWalker;
+import unn.interfaces.IEnvironment;
+import unn.interfaces.IOperator;
+import unn.mining.StatsWalker;
+import unn.simulation.Simulation;
+import unn.simulation.SimulationReport;
 
 public class RESTApi extends Thread {
 	EnvironmentGroup group;

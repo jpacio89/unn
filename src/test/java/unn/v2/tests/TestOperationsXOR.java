@@ -8,6 +8,11 @@ import java.util.PriorityQueue;
 import org.junit.Test;
 
 import unn.*;
+import unn.interfaces.IOperator;
+import unn.operations.OperatorDescriptor;
+import unn.operations.RAW;
+import unn.operations.THD;
+import unn.structures.Config;
 import utils.Pair;
 import utils.RandomManager;
 import utils.Triplet;

@@ -1,8 +1,15 @@
-package unn;
+package unn.dataset;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+
+import unn.interfaces.IOperator;
+import unn.operations.OperatorDescriptor;
+import unn.operations.RAW;
+import unn.structures.Config;
+import unn.structures.VTR;
+
 import java.io.PrintStream;
 
 public class DatasetParser {

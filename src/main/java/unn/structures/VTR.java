@@ -1,4 +1,6 @@
-package unn;
+package unn.structures;
+
+import unn.interfaces.IOperator;
 
 public class VTR {
 	Integer v;

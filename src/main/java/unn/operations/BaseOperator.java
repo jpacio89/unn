@@ -1,10 +1,11 @@
-package unn;
+package unn.operations;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import unn.interfaces.IOperator;
 import utils.Domain;
 import utils.Pair;
 import utils.RandomManager;

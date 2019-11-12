@@ -1,7 +1,9 @@
-package unn;
+package unn.operations;
 
 import java.util.ArrayList;
 
+import unn.interfaces.IOperator;
+import unn.structures.Config;
 import utils.Domain;
 import utils.Range;
 

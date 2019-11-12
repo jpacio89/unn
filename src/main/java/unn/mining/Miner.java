@@ -1,7 +1,11 @@
-package unn;
+package unn.mining;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+import unn.dataset.Dataset;
+import unn.interfaces.IOperator;
+import unn.structures.Config;
 
 public class Miner {
 	public final int MIN_WHEAT_COUNT = 1;

@@ -1,7 +1,8 @@
-package unn;
+package unn.interfaces;
 
 import java.util.ArrayList;
 
+import unn.operations.OperatorDescriptor;
 import utils.Domain;
 
 public interface IOperator

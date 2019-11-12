@@ -5,8 +5,8 @@ import plugins.crypto.trade.bot.TradeEnvironment;
 import plugins.openml.OpenML;
 import plugins.openml.MiningEnvironment;
 import server.RESTApi;
-import unn.Config;
-import unn.IEnvironment;
+import unn.interfaces.IEnvironment;
+import unn.structures.Config;
 
 public class Shell {
 	private static Logger logger = Logger.getLogger(Shell.class.toString());

@@ -1,8 +1,10 @@
-package unn;
+package unn.operations;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+
+import unn.interfaces.IOperator;
 
 public class OperatorUtils 
 {

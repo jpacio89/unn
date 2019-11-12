@@ -3,15 +3,15 @@ package plugins.openml;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import unn.Config;
-import unn.Dataset;
-import unn.DatasetParser;
-import unn.IEnvironment;
-import unn.IOperator;
-import unn.Miner;
-import unn.Model;
-import unn.ModelRefinery;
-import unn.StatsWalker;
+import unn.dataset.Dataset;
+import unn.dataset.DatasetParser;
+import unn.interfaces.IEnvironment;
+import unn.interfaces.IOperator;
+import unn.mining.Miner;
+import unn.mining.Model;
+import unn.mining.ModelRefinery;
+import unn.mining.StatsWalker;
+import unn.structures.Config;
 
 public class MiningEnvironment implements IEnvironment {
 	private int datasetId;

@@ -1,4 +1,4 @@
-package unn;
+package unn.operations;
 
 public class OperatorDescriptor {
 	private String classId;
