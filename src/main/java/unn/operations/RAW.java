@@ -3,9 +3,6 @@ package unn.operations;
 import java.util.ArrayList;
 
 import unn.interfaces.IOperator;
-import unn.structures.Config;
-import utils.Domain;
-import utils.Range;
 
 public class RAW extends BaseOperator
 {
@@ -13,30 +10,14 @@ public class RAW extends BaseOperator
 		super();
 		
 		define(v);
-		
-		Domain dom = new Domain ();
-		dom.add_range(new Range (v, v));
-		
-		domain_ = dom;
 	}
 	
-	public RAW () {
-		super ();
-		
-		init_domain ();
+	public RAW() {
+		super();
 	}
 
 	public RAW (boolean is_time_reward) {
 		super (is_time_reward);
-		
-		init_domain ();
-	}
-	
-	private void init_domain () {
-		Domain dom = new Domain ();
-		dom.add_range(new Range (Config.STIMULI_MIN_VALUE, Config.STIMULI_MAX_VALUE));
-		
-		domain_ = dom;
 	}
 
 	@Override

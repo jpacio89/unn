@@ -1,14 +1,11 @@
 package unn.operations;
 
 import unn.interfaces.IOperator;
-import utils.Domain;
 
 public abstract class BaseOperator implements IOperator
 {
 	CachedResult cache_;
 	OperatorDescriptor operatorDescriptor_;
-	
-	protected Domain domain_;
 	
 	public BaseOperator () {
 		init ();
@@ -93,14 +90,6 @@ public abstract class BaseOperator implements IOperator
 
 	public void recycle () {
 		cache_.clear ();
-	}
-	
-	public Domain get_domain () {
-		return domain_;
-	}
-	
-	public void set_domain (Domain dom) {
-		domain_ = dom;
 	}
 
 	public int hashCode () {

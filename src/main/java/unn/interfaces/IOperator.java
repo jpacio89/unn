@@ -3,7 +3,6 @@ package unn.interfaces;
 import java.util.ArrayList;
 
 import unn.operations.OperatorDescriptor;
-import utils.Domain;
 
 public interface IOperator
 {
@@ -41,8 +40,4 @@ public interface IOperator
 	abstract String hash ();
 	
 	abstract boolean isParameter ();
-	
-	abstract Domain get_domain ();
-	
-	abstract void set_domain (Domain dom);	
 }
