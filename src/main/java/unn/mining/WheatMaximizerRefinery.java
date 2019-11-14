@@ -65,7 +65,7 @@ public class WheatMaximizerRefinery {
 		artifacts.remove(seedArtifact);
 		
 		while (wheatFound.size() < totalHighs.size() && artifacts.size() > 0) {
-			Artifact nextArtifact = Collections.min(artifacts, new Comparator<Artifact>() {
+			Artifact nextArtifact = Collections.max(artifacts, new Comparator<Artifact>() {
 			    @Override
 			    public int compare(Artifact first, Artifact second) {
 			    	ArrayList<Integer> firstWheats = new ArrayList<Integer>();
@@ -76,10 +76,13 @@ public class WheatMaximizerRefinery {
 			    	
 			    	firstWheats.retainAll(wheatFound);
 			    	secondWheats.retainAll(wheatFound);
+			    	
+			    	int firstDiff = first.wheatTimes.size() - firstWheats.size();
+			    	int secondDiff = second.wheatTimes.size() - secondWheats.size();
 					
-			        if (firstWheats.size() > secondWheats.size())
+			        if (firstDiff > secondDiff)
 			            return 1;
-			        else if (firstWheats.size() < secondWheats.size())
+			        else if (firstDiff < secondDiff)
 			            return -1;
 			        return 0;
 			    }
