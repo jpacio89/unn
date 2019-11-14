@@ -90,6 +90,14 @@ public class Miner {
 		return this.model;
 	}
 	
+	public ArrayList<Integer> getHighs() {
+		return this.trainTimeSets.get(1);
+	}
+	
+	public ArrayList<Integer> getLows() {
+		return this.trainTimeSets.get(0);
+	}
+	
 	public void mine() {
 		startClock();
 		
