@@ -11,7 +11,7 @@ import unn.interfaces.IEnvironment;
 import unn.interfaces.IOperator;
 import unn.mining.Miner;
 import unn.mining.Model;
-import unn.mining.ModelRefinery;
+import unn.mining.Refinery;
 import unn.mining.StatsWalker;
 import unn.structures.Config;
 
@@ -56,7 +56,7 @@ public class TradeEnvironment implements IEnvironment {
 			
 			Model model = miner.getModel();
 			
-			ModelRefinery refinery = new ModelRefinery(miner, model);
+			Refinery refinery = new Refinery(miner, model);
 			Model refined = refinery.refine();
 			
 			

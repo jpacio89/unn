@@ -9,9 +9,8 @@ import unn.interfaces.IEnvironment;
 import unn.interfaces.IOperator;
 import unn.mining.Miner;
 import unn.mining.Model;
-import unn.mining.ModelRefinery;
 import unn.mining.StatsWalker;
-import unn.mining.WheatMaximizerRefinery;
+import unn.mining.Refinery;
 import unn.structures.Config;
 
 public class MiningEnvironment implements IEnvironment {
@@ -61,7 +60,7 @@ public class MiningEnvironment implements IEnvironment {
 		Model model = miner.getModel();
 		
 		//ModelRefinery refinery = new ModelRefinery(miner, model);
-		WheatMaximizerRefinery refinery = new WheatMaximizerRefinery(miner, model);
+		Refinery refinery = new Refinery(miner, model);
 		this.refinedModel = refinery.refine();
 		
 		int countMin = dbDataset.count(Config.STIMULI_MIN_VALUE);

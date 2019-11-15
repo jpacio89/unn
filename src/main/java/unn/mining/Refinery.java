@@ -10,11 +10,11 @@ import unn.dataset.Dataset;
 import unn.structures.Config;
 import utils.RandomManager;
 
-public class WheatMaximizerRefinery {
-	Model model;
-	Miner miner;
+public class Refinery {
+	private Model model;
+	private Miner miner;
 	
-	public WheatMaximizerRefinery(Miner miner, Model model) {
+	public Refinery(Miner miner, Model model) {
 		this.model = model;
 		this.miner = miner;
 	}
