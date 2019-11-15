@@ -30,82 +30,67 @@ public class Refinery {
 		return refinedModel;
 	}
 	
-	public ArrayList<Artifact> refineByType(boolean isWheat) {
+	private ArrayList<Artifact> refineByType (boolean isWheat) {
+		ArrayList<Integer> timesFound = new ArrayList<Integer>();
 		ArrayList<Artifact> refinedArtifacts = new ArrayList<Artifact>();
 		
-		ArrayList<Artifact> artifacts = new ArrayList<Artifact>();
-		artifacts.addAll(model.getArtifacts());
+		ArrayList<Artifact> artifacts = this.filterArtifacts(isWheat);
+		ArrayList<Integer> allTimes = this.getTimes(isWheat);
 		
-		Predicate<Artifact> wheatFilter = artifact -> isWheat ? artifact.reward == Config.STIMULI_MAX_VALUE : artifact.reward == Config.STIMULI_MIN_VALUE;
-		artifacts = new ArrayList<Artifact>(artifacts.stream().filter(wheatFilter).collect(Collectors.toList()));
-        
-		ArrayList<Integer> totalHighs;
+		Artifact seedArtifact = this.getSeedArtifact(artifacts);
+		this.appendArtifact(refinedArtifacts, timesFound, artifacts, seedArtifact);
 		
-		if (isWheat) {
-			totalHighs = this.miner.getHighs();
-		} else {
-			totalHighs = this.miner.getLows();
-		}
-		
-		ArrayList<Integer> wheatFound = new ArrayList<Integer>();
-		
-		Artifact seedArtifact = Collections.max(artifacts, new Comparator<Artifact>() {
-		    @Override
-		    public int compare(Artifact first, Artifact second) {
-		        if (first.wheatTimes.size() > second.wheatTimes.size())
-		            return 1;
-		        else if (first.wheatTimes.size() < second.wheatTimes.size())
-		            return -1;
-		        return 0;
-		    }
-		});
-		
-		refinedArtifacts.add(seedArtifact);
-		wheatFound.addAll(seedArtifact.wheatTimes);
-		artifacts.remove(seedArtifact);
-		
-		while (wheatFound.size() < totalHighs.size() && artifacts.size() > 0) {
-			Artifact nextArtifact = Collections.max(artifacts, new Comparator<Artifact>() {
-			    @Override
-			    public int compare(Artifact first, Artifact second) {
-			    	ArrayList<Integer> firstWheats = new ArrayList<Integer>();
-			    	firstWheats.addAll(first.wheatTimes);
-			    	
-			    	ArrayList<Integer> secondWheats = new ArrayList<Integer>();
-			    	secondWheats.addAll(second.wheatTimes);
-			    	
-			    	firstWheats.retainAll(wheatFound);
-			    	secondWheats.retainAll(wheatFound);
-			    	
-			    	int firstDiff = first.wheatTimes.size() - firstWheats.size();
-			    	int secondDiff = second.wheatTimes.size() - secondWheats.size();
-					
-			        if (firstDiff > secondDiff)
-			            return 1;
-			        else if (firstDiff < secondDiff)
-			            return -1;
-			        return 0;
-			    }
-			});
-			
-			refinedArtifacts.add(nextArtifact);
-			wheatFound.addAll(nextArtifact.wheatTimes);
-			artifacts.remove(nextArtifact);
+		while (timesFound.size() < allTimes.size() && artifacts.size() > 0) {
+			Artifact nextArtifact = this.getNextArtifact(artifacts, timesFound);
+			this.appendArtifact(refinedArtifacts, timesFound, artifacts, nextArtifact);
 		}
 		
 		return refinedArtifacts;
 	}
 	
+	private ArrayList<Integer> getTimes(boolean isWheat) {
+		if (isWheat) {
+			return this.miner.getHighs();
+		}
+		return this.miner.getLows();
+	}
 	
-	/*public Model refine() {
-		ArrayList<Artifact> refinedArtifacts = new ArrayList<Artifact>();
+	private ArrayList<Artifact> filterArtifacts(boolean isWheat) {
+		ArrayList<Artifact> artifacts = new ArrayList<Artifact>(this.model.getArtifacts());
+		Predicate<Artifact> wheatFilter = artifact -> {
+			return isWheat ? artifact.reward == Config.STIMULI_MAX_VALUE : artifact.reward == Config.STIMULI_MIN_VALUE;
+		};
+        return new ArrayList<Artifact>(artifacts
+        		.stream()
+        		.filter(wheatFilter)
+        		.collect(Collectors.toList()));
+	}
+	
+	private Artifact getNextArtifact(ArrayList<Artifact> artifacts, ArrayList<Integer> wheatFound) {
+		Artifact nextArtifact = Collections.max(artifacts, new Comparator<Artifact>() {
+		    @Override
+		    public int compare(Artifact first, Artifact second) {
+		    	ArrayList<Integer> firstWheats = new ArrayList<Integer>(first.wheatTimes);		    	
+		    	ArrayList<Integer> secondWheats = new ArrayList<Integer>(second.wheatTimes);
+		    	
+		    	firstWheats.retainAll(wheatFound);
+		    	secondWheats.retainAll(wheatFound);
+		    	
+		    	int firstDiff = first.wheatTimes.size() - firstWheats.size();
+		    	int secondDiff = second.wheatTimes.size() - secondWheats.size();
+				
+		        if (firstDiff > secondDiff)
+		            return 1;
+		        else if (firstDiff < secondDiff)
+		            return -1;
+		        return 0;
+		    }
+		});
 		
-		ArrayList<Artifact> artifacts = new ArrayList<Artifact>();
-		artifacts.addAll(model.getArtifacts());
-		
-		ArrayList<Integer> totalHighs = this.miner.getHighs();
-		ArrayList<Integer> wheatFound = new ArrayList<Integer>();
-		
+		return nextArtifact;
+	}
+	
+	private Artifact getSeedArtifact(ArrayList<Artifact> artifacts) {
 		Artifact seedArtifact = Collections.max(artifacts, new Comparator<Artifact>() {
 		    @Override
 		    public int compare(Artifact first, Artifact second) {
@@ -116,38 +101,16 @@ public class Refinery {
 		        return 0;
 		    }
 		});
-		
-		refinedArtifacts.add(seedArtifact);
-		wheatFound.addAll(seedArtifact.wheatTimes);
-		artifacts.remove(seedArtifact);
-		
-		while (wheatFound.size() < totalHighs.size() && artifacts.size() > 0) {
-			Artifact nextArtifact = Collections.min(artifacts, new Comparator<Artifact>() {
-			    @Override
-			    public int compare(Artifact first, Artifact second) {
-			    	ArrayList<Integer> firstWheats = new ArrayList<Integer>();
-			    	firstWheats.addAll(first.wheatTimes);
-			    	
-			    	ArrayList<Integer> secondWheats = new ArrayList<Integer>();
-			    	secondWheats.addAll(second.wheatTimes);
-			    	
-			    	firstWheats.retainAll(wheatFound);
-			    	secondWheats.retainAll(wheatFound);
-					
-			        if (firstWheats.size() > secondWheats.size())
-			            return 1;
-			        else if (firstWheats.size() < secondWheats.size())
-			            return -1;
-			        return 0;
-			    }
-			});
-			
-			refinedArtifacts.add(nextArtifact);
-			wheatFound.addAll(nextArtifact.wheatTimes);
-			artifacts.remove(nextArtifact);
-		}
-		
-		Model refinedModel = new Model(model.getDataset(), refinedArtifacts);	
-		return refinedModel;
-	}*/
+		return seedArtifact;
+	}
+	
+	private void appendArtifact(
+			ArrayList<Artifact> refinedArtifacts, 
+			ArrayList<Integer> wheatFound, 
+			ArrayList<Artifact> artifacts, 
+			Artifact artifact) {
+		refinedArtifacts.add(artifact);
+		wheatFound.addAll(artifact.wheatTimes);
+		artifacts.remove(artifact);
+	}
 }
