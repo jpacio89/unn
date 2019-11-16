@@ -81,7 +81,7 @@ public class TimeTable {
 		Integer val = this.dataset.getValueByTime(op, time);
 		
 		if (val == null) {
-			calculateBinaryResult(op, time);
+			calculate(op, time);
 			val = this.dataset.getValueByTime(op, time);
 		}
 
@@ -112,12 +112,8 @@ public class TimeTable {
 	}
 	
 	public Artifact createMatrix(ArrayList<Integer> goodTimes, ArrayList<Integer> badTimes) {
-		ArrayList<Integer> missingBadTimes = new ArrayList<Integer>();
-		missingBadTimes.addAll(badTimes);
-		
-		ArrayList<OperatorHit> availableOpHits = new ArrayList<OperatorHit>();
-		availableOpHits.addAll(this.opHits);
-		
+		ArrayList<Integer> missingBadTimes = new ArrayList<Integer>(badTimes);		
+		ArrayList<OperatorHit> availableOpHits = new ArrayList<OperatorHit>(this.opHits);
 		ArrayList<OperatorHit> chosenSet = new ArrayList<OperatorHit>();
 		
 		while (missingBadTimes.size() > 0) {
@@ -167,8 +163,7 @@ public class TimeTable {
 		}
 		
 		assert weedFound == false; */
-		
-		// int wheatCount = 0;
+
 		ArrayList<Integer> chosenSetWheatTimes = new ArrayList<Integer>();
 		
 		for (Integer time : goodTimes) {
@@ -181,19 +176,14 @@ public class TimeTable {
 				}
 			}
 			if (!isRemoved) {
-				// wheatCount++;
 				chosenSetWheatTimes.add(time);
 			}
 		}
 		
-		//System.out.println("Chosen Size: " + chosenSet.size());
-		//System.out.println("Chosen Set: " + chosenSet);
-		//System.out.println("Weat Count: " + wheatCount + " of " + goodTimes.size());
-		
 		return new Artifact(chosenSet, chosenSetWheatTimes, this.reward);
 	}
 	
-	private void calculateBinaryResult(IOperator operator, Integer time) {
+	private void calculate(IOperator operator, Integer time) {
 		operator.recycle();
 		
 		for (IOperator param : this.leafs) {

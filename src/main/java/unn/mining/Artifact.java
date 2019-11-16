@@ -17,6 +17,7 @@ public class Artifact {
 		return this.wheatTimes.size();
 	}
 	
+	// TODO: make unit test
 	public static boolean isRepetition(ArrayList<Artifact> artifacts, Artifact artifact) {
 		for (Artifact artifactCandidate : artifacts) {
 			if (artifactCandidate.opHits.size() != artifact.opHits.size()) {
