@@ -32,7 +32,7 @@ public class THD extends BaseOperator implements IOperator
 		}
 		
 		try {
-			int result = PrimaryOperator.Threshold (v.value (), lb.value (), Config.STIMULI_MAX_VALUE - 1);
+			int result = Threshold(v.value (), lb.value (), Config.STIMULI_MAX_VALUE - 1);
 			this.define (result);
 		} 
 		catch(Exception e) {
@@ -100,5 +100,12 @@ public class THD extends BaseOperator implements IOperator
 	@Override
 	public boolean isParameter () {
 		return false;
-	}	
+	}
+	
+	public static int Threshold (int v, int lb, int ub) {
+		if(v >= lb && v <= ub) {
+			return Config.STIMULI_MAX_VALUE;
+		}
+		return Config.STIMULI_MIN_VALUE;
+	}
 }
