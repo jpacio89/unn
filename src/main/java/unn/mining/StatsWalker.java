@@ -22,7 +22,7 @@ public class StatsWalker {
 		this.times = new ArrayList<Integer>();
 	}
 	
-	public int getOutlier() {
+	public int getUnknownCount() {
 		return this.outlier;
 	}
 	

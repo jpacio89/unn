@@ -23,8 +23,11 @@ public class UnitReport {
 		return this.units.get(feature);
 	}
 	
-	public void addRange(String feature, double lb, double ub) {
-		this.units.put(feature, new Range(lb, ub));
+	public void addNumeric(String feature, ArrayList<Double> values) {
+		NumericMapper mapper = new NumericMapper();
+		// TODO: fix group count
+		mapper.init(10, values);
+		this.units.put(feature, mapper);
 	}
 	
 	public Integer getInnerValue(String feature, String outerValue) {
@@ -45,31 +48,16 @@ public class UnitReport {
 			
 			int innerValue = (int) (Config.STIMULI_MIN_VALUE + index * Math.floor((Config.STIMULI_MAX_VALUE - Config.STIMULI_MIN_VALUE) / (type.cardinal() - 1)));
 			return innerValue;
-		} 
-		else if (valueType instanceof Range) {
-			// TODO: implement
-			return null;
 		}
-		
+		else if (valueType instanceof NumericMapper) {
+			NumericMapper mapper = (NumericMapper) valueType;
+			return mapper.getInnerValue(Double.parseDouble(outerValue));
+		}
 		return null;
-	}
-	
-	private class Range extends OuterValueType {
-		public final double lb;
-		public final double ub;
-		
-		public Range(double lb, double ub) {
-			this.lb = lb;
-			this.ub = ub;
-		}
 	}
 
 	public void setFeatures(String[] features) {
 		this.features = features;
 		
 	}
-	
-	
-	
-	
 }

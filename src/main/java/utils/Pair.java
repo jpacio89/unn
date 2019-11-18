@@ -1,8 +1,8 @@
 package utils;
 
 public class Pair<L, R> {
-	private L first_;
-	private R second_;
+	public L first_;
+	public R second_;
 	
 	public Pair (L a, R b)
 	{

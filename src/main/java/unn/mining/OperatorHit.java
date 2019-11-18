@@ -15,6 +15,4 @@ public class OperatorHit {
 	public String toString() {
 		return "OperatorHit [" + operator + " = " + hit + "]";
 	}
-	
-	
 }

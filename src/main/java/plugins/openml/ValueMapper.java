@@ -18,19 +18,18 @@ public class ValueMapper {
 		double minVal = Double.MAX_VALUE;
 		double maxVal = Double.MIN_VALUE;
 		HashMap<String, String> vals = new HashMap<String, String>();
+		ArrayList<Double> numericValues = new ArrayList<Double>();
 		
 		for (HashMap<String, String> input : this.dataset) {
 			String v = input.get(feature);
 			
 			try {
-				double vDouble = Double.parseDouble(v);					
-				minVal = Math.min(minVal, vDouble);
-				maxVal = Math.max(maxVal, vDouble);
+				double vDouble = Double.parseDouble(v);
+				numericValues.add(vDouble);
 			} catch (NumberFormatException e) {
 				try {
-					int vDouble = Integer.parseInt(v);					
-					minVal = Math.min(minVal, vDouble);
-					maxVal = Math.max(maxVal, vDouble);
+					int vDouble = Integer.parseInt(v);
+					numericValues.add((double)vDouble);
 				} catch (NumberFormatException e2) {
 					isNumeric = false;
 				}
@@ -40,8 +39,8 @@ public class ValueMapper {
 		}
 		
 		if (isNumeric) {
-			System.out.println(String.format("Numeric: [%f; %f]", minVal, maxVal));
-			this.report.addRange(feature, minVal, maxVal);
+			System.out.println(String.format("Numeric: %s", feature));
+			this.report.addNumeric(feature, numericValues);
 		} else {
 			System.out.println(String.format("%d discrete values", vals.size()));
 			this.report.addDiscreteSet(feature, new ArrayList<String>(vals.keySet()));
