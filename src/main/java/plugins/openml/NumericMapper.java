@@ -2,8 +2,10 @@ package plugins.openml;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 
+import unn.dataset.FeatureValueHistogram;
 import unn.structures.Config;
 import utils.Domain;
 import utils.Pair;
@@ -13,15 +15,18 @@ public class NumericMapper extends OuterValueType {
 	public int groupCount;
 	public ArrayList<Double> possibleValues;
 	public ArrayList<Pair<Double, Double>> mapperBounds;
+	public FeatureValueHistogram histogram;
 	
 	public NumericMapper() {
 		
 	}
 	
 	public void init(int groupCount, ArrayList<Double> possibleValues) {
+		this.histogram = new FeatureValueHistogram();
 		this.groupCount = groupCount;
 		this.possibleValues = new ArrayList<Double>(possibleValues);
 		this.findDomain();
+		this.buildHistogram();
 	}
 	
 	public Integer getInnerValue(double outerValue) {
@@ -41,8 +46,24 @@ public class NumericMapper extends OuterValueType {
 		return innerVal;
 	}
 	
+	private void buildHistogram() {
+		this.histogram.occurences.clear();
+		
+		for (Double outerValue : this.possibleValues) {
+			Integer innerValue = getInnerValue(outerValue);
+			if (this.histogram.occurences.containsKey(innerValue)) {
+				Integer counter = this.histogram.occurences.get(innerValue) + 1;
+				this.histogram.occurences.put(innerValue, counter);
+			} else {
+				this.histogram.occurences.put(innerValue, 1);
+			}
+		}
+		
+		this.histogram.minimum = Collections.min(this.possibleValues);
+		this.histogram.maximum = Collections.max(this.possibleValues);
+	}
+	
 	private void findDomain() {
-		// TODO: check if sorted from MIN -> MAX
 		ArrayList<Double> distinctValues = new ArrayList<Double>(new HashSet<Double>(this.possibleValues));
 		Collections.sort(distinctValues);
 		
