@@ -38,6 +38,11 @@ public class Refinery {
 		ArrayList<Integer> allTimes = this.getTimes(isWheat);
 		
 		Artifact seedArtifact = this.getSeedArtifact(artifacts);
+		
+		if (seedArtifact == null) {
+			return refinedArtifacts;
+		}
+		
 		this.appendArtifact(refinedArtifacts, timesFound, artifacts, seedArtifact);
 		
 		while (timesFound.size() < allTimes.size() && artifacts.size() > 0) {
@@ -91,6 +96,9 @@ public class Refinery {
 	}
 	
 	private Artifact getSeedArtifact(ArrayList<Artifact> artifacts) {
+		if (artifacts.size() == 0) {
+			return null;
+		}
 		Artifact seedArtifact = Collections.max(artifacts, new Comparator<Artifact>() {
 		    @Override
 		    public int compare(Artifact first, Artifact second) {
