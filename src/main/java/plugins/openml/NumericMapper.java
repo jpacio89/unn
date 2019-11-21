@@ -36,7 +36,7 @@ public class NumericMapper extends OuterValueType {
 				break;
 			}
 			index++;
-			if (outerValue <= bound.second()) {
+			if (outerValue < bound.second()) {
 				break;
 			}
 		}

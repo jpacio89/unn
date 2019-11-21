@@ -26,7 +26,7 @@ public class UnitReport {
 	public void addNumeric(String feature, ArrayList<Double> values) {
 		NumericMapper mapper = new NumericMapper();
 		// TODO: fix group count
-		mapper.init(10, values);
+		mapper.init(15, values);
 		this.units.put(feature, mapper);
 	}
 	
@@ -50,6 +50,9 @@ public class UnitReport {
 			return innerValue;
 		}
 		else if (valueType instanceof NumericMapper) {
+			if (outerValue == null) {
+				return null;
+			}
 			NumericMapper mapper = (NumericMapper) valueType;
 			return mapper.getInnerValue(Double.parseDouble(outerValue));
 		}
