@@ -13,7 +13,7 @@ public class ValueMapper {
 		this.report = new UnitReport(); 
 	}
 	
-	public void reportUnits(String feature) {
+	public void reportUnits(String feature, Integer numericGroupCount) {
 		boolean isNumeric = true;
 		double minVal = Double.MAX_VALUE;
 		double maxVal = Double.MIN_VALUE;
@@ -40,7 +40,7 @@ public class ValueMapper {
 		
 		if (isNumeric) {
 			System.out.println(String.format("Numeric: %s", feature));
-			this.report.addNumeric(feature, numericValues);
+			this.report.addNumeric(feature, numericValues, numericGroupCount);
 		} else {
 			System.out.println(String.format("%d discrete values", vals.size()));
 			this.report.addDiscreteSet(feature, new ArrayList<String>(vals.keySet()));

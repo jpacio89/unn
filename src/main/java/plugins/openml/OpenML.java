@@ -57,7 +57,7 @@ public class OpenML {
 			
 			for (String k : mapper.getFeatures()) {
 				System.out.println(String.format("Feature %s", k));
-				mapper.reportUnits(k);
+				mapper.reportUnits(k, this.config.groupCount.get(k));
 			}
 			
 			ArrayList<IOperator> leaves = getOperators(mapper.getFeatures(), this.config.targetFeature, true);

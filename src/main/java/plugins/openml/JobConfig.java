@@ -1,5 +1,6 @@
 package plugins.openml;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,12 +8,14 @@ import unn.structures.Config;
 
 
 public class JobConfig {
-	public static JobConfig DEFAULT = new JobConfig("", new LinkedList<String>());
+	public final static JobConfig DEFAULT = new JobConfig("", new LinkedList<String>());
 	
 	public String targetFeature;
 	public String targetOuterValue;
 	public Integer targetInnerValue;
 	public String[] featureBlacklist;
+	public HashMap<String, Integer> groupCount;
+	
 	//public static Integer mapReward(Integer val) {
 	//	return val != null && val == 5 ? Config.STIMULI_MAX_VALUE : Config.STIMULI_MIN_VALUE;
 		

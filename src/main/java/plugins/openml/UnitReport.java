@@ -23,10 +23,10 @@ public class UnitReport {
 		return this.units.get(feature);
 	}
 	
-	public void addNumeric(String feature, ArrayList<Double> values) {
+	public void addNumeric(String feature, ArrayList<Double> values, Integer numericGroupCount) {
 		NumericMapper mapper = new NumericMapper();
 		// TODO: fix group count
-		mapper.init(35, values);
+		mapper.init(numericGroupCount != null ? numericGroupCount : 35, values);
 		this.units.put(feature, mapper);
 	}
 	
