@@ -61,7 +61,8 @@ public class MiningEnvironment implements IEnvironment {
 		
 		//ModelRefinery refinery = new ModelRefinery(miner, model);
 		Refinery refinery = new Refinery(miner, model);
-		this.refinedModel = refinery.refine();
+		//this.refinedModel = refinery.refine();
+		this.refinedModel = model;
 		
 		int countMin = dbDataset.count(Config.STIMULI_MIN_VALUE);
 		int countNull = dbDataset.count(Config.STIMULI_NULL_VALUE);

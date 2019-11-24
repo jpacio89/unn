@@ -11,6 +11,7 @@ public class JobConfig {
 	
 	public String targetFeature;
 	public String targetOuterValue;
+	public Integer targetInnerValue;
 	public String[] featureBlacklist;
 	//public static Integer mapReward(Integer val) {
 	//	return val != null && val == 5 ? Config.STIMULI_MAX_VALUE : Config.STIMULI_MIN_VALUE;
@@ -26,8 +27,12 @@ public class JobConfig {
 		this.targetOuterValue = val;
 	}
 	
+	public void setTargetInnerValue(Integer innerValue) {
+		this.targetInnerValue = innerValue;
+	}
+	
 	public static Integer mapReward(Integer ref, Integer val) {
 		return val != null && val == ref ? Config.STIMULI_MAX_VALUE : Config.STIMULI_MIN_VALUE;
-	 }
+	}
 
 }

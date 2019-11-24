@@ -8,8 +8,8 @@ import unn.interfaces.IOperator;
 import unn.structures.Config;
 
 public class Miner {
-	public final int MIN_WHEAT_COUNT = 1;
-	public final long MINING_TIME = 1 * 60 * 1000;
+	public final int MIN_WHEAT_COUNT = 0;
+	public final long MINING_TIME = (long) (1 * 60 * 1000);
 	
 	Dataset dataset;
 	Model model;

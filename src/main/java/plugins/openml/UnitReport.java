@@ -26,7 +26,7 @@ public class UnitReport {
 	public void addNumeric(String feature, ArrayList<Double> values) {
 		NumericMapper mapper = new NumericMapper();
 		// TODO: fix group count
-		mapper.init(15, values);
+		mapper.init(35, values);
 		this.units.put(feature, mapper);
 	}
 	

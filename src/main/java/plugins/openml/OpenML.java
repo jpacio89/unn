@@ -32,6 +32,8 @@ public class OpenML {
 		try {
 			DataSetDescription data = client.dataGet(datasetId);
 			File url = client.datasetGetCsv(data);
+			//File url = new File("/Users/joaocoelho/Documents/Work/UNN/exchange-crawler/dataset/dataset.csv");
+			
 			ArrayList<HashMap<String, String>> datasetMap = readCSV(url);
 			return datasetMap;
 		}
@@ -48,6 +50,7 @@ public class OpenML {
 		try {
 			DataSetDescription data = client.dataGet(datasetId);
 			File url = client.datasetGetCsv(data);
+			//File url = new File("/Users/joaocoelho/Documents/Work/UNN/exchange-crawler/dataset/dataset.csv");
 			
 			ArrayList<HashMap<String, String>> datasetMap = readCSV(url);
 			ValueMapper mapper = new ValueMapper(datasetMap);
@@ -66,7 +69,11 @@ public class OpenML {
 			dataset.setAllLeaves(leaves);
 			int n = 0;
 			
-			Integer refInnerValue = report.getInnerValue(config.targetFeature, config.targetOuterValue);
+			Integer refInnerValue = config.targetInnerValue;
+			
+			if (config.targetOuterValue != null) {
+				refInnerValue = report.getInnerValue(config.targetFeature, config.targetOuterValue);
+			}
 			
 			for (HashMap<String, String> input : datasetMap) {
 				Integer rewardInnerValue = report.getInnerValue(this.config.targetFeature, input.get(this.config.targetFeature));

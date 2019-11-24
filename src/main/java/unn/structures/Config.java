@@ -1,8 +1,8 @@
 package unn.structures;
 
 public class Config {
-	public static int STIMULI_MIN_VALUE = -10;
-	public static int STIMULI_MAX_VALUE =  10;
+	public static int STIMULI_MIN_VALUE = -20;
+	public static int STIMULI_MAX_VALUE =  20;
 	public static int STIMULI_NULL_VALUE = 0;
 	public static int STIMULI_RANGE = STIMULI_MAX_VALUE - STIMULI_MIN_VALUE;
 	

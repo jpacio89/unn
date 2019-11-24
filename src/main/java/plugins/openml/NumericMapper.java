@@ -46,6 +46,19 @@ public class NumericMapper extends OuterValueType {
 		return innerVal;
 	}
 	
+	public ArrayList<Integer> getAllInnerValues() {
+		ArrayList<Integer> values = new ArrayList<Integer>();
+		int range = Config.STIMULI_MAX_VALUE - Config.STIMULI_MIN_VALUE + 1;
+		int step = Math.max(1, range / (this.groupCount + 2));
+		
+		for(int i = 0; i < this.mapperBounds.size() + 1; ++i) {
+			int innerVal = Config.STIMULI_MIN_VALUE + step * i;
+			values.add(innerVal);
+		}
+		
+		return values;
+	}
+	
 	private void buildHistogram() {
 		this.histogram.occurences.clear();
 		
