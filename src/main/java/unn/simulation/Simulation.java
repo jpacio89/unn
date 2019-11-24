@@ -30,7 +30,6 @@ public class Simulation {
 		for (Entry<String, MiningEnvironment> env : envs.entrySet()) {
 			ArrayList<IOperator> inputs = env.getValue().getInputs("");
 			UnitReport unitReport = env.getValue().getUnitReport();
-
 			
 	    	if (inputs == null) {
 	    		continue;

@@ -26,6 +26,9 @@ public class MiningEnvironment implements IEnvironment {
 	
 	@Override
 	public ArrayList<IOperator> getInputs(String market) {
+		if (this.refinedModel == null) {
+			return null;
+		}
 		return this.refinedModel.getInputs();
 	}
 	
