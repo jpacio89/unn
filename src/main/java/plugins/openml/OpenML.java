@@ -110,7 +110,7 @@ public class OpenML {
 		ArrayList<IOperator> operators = new ArrayList<IOperator>();
 		int n = 0;
 		for (String feature : features) {
-			if (Arrays.stream(this.config.featureBlacklist).anyMatch(feature::equals)) {
+			if (this.config.featureBlacklist != null && Arrays.stream(this.config.featureBlacklist).anyMatch(feature::equals)) {
 				continue;
 			}
 			if (feature.equals(rewardFeature)) {

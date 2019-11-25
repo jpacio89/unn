@@ -19,9 +19,12 @@ public class JobConfig {
 	//public static Integer mapReward(Integer val) {
 	//	return val != null && val == 5 ? Config.STIMULI_MAX_VALUE : Config.STIMULI_MIN_VALUE;
 		
-	public JobConfig() {}
+	public JobConfig() {
+		this.groupCount = new HashMap<String, Integer>();
+	}
 	
 	public JobConfig(String targetFeature, List<String> featureBlacklist) {
+		this.groupCount = new HashMap<String, Integer>();
 		this.targetFeature = targetFeature;
 		this.featureBlacklist = featureBlacklist.toArray(new String[featureBlacklist.size()]);
 	}

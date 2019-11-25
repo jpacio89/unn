@@ -88,10 +88,15 @@ public class RESTApi extends Thread {
         
         app.get("/feature/histogram/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
-        	//this.datasetId = ctx.pathParam("id");
-    		//IEnvironment env = new MiningEnvironment(Integer.parseInt(datasetId));
-    		//this.env = env;
-			//env.init(JobConfig.DEFAULT);
+        	String feature = ctx.queryParam("feature");
+        	String groupCount = ctx.queryParam("groupCount");
+        	
+        	JobConfig config = new JobConfig();
+        	config.groupCount.put(feature, Integer.parseInt(groupCount));
+        	
+    		IEnvironment env = new MiningEnvironment(Integer.parseInt(datasetId));    		
+			env.init(config);
+    		this.env = env;
         });
 	}
 }
