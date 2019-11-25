@@ -81,7 +81,7 @@ public class OpenML {
 				rewardInnerValue = JobConfig.mapReward(refInnerValue, rewardInnerValue);
 				
 				for (String key : input.keySet()) {
-					if (Arrays.stream(this.config.featureBlacklist).anyMatch(key::equals)) {
+					if (this.config.featureBlacklist != null && Arrays.stream(this.config.featureBlacklist).anyMatch(key::equals)) {
 						continue;
 					}
 					Integer innerValue = report.getInnerValue(key, input.get(key));
