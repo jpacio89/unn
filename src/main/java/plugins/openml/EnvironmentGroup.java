@@ -2,8 +2,11 @@ package plugins.openml;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
+import unn.mining.MiningStatusObservable;
 import unn.mining.StatsWalker;
+import unn.structures.MiningStatus;
 
 public class EnvironmentGroup {
 	private int datasetId;
@@ -80,5 +83,15 @@ public class EnvironmentGroup {
 
 	public HashMap<String, MiningEnvironment> getEnvironments() {
 		return this.envs;
+	}
+	
+	public HashMap<String, MiningStatus> getMiningStatuses() {
+		HashMap<String, MiningStatus> statuses = new HashMap<String, MiningStatus>();
+		
+		for (Entry<String, MiningEnvironment> entry : this.envs.entrySet()) {
+			statuses.put(entry.getKey(), entry.getValue().getMiningStatus());
+		}
+		
+		return statuses;
 	}
 }

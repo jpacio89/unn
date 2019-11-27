@@ -8,10 +8,12 @@ import unn.dataset.DatasetParser;
 import unn.interfaces.IEnvironment;
 import unn.interfaces.IOperator;
 import unn.mining.Miner;
+import unn.mining.MiningStatusObservable;
 import unn.mining.Model;
 import unn.mining.StatsWalker;
 import unn.mining.Refinery;
 import unn.structures.Config;
+import unn.structures.MiningStatus;
 
 public class MiningEnvironment implements IEnvironment {
 	private int datasetId;
@@ -19,9 +21,11 @@ public class MiningEnvironment implements IEnvironment {
 	private Dataset dbDataset;
 	// private JobConfig config;
 	private Model refinedModel;
+	private MiningStatusObservable statusObservable;
 	
 	public MiningEnvironment(int datasetId) {
 		this.datasetId = datasetId;
+		this.statusObservable = new MiningStatusObservable();
 	}
 	
 	@Override
@@ -48,7 +52,7 @@ public class MiningEnvironment implements IEnvironment {
 	public StatsWalker mine() throws Exception {
 		this.refinedModel = null;
 		
-		Miner miner = new Miner(dbDataset);
+		Miner miner = new Miner(dbDataset, statusObservable);
 		miner.init();
 		
 		if (!miner.ready()) {
@@ -111,6 +115,7 @@ public class MiningEnvironment implements IEnvironment {
 		return null;
 	}
 	
-
-
+	public MiningStatus getMiningStatus() {
+		return this.statusObservable.getStatus();
+	}
 }

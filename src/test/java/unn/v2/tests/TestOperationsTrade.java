@@ -5,6 +5,7 @@ import org.junit.Test;
 import plugins.crypto.trade.bot.PostgresManager;
 import unn.dataset.Dataset;
 import unn.mining.Miner;
+import unn.mining.MiningStatusObservable;
 import unn.structures.Config;
 
 public class TestOperationsTrade 
@@ -29,7 +30,7 @@ public class TestOperationsTrade
 		// Dataset dataset = loadDataset();
 		// Model model = null;
 		
-		Miner miner = new Miner(dbDataset);
+		Miner miner = new Miner(dbDataset, new MiningStatusObservable());
 		miner.init();
 		miner.mine();
 	}

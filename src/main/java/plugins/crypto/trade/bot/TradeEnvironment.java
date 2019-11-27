@@ -10,6 +10,7 @@ import unn.dataset.DatasetParser;
 import unn.interfaces.IEnvironment;
 import unn.interfaces.IOperator;
 import unn.mining.Miner;
+import unn.mining.MiningStatusObservable;
 import unn.mining.Model;
 import unn.mining.Refinery;
 import unn.mining.StatsWalker;
@@ -42,7 +43,7 @@ public class TradeEnvironment implements IEnvironment {
 			
 			System.out.println(String.format(" Initializing miner"));
 			
-			Miner miner = new Miner(dbDataset);
+			Miner miner = new Miner(dbDataset, new MiningStatusObservable());
 			miner.init();
 			
 			if (!miner.ready()) {

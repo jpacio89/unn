@@ -14,6 +14,7 @@ import plugins.openml.SimulationConfig;
 import unn.interfaces.IEnvironment;
 import unn.simulation.Simulation;
 import unn.simulation.SimulationReport;
+import unn.structures.MiningStatus;
 
 public class RESTApi extends Thread {
 	EnvironmentGroup group;
@@ -64,6 +65,12 @@ public class RESTApi extends Thread {
         	// IEnvironment env = this.env;
         	MiningReport report = group.getReport();
 			ctx.json(report);
+        });
+        
+        app.get("/mine/status/:jobId", ctx -> {
+        	// String jobId = ctx.pathParam("jobId");
+        	HashMap<String, MiningStatus> statuses = group.getMiningStatuses();
+			ctx.json(statuses);
         });
         
         app.post("/simulate/:jobId", ctx -> {
