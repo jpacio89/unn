@@ -22,12 +22,14 @@ public class TimeTable {
 	int reward;
 	MultiplesHashMap<Integer, OperatorHit> findings;
 	MultiplesHashMap<OperatorHit, Integer> opHitPresences;
+	MiningStatusObservable miningStatusObservable;
 	
-	public TimeTable(Dataset dataset, int reward) {
+	public TimeTable(Dataset dataset, int reward, MiningStatusObservable statusObservable) {
 		this.dataset = dataset;
 		this.opHits = new ArrayList<OperatorHit>();
 		this.operatorIndex = new HashMap<>();
 		this.reward = reward;
+		this.miningStatusObservable = statusObservable;
 	}
 	
 	public void init(ArrayList<IOperator> leafs, ArrayList<IOperator> booleanLayer) {
@@ -106,6 +108,7 @@ public class TimeTable {
 				if (n % 10000 == 0) {
 					System.out.println((n * 100.0 / maxN) + "%");
 				}
+				this.miningStatusObservable.updateProgress(n, maxN);
 				n++;
 			}
 		}

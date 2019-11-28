@@ -1,5 +1,7 @@
 package unn.mining;
 
+import java.text.DecimalFormat;
+
 import unn.structures.MiningStatus;
 
 public class MiningStatusObservable {
@@ -15,6 +17,12 @@ public class MiningStatusObservable {
 	
 	public void updateStatusLabel(String status) {
 		this.status.statusLabel = status;
+	}
+	
+	public void updateProgress(long n, long maxN) {
+		double percentage = n * 100.0 / maxN;
+		DecimalFormat df = new DecimalFormat("#.00");
+		status.progressPercentage = Double.parseDouble(df.format(percentage));
 	}
 	
 	public MiningStatus getStatus() {

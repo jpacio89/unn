@@ -39,6 +39,7 @@ public class MiningEnvironment implements IEnvironment {
 	
 	public void init(JobConfig config) {
 		// this.config = config;
+		this.statusObservable.updateStatusLabel("LOADING");
 		
 		OpenML ml = new OpenML();
 		ml.init(config);
@@ -52,6 +53,8 @@ public class MiningEnvironment implements IEnvironment {
 	public StatsWalker mine() throws Exception {
 		this.refinedModel = null;
 		
+		this.statusObservable.updateStatusLabel("CACHING");
+		
 		Miner miner = new Miner(dbDataset, statusObservable);
 		miner.init();
 		
@@ -63,6 +66,8 @@ public class MiningEnvironment implements IEnvironment {
 		System.out.println(String.format(" Mining"));
 		
 		miner.mine();
+		
+		this.statusObservable.updateStatusLabel("OPTIMIZING");
 		
 		Model model = miner.getModel();
 		
@@ -80,6 +85,8 @@ public class MiningEnvironment implements IEnvironment {
 		System.out.println("Max Count = " + countMax);
 		
 		dbDataset.shrink();
+		
+		this.statusObservable.updateStatusLabel("IDLE");
 		
 		// refined.getStatsWalker().printTimes();
 		return this.refinedModel.getStatsWalker();

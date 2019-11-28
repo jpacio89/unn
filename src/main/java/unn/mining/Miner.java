@@ -73,7 +73,7 @@ public class Miner {
 		int i = 0;
 		
 		for (Integer reward : rewards) {
-			TimeTable table = new TimeTable(dataset, reward);
+			TimeTable table = new TimeTable(dataset, reward, this.statusObservable);
 			
 			System.out.println(String.format(" TimeTable init: %d", reward));
 			
@@ -128,8 +128,6 @@ public class Miner {
 				System.out.println(String.format("Mining... %d",  System.currentTimeMillis() - this.miningStartTime));
 			}
 		}
-		
-		this.statusObservable.updateStatusLabel("OPTIMIZING");
 	}
 	
 	public void gatherStats(Model model) {
