@@ -32,9 +32,12 @@ public class EnvironmentGroup {
 
 			for (String value : set.values) {
 				MiningEnvironment env = new MiningEnvironment(this.datasetId);
-
-				config.setTargetOuterValue(value);
 				envs.put(value, env);
+			}
+			
+			for (String value : set.values) {
+				MiningEnvironment env = envs.get(value);
+				config.setTargetOuterValue(value);
 
 				env.init(config);
 
@@ -50,9 +53,12 @@ public class EnvironmentGroup {
 
 			for (Integer innerValue : innerValues) {
 				MiningEnvironment env = new MiningEnvironment(this.datasetId);
-
-				config.setTargetInnerValue(innerValue);
 				envs.put(Integer.toString(innerValue), env);
+			}
+			
+			for (Integer innerValue : innerValues) {
+				MiningEnvironment env = envs.get(Integer.toString(innerValue));
+				config.setTargetInnerValue(innerValue);	
 
 				env.init(config);
 

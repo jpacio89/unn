@@ -86,7 +86,7 @@ public class MiningEnvironment implements IEnvironment {
 		
 		dbDataset.shrink();
 		
-		this.statusObservable.updateStatusLabel("IDLE");
+		this.statusObservable.updateStatusLabel("DONE");
 		
 		// refined.getStatsWalker().printTimes();
 		return this.refinedModel.getStatsWalker();
