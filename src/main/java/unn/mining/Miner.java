@@ -127,6 +127,8 @@ public class Miner {
 			if ((System.currentTimeMillis() - this.miningStartTime) % 10000 < 1000) {
 				System.out.println(String.format("Mining... %d",  System.currentTimeMillis() - this.miningStartTime));
 			}
+			
+			this.statusObservable.updateProgress(System.currentTimeMillis() - this.miningStartTime, MINING_TIME);
 		}
 	}
 	
