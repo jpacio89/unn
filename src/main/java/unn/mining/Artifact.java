@@ -36,4 +36,9 @@ public class Artifact {
 		}
 		return false;
 	}
+
+	@Override
+	public String toString() {
+		return "Artifact [opHits=" + opHits + ", reward=" + reward + "]";
+	}
 }

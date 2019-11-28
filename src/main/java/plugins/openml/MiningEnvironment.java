@@ -109,6 +109,10 @@ public class MiningEnvironment implements IEnvironment {
 		}
 		return this.refinedModel.predict(inputs);
 	}
+	
+	public Model getModel() {
+		return this.refinedModel;
+	}
 
 	@Override
 	public Integer mapInput(String inputString, String version) {

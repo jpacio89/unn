@@ -1,10 +1,13 @@
 package plugins.openml;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import unn.mining.Artifact;
 import unn.mining.MiningStatusObservable;
+import unn.mining.Model;
 import unn.mining.StatsWalker;
 import unn.structures.MiningStatus;
 
@@ -81,7 +84,17 @@ public class EnvironmentGroup {
 		for (String value : envs.keySet()) {
 			MiningEnvironment env = envs.get(value);
 			StatsWalker stats = env.getStatsWalker();
+			Model model = env.getModel();
 			report.confusionMatrixes.put(value, stats);
+			
+			ArrayList<String> artifactSigs = new ArrayList<String>();
+			
+			for (Artifact fact : model.getArtifacts()) {
+				artifactSigs.add(fact.toString());
+			}
+			
+			Collections.sort(artifactSigs);
+			report.artifactSignatures.put(value, artifactSigs);
 		}
 
 		return report;

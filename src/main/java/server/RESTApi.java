@@ -52,7 +52,7 @@ public class RESTApi extends Thread {
 				public void run() {
 		    		try {
 		    			group.mine(conf);
-					} 
+					}
 		    		catch (Exception e) {
 						e.printStackTrace();
 					}
