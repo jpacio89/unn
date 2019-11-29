@@ -95,7 +95,12 @@ public class Model {
 		IOperator[] allArguments = this.dataset.getAllLeaves();
 		int historicAction = this.dataset.getValueByTime(allArguments[allArguments.length - 1], time);
 		
-		walker.addHit2Matrix(time, historicAction, (int) rewardAccumulator);
+		if (hitCount > 0) {
+			walker.addHit2Matrix(time, historicAction, (int) rewardAccumulator);
+		}
+		else {
+			walker.incUnknown();
+		}
 	}
 
 	public Double predict(HashMap<IOperator, Integer> inputs) {

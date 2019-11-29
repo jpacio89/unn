@@ -31,7 +31,7 @@ public class StatsWalker {
 	}
 	
 	public void addHit2Matrix(Integer time, Integer expected, Integer guess) {
-		int relaxation = (int) 0.1 * Config.STIMULI_MAX_VALUE * 2;
+		int relaxation = (int) 0.4 * Config.STIMULI_MAX_VALUE * 2;
 		
 		if (guess > 0) {
 			guess = guess > Config.STIMULI_MAX_VALUE - relaxation ? Config.STIMULI_MAX_VALUE : guess;
@@ -42,15 +42,23 @@ public class StatsWalker {
 		int guessIndex = this.possibleValues.indexOf(guess);
 		int expectedIndex = this.possibleValues.indexOf(expected);
 		
+		if (guessIndex < 0) {
+			guessIndex = this.possibleValues.indexOf(Config.STIMULI_NULL_VALUE);
+		}
+		
 		if (guessIndex >= 0 && expectedIndex >= 0) {
 			this.hitMatrix[guessIndex][expectedIndex]++;
 		} else {
-			this.outlier++;
+			System.err.println("|StatsWalker| Unexpected situation");
 		}
 		
 		if (guessIndex == 2 && expectedIndex == 2) {
 			this.times.add(time);
 		}
+	}
+	
+	public void incUnknown() {
+		this.outlier++;
 	}
 	
 	public void printTimes() {
