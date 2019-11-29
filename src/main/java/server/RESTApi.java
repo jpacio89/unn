@@ -88,7 +88,7 @@ public class RESTApi extends Thread {
         app.get("/dataset/raw/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
         	OpenML ml = new OpenML();
-        	ml.init(this.group.getConfig());
+        	ml.init(this.group.getConfig(), null);
         	ArrayList<HashMap<String, String>> rawDataset = ml.getRawDataset(Integer.parseInt(this.datasetId));
 			ctx.json(rawDataset);
         });

@@ -13,6 +13,7 @@ import org.openml.apiconnector.xml.DataSetDescription;
 
 import unn.dataset.Dataset;
 import unn.interfaces.IOperator;
+import unn.mining.MiningStatusObservable;
 import unn.operations.OperatorDescriptor;
 import unn.operations.RAW;
 import unn.structures.VTR;
@@ -22,10 +23,12 @@ public class OpenML {
 	private UnitReport unitReport;
 	private String[] features;
 	private JobConfig config;
+	private MiningStatusObservable statusObservable;
 
-	public void init(JobConfig config) {
+	public void init(JobConfig config, MiningStatusObservable statusObservable) {
 		this.config = config;
 		this.client = new OpenmlConnector("afd8250e50b774f1cd0b4a4534a1ae90");
+		this.statusObservable = statusObservable;
 	}
 	
 	public ArrayList<HashMap<String, String>> getRawDataset(int datasetId) {
@@ -76,6 +79,10 @@ public class OpenML {
 			}
 			
 			for (HashMap<String, String> input : datasetMap) {
+				if (this.statusObservable != null) {
+					this.statusObservable.updateProgress(n, datasetMap.size());
+				}
+				
 				Integer rewardInnerValue = report.getInnerValue(this.config.targetFeature, input.get(this.config.targetFeature));
 				
 				rewardInnerValue = JobConfig.mapReward(refInnerValue, rewardInnerValue);

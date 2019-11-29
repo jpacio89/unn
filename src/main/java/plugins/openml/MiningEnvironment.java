@@ -42,7 +42,7 @@ public class MiningEnvironment implements IEnvironment {
 		this.statusObservable.updateStatusLabel("LOADING");
 		
 		OpenML ml = new OpenML();
-		ml.init(config);
+		ml.init(config, this.statusObservable);
 		
 		System.out.println(String.format(" Initializing miner"));
 		
@@ -53,7 +53,7 @@ public class MiningEnvironment implements IEnvironment {
 	public StatsWalker mine() throws Exception {
 		this.refinedModel = null;
 		
-		this.statusObservable.updateStatusLabel("CACHING");
+		this.statusObservable.updateStatusLabel("BUFFERING");
 		
 		Miner miner = new Miner(dbDataset, statusObservable);
 		miner.init();
