@@ -60,6 +60,7 @@ public class MiningEnvironment implements IEnvironment {
 		
 		if (!miner.ready()) {
 			System.out.println(String.format(" Not enough data. Skipping..."));
+			this.statusObservable.updateStatusLabel("DONE");
 			return null;
 		}
 		

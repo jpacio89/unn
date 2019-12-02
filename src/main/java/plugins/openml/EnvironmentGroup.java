@@ -89,11 +89,14 @@ public class EnvironmentGroup {
 			
 			ArrayList<String> artifactSigs = new ArrayList<String>();
 			
-			for (Artifact fact : model.getArtifacts()) {
-				artifactSigs.add(fact.toString());
+			if (model != null && model.getArtifacts() != null) {
+				for (Artifact fact : model.getArtifacts()) {
+					artifactSigs.add(fact.toString());
+				}
+				
+				Collections.sort(artifactSigs);				
 			}
-			
-			Collections.sort(artifactSigs);
+
 			report.artifactSignatures.put(value, artifactSigs);
 		}
 
