@@ -11,6 +11,7 @@ import plugins.openml.MiningEnvironment;
 import plugins.openml.MiningReport;
 import plugins.openml.OpenML;
 import plugins.openml.SimulationConfig;
+import plugins.openml.UnitReport;
 import unn.interfaces.IEnvironment;
 import unn.simulation.Simulation;
 import unn.simulation.SimulationReport;
@@ -83,6 +84,12 @@ public class RESTApi extends Thread {
         	SimulationReport report = simulation.getReport();
         	
         	ctx.json(report);
+        });
+        
+        app.get("/mine/units/:jobId", ctx -> {
+        	// String jobId = ctx.pathParam("jobId");
+        	HashMap<String, UnitReport> reports = this.group.getUnitReports();        	
+        	ctx.json(reports);
         });
         
         app.get("/dataset/raw/:jobId", ctx -> {

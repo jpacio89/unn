@@ -107,6 +107,16 @@ public class EnvironmentGroup {
 		return this.envs;
 	}
 	
+	public HashMap<String, UnitReport> getUnitReports() {
+		HashMap<String, UnitReport> reports = new HashMap<String, UnitReport>();
+		
+		for (Entry<String, MiningEnvironment> entry : this.envs.entrySet()) {
+			reports.put(entry.getKey(), entry.getValue().getUnitReport());
+		}
+		
+		return reports;
+	}
+	
 	public HashMap<String, MiningStatus> getMiningStatuses() {
 		HashMap<String, MiningStatus> statuses = new HashMap<String, MiningStatus>();
 		
