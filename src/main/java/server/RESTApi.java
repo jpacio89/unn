@@ -92,6 +92,12 @@ public class RESTApi extends Thread {
         	ctx.json(reports);
         });
         
+        app.get("/mine/config/:jobId", ctx -> {
+        	// String jobId = ctx.pathParam("jobId");
+        	JobConfig config = this.group.getConfig();        	
+        	ctx.json(config);
+        });
+        
         app.get("/dataset/raw/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
         	OpenML ml = new OpenML();
