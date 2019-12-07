@@ -17,19 +17,20 @@
 
     file_put_contents("dataset/dataset.csv", implode(",", $inputNames)."\n", LOCK_EX);
 
-    for ($i = 0; $i < count($files); ++$i) {
-        $file = $files[$i];
+    for ($i = 0; $i < count($marketWhitelist); ++$i) {
+        //$file = $files[$i];
+        $file = $marketWhitelist[$i].".txt";
         $rowMap = array();
 
-        if ($file === '.' ||
-            $file === '..' ||
-            strrpos($file, ".txt") === FALSE) {
-            continue;
-        }
-
-        if (!isMarketWhitelist($file, $marketWhitelist)) {
-            continue;
-        }
+        //if ($file === '.' ||
+        //    $file === '..' ||
+        //    strrpos($file, ".txt") === FALSE) {
+        //    continue;
+        //}
+        //
+        //if (!isMarketWhitelist($file, $marketWhitelist)) {
+        //    continue;
+        //}
 
         $csv = file_get_contents("$dir/$file");
         $csv = trim($csv);
