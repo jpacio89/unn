@@ -1,7 +1,7 @@
 <?php
     include "config.php";
 
-    $DIM = 2;
+    $DIM = count($marketWhitelist);
 
     $csv = file_get_contents("dataset/dataset.csv");
     $csv = trim($csv);

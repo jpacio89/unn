@@ -80,4 +80,16 @@ $inputNames = array (
 
 // reward offsets are always extracted from the future
 $rewardOffset = -$sampleOffsets[2];
+
+$marketWhitelist = array(
+    "amzn.us",
+    "msft.us",
+    "fb.us",
+    "intc.us",
+    "csco.us",
+    "googl.us",
+    "aapl.us",
+    "ebay.us"
+);
+
 ?>

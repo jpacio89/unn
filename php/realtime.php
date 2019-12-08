@@ -1,10 +1,7 @@
 <?php
     include "config.php";
 
-    $marketWhitelist = array(
-        "amzn.us",
-        "googl.us"
-    );
+    $payload = array();
 
     for ($i = 0; $i < count($marketWhitelist); ++$i) {
         $file = explode(".", $marketWhitelist[$i])[0];
@@ -30,9 +27,17 @@
             } else {
                 $variation = '?';
             }
-            echo $prevDate." --> ".$inputNames[2+$j]."@".$marketWhitelist[$i]."=".$variation."\n";
+            $operatorId = $inputNames[2+$j]."@".$marketWhitelist[$i].".txt";
+            //echo $prevDate." --> ".$operatorId."=".$variation."\n";
+            if ($variation == 0) {
+                $payload[$operatorId]["0.0"] = true;
+            } else {
+                $payload[$operatorId]["$variation"] = true;
+            }
         }
     }
+
+    echo json_encode($payload);
 
     function getVariation($pivot, $price) {
         return round(($pivot - $price) * 100 / $pivot, 2);

@@ -5,15 +5,8 @@
     $files  = scandir($dir);
     $fileCount = count($files);
     $blacklist = array();
-
     $ROW_CAP = 10000000;
-
-    $marketWhitelist = array(
-        "amzn.us",
-        "googl.us"
-    );
-
-    $datasetQueryValues = [];
+    $MINING_TARGET_COL = 4;
 
     file_put_contents("dataset/dataset.csv", implode(",", $inputNames)."\n", LOCK_EX);
 
@@ -57,18 +50,18 @@
                     }*/
 
                     $diffPercOpen = [];
-                    $diffPercVolume = [];
+                    // $diffPercVolume = [];
 
                     for ($k = 0; $k < count($sampleOffsets); ++$k) {
-                        $diffPercOpen[] = processOffset($rowMap, $time, $sampleOffsets[$k], 1);
-                        $diffPercVolume[] = processOffset($rowMap, $time, $sampleOffsets[$k], 5);
+                        $diffPercOpen[] = processOffset($rowMap, $time, $sampleOffsets[$k], $MINING_TARGET_COL);
+                        // $diffPercVolume[] = processOffset($rowMap, $time, $sampleOffsets[$k], 5);
                     }
 
                     preProcessRow($rowMap, $rows, $j, $time + $rewardOffset);
-                    $rewardDiffPercOpen = processOffset($rowMap, $time + $rewardOffset, -$rewardOffset, 1);
+                    $rewardDiffPercOpen = processOffset($rowMap, $time + $rewardOffset, -$rewardOffset, $MINING_TARGET_COL);
 
                     echo implode(',', $diffPercOpen)."\n";
-                    echo implode(',', $diffPercVolume)."\n";
+                    // echo implode(',', $diffPercVolume)."\n";
                     echo $rewardDiffPercOpen."%   action? $action\n\n";
 
                     $action = $rewardDiffPercOpen;
