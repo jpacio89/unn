@@ -2,28 +2,14 @@
     include "config.php";
 
     $dir    = 'data';
-    $files  = scandir($dir);
-    $fileCount = count($files);
-    $blacklist = array();
     $ROW_CAP = 10000000;
     $MINING_TARGET_COL = 4;
 
     file_put_contents("dataset/dataset.csv", implode(",", $inputNames)."\n", LOCK_EX);
 
     for ($i = 0; $i < count($marketWhitelist); ++$i) {
-        //$file = $files[$i];
         $file = $marketWhitelist[$i].".txt";
         $rowMap = array();
-
-        //if ($file === '.' ||
-        //    $file === '..' ||
-        //    strrpos($file, ".txt") === FALSE) {
-        //    continue;
-        //}
-        //
-        //if (!isMarketWhitelist($file, $marketWhitelist)) {
-        //    continue;
-        //}
 
         $csv = file_get_contents("$dir/$file");
         $csv = trim($csv);
@@ -43,11 +29,6 @@
 
                     $diff = $time - $lastTime;
                     $rowMap[$time] = $cols;
-
-                    /*if ($j > 1 && $diff != 3600000) {
-                        //echo "$file @ row $j: $diff\n";
-                        $blacklist[$file] = true;
-                    }*/
 
                     $diffPercOpen = [];
                     // $diffPercVolume = [];
@@ -77,14 +58,12 @@
                     $lastTime = $time;
                 }
                 else {
-                    // echo "$file @ $j has malformed line(s): $row\n";
-                    $blacklist[$file] = true;
+                    echo "$file @ $j has malformed line(s): $row\n";
                 }
             }
 
         } else {
-            // echo "$file is empty.\n";
-            $blacklist[$file] = true;
+            echo "$file is empty.\n";
         }
     }
 

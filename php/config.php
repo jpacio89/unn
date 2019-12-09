@@ -41,7 +41,7 @@ $inputNames = array (
     "action"
 );*/
 // Friday
-$sampleOffsets = array (
+/*$sampleOffsets = array (
     -1 * $dayStep,
     -2 * $dayStep,
     -3 * $dayStep,
@@ -76,20 +76,52 @@ $inputNames = array (
     "-17d",
     "-18d",
     "action"
+);*/
+// Monday
+$sampleOffsets = array (
+    -3 * $dayStep,
+    -4 * $dayStep,
+    -5 * $dayStep,
+    -6 * $dayStep,
+    -7 * $dayStep,
+    -10 * $dayStep,
+    -11 * $dayStep,
+    -12 * $dayStep,
+    -13 * $dayStep,
+    -14 * $dayStep
+);
+
+$inputNames = array (
+    "file",
+    "time",
+    "-3d",
+    "-4d",
+    "-5d",
+    "-6d",
+    "-7d",
+    "-10d",
+    "-11d",
+    "-12d",
+    "-13d",
+    "-14d",
+    "action"
 );
 
 // reward offsets are always extracted from the future
-$rewardOffset = -$sampleOffsets[2];
+$rewardOffset = 1 * $dayStep;
 
+// Tech
 $marketWhitelist = array(
-    "amzn.us",
-    "msft.us",
-    "fb.us",
-    "intc.us",
-    "csco.us",
     "googl.us",
     "aapl.us",
-    "ebay.us"
+    "ebay.us",
+//    "csco.us",
+//    "intc.us",
+    "fb.us",
+//    "msft.us",
+    "amzn.us",
+//    "ibm.us",
+
 );
 
 ?>

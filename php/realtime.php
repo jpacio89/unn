@@ -47,7 +47,7 @@
         if (!isset($rows[$dateStr])) {
             return '?';
         }
-        return $rows[$dateStr]["1. open"];
+        return $rows[$dateStr]["4. close"];
     }
 
 ?>
