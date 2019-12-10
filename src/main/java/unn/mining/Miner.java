@@ -66,7 +66,9 @@ public class Miner {
 		this.testTimeSets.add(new ArrayList<Integer> (allTimesLow.subList(midPointLow, allTimesLow.size())));
 		this.testTimeSets.add(new ArrayList<Integer> (allTimesHigh.subList(midPointHigh, allTimesHigh.size())));
 		
-		assertDisjoint();
+		if (Config.ASSERT) {
+			assertDisjoint();
+		}
 		
 		ArrayList<IOperator> booleanLayer = TimeTable.getBooleanParameters (dataset.getTrainingLeaves());
 		Integer[] rewards = { Config.STIMULI_MAX_VALUE, Config.STIMULI_MIN_VALUE };
@@ -124,9 +126,9 @@ public class Miner {
 				this.statusObservable.updateArtifactCount(model.getArtifacts().size());
 			}
 			
-			if ((System.currentTimeMillis() - this.miningStartTime) % 10000 < 1000) {
-				System.out.println(String.format("Mining... %d",  System.currentTimeMillis() - this.miningStartTime));
-			}
+			//if ((System.currentTimeMillis() - this.miningStartTime) % 10000 < 1000) {
+			//	System.out.println(String.format("Mining... %d",  System.currentTimeMillis() - this.miningStartTime));
+			//}
 			
 			this.statusObservable.updateProgress(System.currentTimeMillis() - this.miningStartTime, MINING_TIME);
 		}

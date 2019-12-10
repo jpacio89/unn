@@ -71,9 +71,12 @@ public class MiningEnvironment implements IEnvironment {
 		this.statusObservable.updateStatusLabel("OPTIMIZING");
 		
 		Model model = miner.getModel();
-		
-		//ModelRefinery refinery = new ModelRefinery(miner, model);
 		Refinery refinery = new Refinery(miner, model);
+		
+		if (Config.ASSERT) {
+			refinery.checkConsistency();
+		}
+		
 		//this.refinedModel = refinery.refine();
 		this.refinedModel = model;
 		

@@ -30,6 +30,22 @@ public class Refinery {
 		return refinedModel;
 	}
 	
+	public void checkConsistency() throws Exception {
+		ArrayList<Artifact> wheats = this.filterArtifacts(true);
+		ArrayList<Artifact> weeds  = this.filterArtifacts(false);
+		long count = 0;
+		for (Artifact wheat : wheats) {
+			ArrayList<Integer> wheatTimes = new ArrayList<Integer>(wheat.wheatTimes);
+			for (Artifact weed : weeds) {
+				wheatTimes.retainAll(weed.wheatTimes);
+				count += wheatTimes.size();
+			}
+		}
+		if (count > 0) {
+			throw new Exception("|Refinery| Consistency check failed.");
+		}
+	}
+	
 	private ArrayList<Artifact> refineByType (boolean isWheat) {
 		ArrayList<Integer> timesFound = new ArrayList<Integer>();
 		ArrayList<Artifact> refinedArtifacts = new ArrayList<Artifact>();
