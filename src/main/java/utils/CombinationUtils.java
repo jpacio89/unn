@@ -53,4 +53,39 @@ public class CombinationUtils {
 	 
 	    return combinations;
 	}
+	
+	public static ArrayList<ArrayList<Integer>> getSubsets(int n) {
+		ArrayList<ArrayList<Integer>> subsets = new ArrayList<ArrayList<Integer>>();
+		
+		int[] set = new int[n];
+		
+		for (int i = 0; i < n; ++i) {
+			set[i] = i;
+		}
+  
+        // Run a loop for printing all 2^n 
+        // subsets one by obe 
+        for (int i = 0; i < (1<<n); i++) {
+        	ArrayList<Integer> subset = new ArrayList<Integer>();
+  
+            // Print current subset 
+            for (int j = 0; j < n; j++) {
+            	// (1<<j) is a number with jth bit 1 
+                // so when we 'and' them with the 
+                // subset number we get which numbers 
+                // are present in the subset and which 
+                // are not 
+                if ((i & (1 << j)) > 0) {
+                	subset.add(set[j]);	
+                }
+            }
+  
+            if (!subset.isEmpty()) {
+            	subsets.add(subset);
+            	System.out.println(subset);
+            }
+        }
+        
+        return subsets;
+    }
 }

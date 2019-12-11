@@ -122,7 +122,7 @@ public class Miner {
 			
 			if (newArtifact != null && 
 				newArtifact.getWheatCount() > MIN_WHEAT_COUNT && 
-				!Artifact.isRepetition(model.getArtifacts(), newArtifact)) {
+				!Artifact.isRepetitionFull(model.getArtifacts(), newArtifact)) {
 				model.add(newArtifact);
 				model.gatherStats(this.testTimeSets.get(0), this.testTimeSets.get(1));
 				this.statusObservable.updateArtifactCount(model.getArtifacts().size());
