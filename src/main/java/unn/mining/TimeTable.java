@@ -114,7 +114,7 @@ public class TimeTable {
 		}
 	}
 	
-	public Artifact createMatrix(ArrayList<Integer> goodTimes, ArrayList<Integer> badTimes) {
+	public Artifact createMatrix(ArrayList<Integer> goodTimes, ArrayList<Integer> badTimes) throws Exception {
 		ArrayList<Integer> missingBadTimes = new ArrayList<Integer>(badTimes);		
 		ArrayList<OperatorHit> availableOpHits = new ArrayList<OperatorHit>(this.opHits);
 		ArrayList<OperatorHit> chosenSet = new ArrayList<OperatorHit>();
@@ -183,7 +183,41 @@ public class TimeTable {
 			}
 		}
 		
-		return new Artifact(chosenSet, chosenSetWheatTimes, this.reward);
+		Artifact artifact = new Artifact(chosenSet, chosenSetWheatTimes, this.reward);
+		
+		/*if (Config.ASSERT) {
+			boolean ret = checkNegatedArtifact(artifact, goodTimes, badTimes);
+			
+			if (!ret) {
+				return null;
+			}
+		}*/
+		
+		return artifact;
+	}
+	
+	private boolean checkNegatedArtifact(Artifact artifact, ArrayList<Integer> goodTimes, ArrayList<Integer> badTimes) throws Exception {
+		long timeCounter = 0;
+		for (Integer time : badTimes) {
+			boolean isValid = false;
+			for (OperatorHit opHit : artifact.opHits) {
+				boolean ret = checkTime(opHit.operator, time, -opHit.hit);
+				if (ret) {
+					isValid = true;
+					break;
+				}
+			}
+			if (isValid) {
+				timeCounter++;
+			}
+		}
+		
+		if (timeCounter == 0) {
+			return false;
+			// throw new Exception("|TimeTable| Negated artifact has hits");
+		}
+		
+		return true;
 	}
 	
 	private void calculate(IOperator operator, Integer time) {
@@ -196,6 +230,7 @@ public class TimeTable {
 		try {
 			operator.operate();
 			int binaryResult = operator.value();
+			// TODO: probably will end up adding several instances of the same thing (FIX IT!)
 			dataset.add(new VTR(operator, binaryResult, time, this.dataset.getRewardByTime(time)));
 		}
 		catch (Exception e) {

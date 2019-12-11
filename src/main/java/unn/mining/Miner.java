@@ -103,7 +103,7 @@ public class Miner {
 		return this.trainTimeSets.get(0);
 	}
 	
-	public void mine() {
+	public void mine() throws Exception {
 		startClock();
 		this.statusObservable.updateStatusLabel("MINING");
 		
@@ -120,7 +120,9 @@ public class Miner {
 				newArtifact = table.createMatrix(this.trainTimeSets.get(0), this.trainTimeSets.get(1));
 			}
 			
-			if (newArtifact.getWheatCount() > MIN_WHEAT_COUNT && !Artifact.isRepetition(model.getArtifacts(), newArtifact)) {
+			if (newArtifact != null && 
+				newArtifact.getWheatCount() > MIN_WHEAT_COUNT && 
+				!Artifact.isRepetition(model.getArtifacts(), newArtifact)) {
 				model.add(newArtifact);
 				model.gatherStats(this.testTimeSets.get(0), this.testTimeSets.get(1));
 				this.statusObservable.updateArtifactCount(model.getArtifacts().size());
