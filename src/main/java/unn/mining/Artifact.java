@@ -2,6 +2,7 @@ package unn.mining;
 
 import java.util.ArrayList;
 
+import unn.interfaces.IOperator;
 import utils.CombinationUtils;
 
 public class Artifact {
@@ -23,22 +24,63 @@ public class Artifact {
 		return this.wheatTimes.size();
 	}
 	
-	// TODO: make unit test
-	public static Artifact isRepetition(ArrayList<Artifact> artifacts, Artifact artifact) {
-		for (Artifact artifactCandidate : artifacts) {
-			if (artifactCandidate.opHits.size() != artifact.opHits.size()) {
-				continue;
+	public static boolean contains(Artifact pivot, Artifact candidate) {
+		// ArrayList<IOperator> doubleRaws = new ArrayList<IOperator>();
+		boolean contains = true;
+		for (OperatorHit opHitCandidate : candidate.opHits) {
+			if (!pivot.opHits.contains(opHitCandidate)) {
+				contains = false;
+				break;
 			}
-			boolean contains = true;
-			for (OperatorHit opHitCandidate : artifactCandidate.opHits) {
-				if (!artifact.opHits.contains(opHitCandidate)) {
-					contains = false;
-					break;
+			/*IOperator doubleRaw = hasDoubleRaw(opHitCandidate);
+			if (doubleRaw != null) {
+				doubleRaws.add(doubleRaw);
+			}*/
+		}
+		/*if (!contains) {
+			boolean containsDouble = false;
+			outerloop:
+			for (OperatorHit hit : pivot.opHits) {
+				for (IOperator doubleRaw : doubleRaws) {
+					if (hit.operator.toString().split(doubleRaw.toString()).length > 1) {
+						System.out.println(String.format("Found raw=%s in %s", doubleRaw.toString(), hit.operator.toString()));
+						containsDouble = true;
+						break outerloop;
+					}
 				}
 			}
+			return containsDouble;
+		}*/
+		return contains;
+	}
+	
+	public static IOperator hasDoubleRaw(OperatorHit opHit) {
+		IOperator[] ops = opHit.operator.children();
+		if (ops[0].equals(ops[1])) {
+			return ops[0];
+		}
+		return null;
+	}
+	
+	// TODO: make unit test
+	public static Artifact isRepetition(ArrayList<Artifact> artifacts, Artifact artifact) {
+		ArrayList<Artifact> toRemove = new ArrayList<Artifact>();
+		for (Artifact artifactCandidate : artifacts) {
+			if (artifactCandidate.opHits.size() > artifact.opHits.size()) {
+				boolean contains = contains(artifactCandidate, artifact);
+				if (contains) {
+					toRemove.add(artifactCandidate);
+				}
+				continue;
+			}
+			boolean contains = contains(artifact, artifactCandidate);
 			if (contains) {
 				return artifactCandidate;
 			}
+		}
+		if (toRemove.size() > 0) {
+			System.out.println("|Artifact| removing artifacts...");
+			artifacts.removeAll(toRemove);
 		}
 		return null;
 	}
