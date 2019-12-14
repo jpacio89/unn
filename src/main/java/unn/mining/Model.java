@@ -75,13 +75,13 @@ public class Model {
 		double rewardAccumulator = 0;
 		int hitCount = 0;
 		
-		for (IOperator param : this.dataset.getTrainingLeaves()) {
+		/*for (IOperator param : this.dataset.getTrainingLeaves()) {
 			if (inputs.containsKey(param)) {
 				param.define(inputs.get(param));
 			} else {
 				System.out.println("Missing assignment: " + param.toString());
 			}
-		}	
+		}*/	
 
 		
 		for (Artifact artifact : this.artifacts) {
@@ -100,7 +100,7 @@ public class Model {
 				// thd.recycle();
 				
 				try {
-					int thdOutcome = thd.operate();
+					int thdOutcome = thd.operate(inputs);
 					// int thdOutcome = thd.value();
 					
 					if (parcelOutcome.intValue() != thdOutcome) {
@@ -138,13 +138,13 @@ public class Model {
 		int hitCount = 0;
 		int n = 0;
 		
-		for (IOperator param : this.dataset.getTrainingLeaves()) {
+		/*for (IOperator param : this.dataset.getTrainingLeaves()) {
 			if (inputs.containsKey(param)) {
 				param.define(inputs.get(param));
 			} else {
 				System.out.println("Missing assignment: " + param.toString());
 			}
-		}
+		}*/
 		
 		for (Artifact artifact : this.artifacts) {
 			if (weights[n] == 0) {
@@ -164,7 +164,7 @@ public class Model {
 				// thd.recycle();
 				
 				try {
-					int thdOutcome = thd.operate();
+					int thdOutcome = thd.operate(inputs);
 					// int thdOutcome = thd.value();
 					
 					if (parcelOutcome.intValue() != thdOutcome) {
