@@ -221,15 +221,15 @@ public class TimeTable {
 	}
 	
 	private void calculate(IOperator operator, Integer time) {
-		operator.recycle();
+		// operator.recycle();
 		
 		for (IOperator param : this.leafs) {
 			param.define(dataset.getValueByTime(param, time));
 		}
 		
 		try {
-			operator.operate();
-			int binaryResult = operator.value();
+			int binaryResult = operator.operate();
+			//operator.value();
 			// TODO: probably will end up adding several instances of the same thing (FIX IT!)
 			dataset.add(new VTR(operator, binaryResult, time, this.dataset.getRewardByTime(time)));
 		}

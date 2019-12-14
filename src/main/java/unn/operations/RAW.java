@@ -93,6 +93,8 @@ public class RAW extends BaseOperator
 	@Override
 	public void setParameters (IOperator[] params) {}
 	
-	public void operate () throws Exception {}
+	public Integer operate () throws Exception {
+		return value();
+	}
 	
 }

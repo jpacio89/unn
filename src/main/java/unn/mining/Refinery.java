@@ -25,11 +25,13 @@ public class Refinery {
 		long[] weights = new long[artifacts.size()];
 		double[] errors = new double[weights.length];
 		
-		for (int j = 0; j < 10; ++j) {
+		for (int j = 0; j < 100; ++j) {
+			long[] tmpWeights = Arrays.copyOf(weights, weights.length);
+			
 			for (int i = 0; i < weights.length; ++i) {
-				long[] tmpWeights = Arrays.copyOf(weights, weights.length);
 				tmpWeights[i]++;
 				errors[i] = calculateError(tmpWeights);
+				tmpWeights[i]--;
 				
 			//	System.out.println(String.format("Minimum Error: %f", minError));
 			//	System.out.println(String.format("Errors: %s", Arrays.toString(errors)));

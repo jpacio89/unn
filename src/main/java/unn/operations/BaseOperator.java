@@ -79,8 +79,9 @@ public abstract class BaseOperator implements IOperator
 		return this.cache_.getMD5 ();
 	}
 
-	public void operate () throws Exception {
+	public Integer operate () throws Exception {
 		// TODO Auto-generated method stub
+		throw new Exception();
 	}
 
 	public OpIterator iterator () {

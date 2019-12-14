@@ -11,7 +11,7 @@ public interface IOperator
 		abstract IOperator next ();
 	}
 	
-	abstract void operate () throws Exception;
+	abstract Integer operate () throws Exception;
 	
 	abstract int value () throws Exception;
 	

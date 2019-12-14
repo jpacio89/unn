@@ -22,7 +22,7 @@ public class THD extends BaseOperator implements IOperator
 		super ();
 	}
 
-	public void operate () throws Exception {
+	public Integer operate () throws Exception {
 		if (!v.isDefined ()) {
 			v.operate ();
 		}
@@ -33,13 +33,15 @@ public class THD extends BaseOperator implements IOperator
 		
 		try {
 			int result = Threshold(v.value (), lb.value (), Config.STIMULI_MAX_VALUE - 1);
-			this.define (result);
+			//this.define (result);
+			return result;
 		} 
 		catch(Exception e) {
 			e.printStackTrace();
 		}
 		
-		updateSignature ();
+		//updateSignature ();
+		throw new Exception();
 	}
 
 

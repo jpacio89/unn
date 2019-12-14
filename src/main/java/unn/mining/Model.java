@@ -75,6 +75,15 @@ public class Model {
 		double rewardAccumulator = 0;
 		int hitCount = 0;
 		
+		for (IOperator param : this.dataset.getTrainingLeaves()) {
+			if (inputs.containsKey(param)) {
+				param.define(inputs.get(param));
+			} else {
+				System.out.println("Missing assignment: " + param.toString());
+			}
+		}	
+
+		
 		for (Artifact artifact : this.artifacts) {
 			if (artifact.weight != null && artifact.weight == 0) {
 				continue;
@@ -83,24 +92,16 @@ public class Model {
 			Integer percentage = artifact.reward;
 			
 			boolean hit = true;
-			
+						
 			for (OperatorHit parcel : parcels) {
 				IOperator thd = parcel.operator;
 				Integer parcelOutcome = parcel.hit;
 			
-				thd.recycle();
-				
-				for (IOperator param : this.dataset.getTrainingLeaves()) {
-					if (inputs.containsKey(param)) {
-						param.define(inputs.get(param));
-					} else {
-						System.out.println("Missing assignment: " + param.toString());
-					}
-				}
+				// thd.recycle();
 				
 				try {
-					thd.operate();
-					int thdOutcome = thd.value();
+					int thdOutcome = thd.operate();
+					// int thdOutcome = thd.value();
 					
 					if (parcelOutcome.intValue() != thdOutcome) {
 						hit = false;
@@ -137,6 +138,14 @@ public class Model {
 		int hitCount = 0;
 		int n = 0;
 		
+		for (IOperator param : this.dataset.getTrainingLeaves()) {
+			if (inputs.containsKey(param)) {
+				param.define(inputs.get(param));
+			} else {
+				System.out.println("Missing assignment: " + param.toString());
+			}
+		}
+		
 		for (Artifact artifact : this.artifacts) {
 			if (weights[n] == 0) {
 				n++;
@@ -152,19 +161,11 @@ public class Model {
 				IOperator thd = parcel.operator;
 				Integer parcelOutcome = parcel.hit;
 			
-				thd.recycle();
-				
-				for (IOperator param : this.dataset.getTrainingLeaves()) {
-					if (inputs.containsKey(param)) {
-						param.define(inputs.get(param));
-					} else {
-						System.out.println("Missing assignment: " + param.toString());
-					}
-				}
+				// thd.recycle();
 				
 				try {
-					thd.operate();
-					int thdOutcome = thd.value();
+					int thdOutcome = thd.operate();
+					// int thdOutcome = thd.value();
 					
 					if (parcelOutcome.intValue() != thdOutcome) {
 						hit = false;
