@@ -49,54 +49,22 @@ public class Model {
 			predict(time, walker);
 		}
 	}
+
+	public Double predictOne(int time, long[] weights) {
+		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
+		Double prediction = this.predictOne(inputs, weights);
+		return prediction;
+	}
 	
 	private void predict (int time, StatsWalker walker) {
-		double rewardAccumulator = 0;
-		int hitCount = 0;
-		
-		for (Artifact artifact : this.artifacts) {
-			ArrayList<OperatorHit> parcels = artifact.opHits;
-			Integer percentage = artifact.reward;
-			
-			boolean hit = true;
-			
-			for (OperatorHit parcel : parcels) {
-				IOperator thd = parcel.operator;
-				Integer parcelOutcome = parcel.hit;
-				
-				thd.recycle();
-				
-				for (IOperator param : this.dataset.getTrainingLeaves()) {
-					param.define(this.dataset.getValueByTime(param, time));
-				}
-				
-				try {
-					thd.operate();
-					int thdOutcome = thd.value();
-					
-					if (parcelOutcome.intValue() != thdOutcome) {
-						hit = false;
-						break;
-					}
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}	
-			}
-			
-			if (hit) {
-				rewardAccumulator += percentage;
-				hitCount++;
-			}
-		}
-		
-		rewardAccumulator /= hitCount;
+		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
+		Double prediction = this.predict(inputs);
 		
 		IOperator[] allArguments = this.dataset.getAllLeaves();
 		int historicAction = this.dataset.getValueByTime(allArguments[allArguments.length - 1], time);
 		
-		if (hitCount > 0) {
-			walker.addHit2Matrix(time, historicAction, (int) rewardAccumulator);
+		if (prediction != null) {
+			walker.addHit2Matrix(time, historicAction, (int) prediction.doubleValue());
 		}
 		else {
 			walker.incUnknown();
@@ -108,6 +76,9 @@ public class Model {
 		int hitCount = 0;
 		
 		for (Artifact artifact : this.artifacts) {
+			if (artifact.weight != null && artifact.weight == 0) {
+				continue;
+			}
 			ArrayList<OperatorHit> parcels = artifact.opHits;
 			Integer percentage = artifact.reward;
 			
@@ -143,9 +114,79 @@ public class Model {
 			}
 			
 			if (hit) {
-				rewardAccumulator += percentage;
-				hitCount++;
+				long w = 1;
+				if (artifact.weight != null) {
+					w = artifact.weight;
+				}
+				rewardAccumulator += percentage * w;
+				hitCount += w;;
 			}
+		}
+		
+		if (hitCount == 0) {
+			return null;
+		}
+		
+		rewardAccumulator /= hitCount;
+		
+		return rewardAccumulator;
+	}
+	
+	public Double predictOne(HashMap<IOperator, Integer> inputs, long[] weights) {
+		double rewardAccumulator = 0;
+		int hitCount = 0;
+		int n = 0;
+		
+		for (Artifact artifact : this.artifacts) {
+			if (weights[n] == 0) {
+				n++;
+				continue;
+			}
+			
+			ArrayList<OperatorHit> parcels = artifact.opHits;
+			Integer percentage = artifact.reward;
+			
+			boolean hit = true;
+			
+			for (OperatorHit parcel : parcels) {
+				IOperator thd = parcel.operator;
+				Integer parcelOutcome = parcel.hit;
+			
+				thd.recycle();
+				
+				for (IOperator param : this.dataset.getTrainingLeaves()) {
+					if (inputs.containsKey(param)) {
+						param.define(inputs.get(param));
+					} else {
+						System.out.println("Missing assignment: " + param.toString());
+					}
+				}
+				
+				try {
+					thd.operate();
+					int thdOutcome = thd.value();
+					
+					if (parcelOutcome.intValue() != thdOutcome) {
+						hit = false;
+						break;
+					}
+				}
+				catch (Exception e) {
+					hit = false;
+					e.printStackTrace();
+				}
+			}
+			
+			if (hit) {
+				rewardAccumulator += percentage * weights[n];
+				hitCount += weights[n];
+			}
+			
+			n++;
+		}
+		
+		if (hitCount == 0) {
+			return null;
 		}
 		
 		rewardAccumulator /= hitCount;
@@ -163,5 +204,16 @@ public class Model {
 
 	public Dataset getDataset() {
 		return this.dataset;
+	}
+	
+	private HashMap<IOperator, Integer> getInputsByTime(int time) {
+		HashMap<IOperator, Integer> inputs = new HashMap<IOperator, Integer>();
+		
+		for (IOperator param : this.dataset.getTrainingLeaves()) {
+			int val = this.dataset.getValueByTime(param, time);
+			inputs.put(param, val);
+		}
+		
+		return inputs;
 	}
 }
