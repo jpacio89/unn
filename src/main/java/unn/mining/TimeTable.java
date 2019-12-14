@@ -79,7 +79,7 @@ public class TimeTable {
 		return booleanParameters;
 	}
 	
-	public boolean checkTime(IOperator op, int time, int hitToCheck) {
+	public boolean checkTime(IOperator op, int time, int hitToCheck) throws Exception {
 		Integer val = this.dataset.getValueByTime(op, time);
 		
 		if (val == null) {
@@ -91,7 +91,7 @@ public class TimeTable {
 		return val == hitToCheck;
 	}
 	
-	public void presetFindings(ArrayList<Integer> badTimes) {
+	public void presetFindings(ArrayList<Integer> badTimes) throws Exception {
 		this.findings = new MultiplesHashMap<>();
 		this.opHitPresences = new MultiplesHashMap<>();
 		
@@ -220,21 +220,21 @@ public class TimeTable {
 		return true;
 	}
 	
-	private void calculate(IOperator operator, Integer time) {
+	private void calculate(IOperator operator, Integer time) throws Exception {
 		// operator.recycle();
+		HashMap<IOperator, Integer> values = new HashMap<IOperator, Integer>();
 		
 		for (IOperator param : this.leafs) {
-			param.define(dataset.getValueByTime(param, time));
+			values.put(param, dataset.getValueByTime(param, time));
 		}
 		
-		try {
-			int binaryResult = operator.operate();
-			//operator.value();
-			// TODO: probably will end up adding several instances of the same thing (FIX IT!)
+		int binaryResult = operator.operate(values);
+		Integer oldValue = dataset.getValueByTime(operator, time);
+		
+		if (oldValue == null) {
 			dataset.add(new VTR(operator, binaryResult, time, this.dataset.getRewardByTime(time)));
-		}
-		catch (Exception e) {
-			e.printStackTrace();
+		} else if (oldValue != binaryResult) {
+			throw new Exception();
 		}
 	}
 	

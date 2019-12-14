@@ -83,7 +83,7 @@ public class TradeEnvironment implements IEnvironment {
 		if (!this.models.containsKey(key)) {
 			return null;
 		}
-		return this.models.get(key).predict(inputs);
+		return this.models.get(key).predict(inputs, null);
 	}
 
 	@Override

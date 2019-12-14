@@ -48,28 +48,6 @@ public class THD extends BaseOperator implements IOperator
 		return result;
 	}
 
-	public Integer operate () throws Exception {
-		if (!v.isDefined ()) {
-			v.operate ();
-		}
-		
-		if (!lb.isDefined ()) {
-			lb.operate ();
-		}
-		
-		try {
-			int result = Threshold(v.value (), lb.value (), Config.STIMULI_MAX_VALUE - 1);
-			//this.define (result);
-			return result;
-		} 
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		
-		//updateSignature ();
-		throw new Exception();
-	}
-
 
 	@Override
 	public void getParameters (ArrayList<IOperator> parameters) {

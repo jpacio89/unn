@@ -52,56 +52,52 @@ public class Model {
 
 	public Double predictOne(int time, long[] weights) {
 		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
-		Double prediction = this.predictOne(inputs, weights);
+		Double prediction = this.predict(inputs, weights);
 		return prediction;
 	}
 	
 	private void predict (int time, StatsWalker walker) {
 		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
-		Double prediction = this.predict(inputs);
+		Double prediction = this.predict(inputs, null);
 		
 		IOperator[] allArguments = this.dataset.getAllLeaves();
 		int historicAction = this.dataset.getValueByTime(allArguments[allArguments.length - 1], time);
 		
 		if (prediction != null) {
-			walker.addHit2Matrix(time, historicAction, (int) prediction.doubleValue());
+			walker.addHit2Matrix(time, historicAction, (int) Math.round(prediction.doubleValue()));
 		}
 		else {
 			walker.incUnknown();
 		}
 	}
-
-	public Double predict(HashMap<IOperator, Integer> inputs) {
+	
+	public Double predict(HashMap<IOperator, Integer> inputs, long[] weights) {
 		double rewardAccumulator = 0;
 		int hitCount = 0;
 		
-		/*for (IOperator param : this.dataset.getTrainingLeaves()) {
-			if (inputs.containsKey(param)) {
-				param.define(inputs.get(param));
-			} else {
-				System.out.println("Missing assignment: " + param.toString());
+		for (int i = 0; i < this.artifacts.size(); ++i) {
+			Artifact artifact = this.artifacts.get(i);
+			Long weight = artifact.weight;
+			
+			if (weights != null) {
+				weight = weights[i];
 			}
-		}*/	
-
-		
-		for (Artifact artifact : this.artifacts) {
-			if (artifact.weight != null && artifact.weight == 0) {
+					
+			if (weight != null && weight == 0) {
 				continue;
 			}
+			
 			ArrayList<OperatorHit> parcels = artifact.opHits;
 			Integer percentage = artifact.reward;
 			
 			boolean hit = true;
-						
+			
 			for (OperatorHit parcel : parcels) {
 				IOperator thd = parcel.operator;
 				Integer parcelOutcome = parcel.hit;
-			
-				// thd.recycle();
 				
 				try {
 					int thdOutcome = thd.operate(inputs);
-					// int thdOutcome = thd.value();
 					
 					if (parcelOutcome.intValue() != thdOutcome) {
 						hit = false;
@@ -116,74 +112,12 @@ public class Model {
 			
 			if (hit) {
 				long w = 1;
-				if (artifact.weight != null) {
-					w = artifact.weight;
+				if (weight != null) {
+					w = weight;
 				}
 				rewardAccumulator += percentage * w;
-				hitCount += w;;
+				hitCount += w;
 			}
-		}
-		
-		if (hitCount == 0) {
-			return null;
-		}
-		
-		rewardAccumulator /= hitCount;
-		
-		return rewardAccumulator;
-	}
-	
-	public Double predictOne(HashMap<IOperator, Integer> inputs, long[] weights) {
-		double rewardAccumulator = 0;
-		int hitCount = 0;
-		int n = 0;
-		
-		/*for (IOperator param : this.dataset.getTrainingLeaves()) {
-			if (inputs.containsKey(param)) {
-				param.define(inputs.get(param));
-			} else {
-				System.out.println("Missing assignment: " + param.toString());
-			}
-		}*/
-		
-		for (Artifact artifact : this.artifacts) {
-			if (weights[n] == 0) {
-				n++;
-				continue;
-			}
-			
-			ArrayList<OperatorHit> parcels = artifact.opHits;
-			Integer percentage = artifact.reward;
-			
-			boolean hit = true;
-			
-			for (OperatorHit parcel : parcels) {
-				IOperator thd = parcel.operator;
-				Integer parcelOutcome = parcel.hit;
-			
-				// thd.recycle();
-				
-				try {
-					int thdOutcome = thd.operate(inputs);
-					// int thdOutcome = thd.value();
-					
-					if (parcelOutcome.intValue() != thdOutcome) {
-						hit = false;
-						break;
-					}
-				}
-				catch (Exception e) {
-					hit = false;
-					e.printStackTrace();
-				}
-			}
-			
-			if (hit) {
-				rewardAccumulator += percentage * weights[n];
-				hitCount += weights[n];
-			}
-			
-			n++;
 		}
 		
 		if (hitCount == 0) {

@@ -14,8 +14,6 @@ public interface IOperator
 	
 	abstract Integer operate (HashMap<IOperator, Integer> values) throws Exception;
 	
-	abstract Integer operate () throws Exception;
-	
 	abstract int value () throws Exception;
 	
 	abstract boolean isDefined ();

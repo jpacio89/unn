@@ -20,35 +20,34 @@ public class Refinery {
 		this.miner = miner;
 	}
 	
+	class MyRunnable extends Thread {
+		int index;
+		public double error;
+		long[] tmpWeights;
+		
+		public MyRunnable(long[] _weights, int index) {
+			this.index = index;
+			this.tmpWeights = Arrays.copyOf(_weights, _weights.length);
+		}
+		
+		@Override
+		public void run() {
+			this.tmpWeights[index]++;
+			this.error = calculateError(tmpWeights);
+		}
+	};
+	
 	public Model refine() throws Exception {
 		ArrayList<Artifact> artifacts = model.getArtifacts();
 		long[] weights = new long[artifacts.size()];
 		double[] errors = new double[weights.length];
 		double lastError = 100000.0;
 		
-		for (int j = 0; j < 500; ++j) {
-			class MyRunnable extends Thread {
-				int index;
-				public double error;
-				long[] tmpWeights;
-				
-				public MyRunnable(int index) {
-					this.index = index;
-					this.tmpWeights = Arrays.copyOf(weights, weights.length);
-				}
-				
-				@Override
-				public void run() {
-					this.tmpWeights[index]++;
-					this.error = calculateError(tmpWeights);
-				}
-				
-			};
-			
+		for (int j = 0; j < 500; ++j) {			
 			ArrayList<MyRunnable> threads = new ArrayList<MyRunnable>();
 			
 			for (int i = 0; i < weights.length; ++i) {
-				MyRunnable thrd = new MyRunnable(i);
+				MyRunnable thrd = new MyRunnable(weights, i);
 				threads.add(thrd);
 			}
 			

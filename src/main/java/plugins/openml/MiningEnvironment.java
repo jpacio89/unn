@@ -111,7 +111,7 @@ public class MiningEnvironment implements IEnvironment {
 		if (this.refinedModel == null) {
 			return null;
 		}
-		return this.refinedModel.predict(inputs);
+		return this.refinedModel.predict(inputs, null);
 	}
 	
 	public Model getModel() {
