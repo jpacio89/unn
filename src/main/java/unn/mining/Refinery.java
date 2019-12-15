@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import unn.dataset.Dataset;
 import unn.structures.Config;
+import utils.Pair;
 import utils.RandomManager;
+import utils.Triplet;
 
 public class Refinery {
 	private Model model;
@@ -121,28 +124,73 @@ public class Refinery {
 		// return refinedModel;
 	}
 	
-	public double calculateError (long[] weights) {
+	class PreviousState {
+		// Integer => time
+		// Long => Boolean[] wasHit
+		// Pair<Double, Integer>: Double => prediction, Integer => hitCount
+		HashMap<Integer, Pair<Boolean[], Pair>> history;
+		
+		public PreviousState() {
+			this.history = new HashMap<Integer, Pair<Boolean[], Pair>>();
+		}
+		
+		public long getTotalHits(int time) {
+			return (long) history.get(time).second().second();
+		}
+		
+		public long getPrediction(int time) {
+			return (long) history.get(time).second().first();
+		}
+	}
+	
+	public double calculateError (PreviousState prevState, long[] weights, int artifactIndex) {
 		ArrayList<Integer> highs = this.miner.getHighs();
 		ArrayList<Integer> lows = this.miner.getLows();
 		
 		double errorSum = 0.0;
+		// TODO: if prevState => assign previous error sum
 		
-		for (Integer high : highs) {
-			Double prediction = this.model.predictOne(high, weights);
-			if (prediction == null) {
-				errorSum += Config.STIMULI_RANGE;
-			} else {
-				errorSum += Config.STIMULI_MAX_VALUE - prediction;
+		if (prevState == null) {
+			for (Integer high : highs) {
+				Pair<Double, Boolean[]> data = this.model.predictPlusHits(high, weights);
+				Double prediction = data.first();
+				if (prediction == null) {
+					errorSum += Config.STIMULI_RANGE;
+				} else {
+					errorSum += Config.STIMULI_MAX_VALUE - prediction;
+				}
+			}
+		} else {
+			for (Integer high : highs) {
+				Artifact fact = this.model.getArtifacts().get(artifactIndex);
+				boolean isHit = this.model.isHit(artifactIndex);
+				int hitDiff = 0;
+				
+				if (isHit) {
+					hitDiff += weights[artifactIndex];
+				}
+				
+				if (wasHit) {
+					hitDiff -= prevWeights[artifactIndex];
+				}
+				
+				double predictionDiff = (prevState.getTotalHits(high) * prevState.getPrediction(high) + hitDiff * fact.reward) / (prevState.getTotalHits(high) * hitDiff);
+				errorSum += predictionDiff;
 			}
 		}
 		
-		for (Integer low : lows) {
-			Double prediction = this.model.predictOne(low, weights);
-			if (prediction == null) {
-				errorSum += Config.STIMULI_RANGE;
-			} else {
-				errorSum += prediction - Config.STIMULI_MIN_VALUE;
+		if (prevState == null) {
+			for (Integer low : lows) {
+				Pair<Double, Boolean[]> data = this.model.predictPlusHits(low, weights);
+				Double prediction = data.first();
+				if (prediction == null) {
+					errorSum += Config.STIMULI_RANGE;
+				} else {
+					errorSum += prediction - Config.STIMULI_MIN_VALUE;
+				}
 			}
+		} else {
+			
 		}
 		
 		return errorSum;

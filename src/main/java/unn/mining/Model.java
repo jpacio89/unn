@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import unn.dataset.Dataset;
 import unn.interfaces.IOperator;
+import utils.Pair;
 
 public class Model {
 	final int TEST_SAMPLE_COUNT = 1000;
@@ -50,9 +51,9 @@ public class Model {
 		}
 	}
 
-	public Double predictOne(int time, long[] weights) {
+	public Pair<Double, Boolean[]> predictPlusHits(int time, long[] weights) {
 		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
-		Double prediction = this.predict(inputs, weights);
+		Pair<Double, Boolean[]> prediction = this.predictPlusHits(inputs, weights);
 		return prediction;
 	}
 	
@@ -72,8 +73,13 @@ public class Model {
 	}
 	
 	public Double predict(HashMap<IOperator, Integer> inputs, long[] weights) {
+		return predictPlusHits(inputs, weights).first();
+	}
+	
+	public Pair<Double, Boolean[]> predictPlusHits(HashMap<IOperator, Integer> inputs, long[] weights) {
 		double rewardAccumulator = 0;
 		int hitCount = 0;
+		Boolean[] hits = new Boolean[this.artifacts.size()];
 		
 		for (int i = 0; i < this.artifacts.size(); ++i) {
 			Artifact artifact = this.artifacts.get(i);
@@ -110,6 +116,8 @@ public class Model {
 				}
 			}
 			
+			hits[i] = hit;
+			
 			if (hit) {
 				long w = 1;
 				if (weight != null) {
@@ -126,7 +134,7 @@ public class Model {
 		
 		rewardAccumulator /= hitCount;
 		
-		return rewardAccumulator;
+		return new Pair<Double, Boolean[]>(rewardAccumulator, hits);
 	}
 
 	public ArrayList<IOperator> getInputs() {
