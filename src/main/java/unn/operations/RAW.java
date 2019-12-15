@@ -1,6 +1,7 @@
 package unn.operations;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import unn.interfaces.IOperator;
 
@@ -92,7 +93,10 @@ public class RAW extends BaseOperator
 	
 	@Override
 	public void setParameters (IOperator[] params) {}
-	
-	public void operate () throws Exception {}
+
+	@Override
+	public Integer operate(HashMap<IOperator, Integer> values) throws Exception {
+		throw new Exception();
+	}
 	
 }

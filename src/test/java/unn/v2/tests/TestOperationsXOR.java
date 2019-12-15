@@ -59,7 +59,7 @@ public class TestOperationsXOR
 			for(IOperator param : params) {
 				param.define(param.toString().equals(".x") ? (Integer) item.first() : (Integer) item.second());
 			}
-			op.operate();
+			op.operate(null);
 			int outcome = op.value();
 			
 			if (outcome == (Integer) item.third()) {
@@ -107,25 +107,25 @@ public class TestOperationsXOR
 		bestOp.recycle();
 		x.define(Config.STIMULI_MIN_VALUE);
 		y.define(Config.STIMULI_MIN_VALUE);
-		bestOp.operate();
+		bestOp.operate(null);
 		System.out.println("FF = " + bestOp.value());
 		
 		bestOp.recycle();
 		x.define(Config.STIMULI_MIN_VALUE);
 		y.define(Config.STIMULI_MAX_VALUE);
-		bestOp.operate();
+		bestOp.operate(null);
 		System.out.println("FT = " + bestOp.value());
 		
 		bestOp.recycle();
 		x.define(Config.STIMULI_MAX_VALUE);
 		y.define(Config.STIMULI_MIN_VALUE);
-		bestOp.operate();
+		bestOp.operate(null);
 		System.out.println("TF = " + bestOp.value());
 		
 		bestOp.recycle();
 		x.define(Config.STIMULI_MAX_VALUE);
 		y.define(Config.STIMULI_MAX_VALUE);
-		bestOp.operate();
+		bestOp.operate(null);
 		System.out.println("TT = " + bestOp.value());	
 	}
 	

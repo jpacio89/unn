@@ -9,6 +9,7 @@ public class Artifact {
 	public ArrayList<OperatorHit> opHits;
 	public ArrayList<Integer> wheatTimes;
 	public int reward;
+	public Long weight;
 	
 	public Artifact() {
 		this.opHits = new ArrayList<OperatorHit>();

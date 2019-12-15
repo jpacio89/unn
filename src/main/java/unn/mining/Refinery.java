@@ -1,6 +1,7 @@
 package unn.mining;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.function.Predicate;
@@ -19,122 +20,131 @@ public class Refinery {
 		this.miner = miner;
 	}
 	
-	public Model refine() {
-		ArrayList<Artifact> allArtifacts = new ArrayList<Artifact>();
-		allArtifacts.addAll(refineByType(true));
-		allArtifacts.addAll(refineByType(false));
+	class MyRunnable extends Thread {
+		int index;
+		public double error;
+		long[] tmpWeights;
 		
-		Model refinedModel = new Model(model.getDataset(), allArtifacts);
-		miner.gatherStats(refinedModel);
+		public MyRunnable(long[] _weights, int index) {
+			this.index = index;
+			this.tmpWeights = Arrays.copyOf(_weights, _weights.length);
+		}
 		
-		return refinedModel;
+		@Override
+		public void run() {
+			this.tmpWeights[index]++;
+			this.error = calculateError(tmpWeights);
+		}
+	};
+	
+	public Model refine() throws Exception {
+		ArrayList<Artifact> artifacts = model.getArtifacts();
+		long[] weights = new long[artifacts.size()];
+		double[] errors = new double[weights.length];
+		double lastError = 100000.0;
+		
+		for (int j = 0; j < 500; ++j) {			
+			ArrayList<MyRunnable> threads = new ArrayList<MyRunnable>();
+			
+			for (int i = 0; i < weights.length; ++i) {
+				MyRunnable thrd = new MyRunnable(weights, i);
+				threads.add(thrd);
+			}
+			
+			int concurrentThreads = 10;
+			
+			for (int i = 0; i < threads.size(); i += concurrentThreads) {
+				for (int l = 0; l < concurrentThreads; ++l) {
+					int idx = i + l;
+					if (idx >= threads.size()) {
+						continue;
+					}
+					threads.get(idx).start();
+				}
+				
+				for (int l = 0; l < concurrentThreads; ++l) {
+					int idx = i + l;
+					if (idx >= threads.size()) {
+						continue;
+					}
+					try {
+						threads.get(idx).join();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			for (int i = 0; i < weights.length; ++i) {
+				errors[i] = threads.get(i).error;
+			}
+			
+			//	System.out.println(String.format("Minimum Error: %f", minError));
+			//	System.out.println(String.format("Errors: %s", Arrays.toString(errors)));
+			//	System.out.println(String.format("Weights: %s", Arrays.toString(weights)));
+			
+			double minError = Arrays.stream(errors).min().getAsDouble();
+			
+			System.out.println(String.format("Minimum Error: %f", minError));
+			
+			int minErrorIndex = -1;
+			for (int k = 0; k < errors.length; ++k) {
+				if (errors[k] == minError) {
+					minErrorIndex = k;
+					break;
+				}
+			}
+		
+			if (minError == lastError) {
+				break;
+			} else if (minError > lastError) {
+				throw new Exception();
+			}
+			
+			weights[minErrorIndex]++;
+			
+			if (minError < 1.0 || lastError - minError < 0.5) {
+				break;
+			}
+			
+			lastError = minError;
+		}
+		
+		for (int i = 0; i < weights.length; ++i) {
+			artifacts.get(i).weight = weights[i];
+		}
+		
+		miner.gatherStats(model);
+		
+		return model;
+		// return refinedModel;
 	}
 	
-	public void checkConsistency() throws Exception {
-		ArrayList<Artifact> wheats = this.filterArtifacts(true);
-		ArrayList<Artifact> weeds  = this.filterArtifacts(false);
-		long count = 0;
-		for (Artifact wheat : wheats) {
-			ArrayList<Integer> wheatTimes = new ArrayList<Integer>(wheat.wheatTimes);
-			for (Artifact weed : weeds) {
-				wheatTimes.retainAll(weed.wheatTimes);
-				count += wheatTimes.size();
+	public double calculateError (long[] weights) {
+		ArrayList<Integer> highs = this.miner.getHighs();
+		ArrayList<Integer> lows = this.miner.getLows();
+		
+		double errorSum = 0.0;
+		
+		for (Integer high : highs) {
+			Double prediction = this.model.predictOne(high, weights);
+			if (prediction == null) {
+				errorSum += Config.STIMULI_RANGE;
+			} else {
+				errorSum += Config.STIMULI_MAX_VALUE - prediction;
 			}
 		}
-		if (count > 0) {
-			throw new Exception("|Refinery| Consistency check failed.");
-		}
-	}
-	
-	private ArrayList<Artifact> refineByType (boolean isWheat) {
-		ArrayList<Integer> timesFound = new ArrayList<Integer>();
-		ArrayList<Artifact> refinedArtifacts = new ArrayList<Artifact>();
 		
-		ArrayList<Artifact> artifacts = this.filterArtifacts(isWheat);
-		ArrayList<Integer> allTimes = this.getTimes(isWheat);
-		
-		Artifact seedArtifact = this.getSeedArtifact(artifacts);
-		
-		if (seedArtifact == null) {
-			return refinedArtifacts;
+		for (Integer low : lows) {
+			Double prediction = this.model.predictOne(low, weights);
+			if (prediction == null) {
+				errorSum += Config.STIMULI_RANGE;
+			} else {
+				errorSum += prediction - Config.STIMULI_MIN_VALUE;
+			}
 		}
 		
-		this.appendArtifact(refinedArtifacts, timesFound, artifacts, seedArtifact);
-		
-		while (timesFound.size() < allTimes.size() && artifacts.size() > 0) {
-			Artifact nextArtifact = this.getNextArtifact(artifacts, timesFound);
-			this.appendArtifact(refinedArtifacts, timesFound, artifacts, nextArtifact);
-		}
-		
-		return refinedArtifacts;
-	}
-	
-	private ArrayList<Integer> getTimes(boolean isWheat) {
-		if (isWheat) {
-			return this.miner.getHighs();
-		}
-		return this.miner.getLows();
-	}
-	
-	private ArrayList<Artifact> filterArtifacts(boolean isWheat) {
-		ArrayList<Artifact> artifacts = new ArrayList<Artifact>(this.model.getArtifacts());
-		Predicate<Artifact> wheatFilter = artifact -> {
-			return isWheat ? artifact.reward == Config.STIMULI_MAX_VALUE : artifact.reward == Config.STIMULI_MIN_VALUE;
-		};
-        return new ArrayList<Artifact>(artifacts
-        		.stream()
-        		.filter(wheatFilter)
-        		.collect(Collectors.toList()));
-	}
-	
-	private Artifact getNextArtifact(ArrayList<Artifact> artifacts, ArrayList<Integer> wheatFound) {
-		Artifact nextArtifact = Collections.max(artifacts, new Comparator<Artifact>() {
-		    @Override
-		    public int compare(Artifact first, Artifact second) {
-		    	ArrayList<Integer> firstWheats = new ArrayList<Integer>(first.wheatTimes);		    	
-		    	ArrayList<Integer> secondWheats = new ArrayList<Integer>(second.wheatTimes);
-		    	
-		    	firstWheats.retainAll(wheatFound);
-		    	secondWheats.retainAll(wheatFound);
-		    	
-		    	int firstDiff = first.wheatTimes.size() - firstWheats.size();
-		    	int secondDiff = second.wheatTimes.size() - secondWheats.size();
-				
-		        if (firstDiff > secondDiff)
-		            return 1;
-		        else if (firstDiff < secondDiff)
-		            return -1;
-		        return 0;
-		    }
-		});
-		
-		return nextArtifact;
-	}
-	
-	private Artifact getSeedArtifact(ArrayList<Artifact> artifacts) {
-		if (artifacts.size() == 0) {
-			return null;
-		}
-		Artifact seedArtifact = Collections.max(artifacts, new Comparator<Artifact>() {
-		    @Override
-		    public int compare(Artifact first, Artifact second) {
-		        if (first.wheatTimes.size() > second.wheatTimes.size())
-		            return 1;
-		        else if (first.wheatTimes.size() < second.wheatTimes.size())
-		            return -1;
-		        return 0;
-		    }
-		});
-		return seedArtifact;
-	}
-	
-	private void appendArtifact(
-			ArrayList<Artifact> refinedArtifacts, 
-			ArrayList<Integer> wheatFound, 
-			ArrayList<Artifact> artifacts, 
-			Artifact artifact) {
-		refinedArtifacts.add(artifact);
-		wheatFound.addAll(artifact.wheatTimes);
-		artifacts.remove(artifact);
+		return errorSum;
 	}
 }

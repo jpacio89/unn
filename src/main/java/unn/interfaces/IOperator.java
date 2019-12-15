@@ -1,6 +1,7 @@
 package unn.interfaces;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import unn.operations.OperatorDescriptor;
 
@@ -11,7 +12,7 @@ public interface IOperator
 		abstract IOperator next ();
 	}
 	
-	abstract void operate () throws Exception;
+	abstract Integer operate (HashMap<IOperator, Integer> values) throws Exception;
 	
 	abstract int value () throws Exception;
 	

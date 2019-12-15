@@ -22,6 +22,9 @@ public abstract class BaseOperator implements IOperator
 	}
 
 	public void define (int v) {	
+		if (isDefined()) {
+			return;
+		}
 		cache_.setResult (v);
 		updateSignature ();
 	}
@@ -77,10 +80,6 @@ public abstract class BaseOperator implements IOperator
 	
 	public String hash () {
 		return this.cache_.getMD5 ();
-	}
-
-	public void operate () throws Exception {
-		// TODO Auto-generated method stub
 	}
 
 	public OpIterator iterator () {

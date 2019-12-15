@@ -1,6 +1,7 @@
 package unn.operations;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import unn.interfaces.IOperator;
 import unn.structures.Config;
@@ -21,25 +22,30 @@ public class THD extends BaseOperator implements IOperator
 	public THD () {
 		super ();
 	}
-
-	public void operate () throws Exception {
-		if (!v.isDefined ()) {
-			v.operate ();
+	
+	@Override
+	public Integer operate(HashMap<IOperator, Integer> values) throws Exception {
+		Integer lbV = values.get(lb);
+		Integer vV  = values.get(v);
+		
+		if (lbV == null) {
+			if (lb instanceof RAW) {
+				lbV = lb.value();
+			} else {
+				throw new Exception();
+			}
 		}
 		
-		if (!lb.isDefined ()) {
-			lb.operate ();
+		if (vV == null) {
+			if (v instanceof RAW) {
+				vV = v.value();
+			} else {
+				throw new Exception();
+			}
 		}
 		
-		try {
-			int result = Threshold(v.value (), lb.value (), Config.STIMULI_MAX_VALUE - 1);
-			this.define (result);
-		} 
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		
-		updateSignature ();
+		int result = Threshold(lbV, vV, Config.STIMULI_MAX_VALUE - 1);
+		return result;
 	}
 
 

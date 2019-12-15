@@ -74,11 +74,11 @@ public class MiningEnvironment implements IEnvironment {
 		Refinery refinery = new Refinery(miner, model);
 		
 		if (Config.ASSERT) {
-			refinery.checkConsistency();
+			// refinery.checkConsistency();
 		}
 		
-		//this.refinedModel = refinery.refine();
-		this.refinedModel = model;
+		this.refinedModel = refinery.refine();
+		//this.refinedModel = model;
 		
 		int countMin = dbDataset.count(Config.STIMULI_MIN_VALUE);
 		int countNull = dbDataset.count(Config.STIMULI_NULL_VALUE);
@@ -111,7 +111,7 @@ public class MiningEnvironment implements IEnvironment {
 		if (this.refinedModel == null) {
 			return null;
 		}
-		return this.refinedModel.predict(inputs);
+		return this.refinedModel.predict(inputs, null);
 	}
 	
 	public Model getModel() {
