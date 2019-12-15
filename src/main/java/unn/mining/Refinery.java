@@ -128,18 +128,26 @@ public class Refinery {
 		// Integer => time
 		// Long => Boolean[] wasHit
 		// Pair<Double, Integer>: Double => prediction, Integer => hitCount
-		HashMap<Integer, Pair<Boolean[], Pair>> history;
+		HashMap<Integer, Triplet<Boolean[], Long[], Pair>> history;
 		
 		public PreviousState() {
-			this.history = new HashMap<Integer, Pair<Boolean[], Pair>>();
+			this.history = new HashMap<Integer, Triplet<Boolean[], Long[], Pair>>();
 		}
 		
 		public long getTotalHits(int time) {
-			return (long) history.get(time).second().second();
+			return (long) history.get(time).third().second();
 		}
 		
 		public long getPrediction(int time) {
-			return (long) history.get(time).second().first();
+			return (long) history.get(time).third().first();
+		}
+		
+		public Long[] getPreviousWeights(int time) {
+			return (Long[]) history.get(time).second();
+		}
+		
+		public boolean wasHit(int time, int index) {
+			return history.get(time).first()[index];
 		}
 	}
 	
@@ -170,11 +178,14 @@ public class Refinery {
 					hitDiff += weights[artifactIndex];
 				}
 				
-				if (wasHit) {
-					hitDiff -= prevWeights[artifactIndex];
+				if (prevState.wasHit(high, artifactIndex)) {
+					Long[] previousWeights = prevState.getPreviousWeights(high);
+					hitDiff -= previousWeights[artifactIndex];
 				}
 				
-				double predictionDiff = (prevState.getTotalHits(high) * prevState.getPrediction(high) + hitDiff * fact.reward) / (prevState.getTotalHits(high) * hitDiff);
+				long totalHits = prevState.getTotalHits(high);
+				double prediction = prevState.getPrediction(high);
+				double predictionDiff = (totalHits * prediction + hitDiff * fact.reward) / (totalHits + hitDiff);
 				errorSum += predictionDiff;
 			}
 		}
@@ -192,6 +203,8 @@ public class Refinery {
 		} else {
 			
 		}
+		
+		// TODO: return PreviousState
 		
 		return errorSum;
 	}
