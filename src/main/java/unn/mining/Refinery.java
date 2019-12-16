@@ -171,7 +171,7 @@ public class Refinery {
 		} else {
 			for (Integer high : highs) {
 				Artifact fact = this.model.getArtifacts().get(artifactIndex);
-				boolean isHit = this.model.isHit(artifactIndex);
+				boolean isHit = this.model.isHit(high, artifactIndex);
 				int hitDiff = 0;
 				
 				if (isHit) {

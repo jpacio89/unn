@@ -76,6 +76,38 @@ public class Model {
 		return predictPlusHits(inputs, weights).first();
 	}
 	
+	public boolean isHit (int time, int artifactIndex) {
+		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
+		return isHit(inputs, artifactIndex);
+	}
+	
+	public boolean isHit(HashMap<IOperator, Integer> inputs, int artifactIndex) {
+		Artifact artifact = this.artifacts.get(artifactIndex);
+		ArrayList<OperatorHit> parcels = artifact.opHits;
+		
+		boolean hit = true;
+		
+		for (OperatorHit parcel : parcels) {
+			IOperator thd = parcel.operator;
+			Integer parcelOutcome = parcel.hit;
+			
+			try {
+				int thdOutcome = thd.operate(inputs);
+				
+				if (parcelOutcome.intValue() != thdOutcome) {
+					hit = false;
+					break;
+				}
+			}
+			catch (Exception e) {
+				hit = false;
+				e.printStackTrace();
+			}
+		}
+		
+		return hit;
+	}
+	
 	public Pair<Double, Boolean[]> predictPlusHits(HashMap<IOperator, Integer> inputs, long[] weights) {
 		double rewardAccumulator = 0;
 		int hitCount = 0;
@@ -88,37 +120,17 @@ public class Model {
 			if (weights != null) {
 				weight = weights[i];
 			}
-					
+
 			if (weight != null && weight == 0) {
 				continue;
 			}
 			
-			ArrayList<OperatorHit> parcels = artifact.opHits;
-			Integer percentage = artifact.reward;
-			
-			boolean hit = true;
-			
-			for (OperatorHit parcel : parcels) {
-				IOperator thd = parcel.operator;
-				Integer parcelOutcome = parcel.hit;
-				
-				try {
-					int thdOutcome = thd.operate(inputs);
-					
-					if (parcelOutcome.intValue() != thdOutcome) {
-						hit = false;
-						break;
-					}
-				}
-				catch (Exception e) {
-					hit = false;
-					e.printStackTrace();
-				}
-			}
+			boolean hit = isHit(inputs, i);
 			
 			hits[i] = hit;
 			
 			if (hit) {
+				Integer percentage = artifact.reward;
 				long w = 1;
 				if (weight != null) {
 					w = weight;
