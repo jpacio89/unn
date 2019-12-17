@@ -21,8 +21,9 @@ public class PreviousState {
 		return (long) history.get(time).second().second();
 	}
 	
-	public long getPrediction(int time) {
-		return (long) history.get(time).second().first();
+	public Double getPrediction(int time) {
+		Object pred = history.get(time).second().first();
+		return pred == null ? null : (double) pred;
 	}
 	
 	public void setPreviousWeights(Long[] previousWeights) {
@@ -34,7 +35,16 @@ public class PreviousState {
 	}
 	
 	public boolean wasHit(int time, int index) {
-		return history.get(time).first()[index];
+		Boolean wasHit = history.get(time).first()[index];
+		return wasHit != null && wasHit == true;
+	}
+	
+	public void copyHits(PreviousState previous, int time) {
+		Boolean[] hits = this.history.get(time).first();
+		Boolean[] prevHits = previous.history.get(time).first();
+		for (int i = 0; i < hits.length; ++i) {
+			hits[i] = prevHits[i];
+		}
 	}
 	
 	public void setErrorSum(double _errorSum) {
@@ -49,7 +59,7 @@ public class PreviousState {
 		this.history.get(time).first()[artifactIndex] = isHit;
 	}
 
-	public void setPrediction(Integer time, int artifactIndex, double predictionNew, long totalHitsNew) {
+	public void setPrediction(Integer time, int artifactIndex, Double predictionNew, long totalHitsNew) {
 		this.history.get(time).second(new Pair<Double, Long>(predictionNew, totalHitsNew));
 		
 	}

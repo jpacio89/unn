@@ -74,7 +74,12 @@ public class Model {
 	}
 	
 	public Double predict(HashMap<IOperator, Integer> inputs, Long[] weights) {
-		return (Double) predictPlusHits(inputs, weights).second().first();
+		try {
+			return (Double) predictPlusHits(inputs, weights).second().first();
+		}
+		catch(Exception e) {
+			return null;
+		}
 	}
 	
 	public Boolean isHit (int time, int artifactIndex) {
@@ -111,7 +116,7 @@ public class Model {
 	
 	public Pair<Boolean[], Pair> predictPlusHits(HashMap<IOperator, Integer> inputs, Long[] weights) {
 		double rewardAccumulator = 0;
-		int hitCount = 0;
+		long hitCount = 0;
 		Boolean[] hits = new Boolean[this.artifacts.size()];
 		
 		for (int i = 0; i < this.artifacts.size(); ++i) {
@@ -136,18 +141,18 @@ public class Model {
 				if (weight != null) {
 					w = weight;
 				}
-				rewardAccumulator += percentage * w;
+				rewardAccumulator += percentage * w * 1.0;
 				hitCount += w;
 			}
 		}
 		
 		if (hitCount == 0) {
-			return null;
+			return new Pair<Boolean[], Pair>(hits, new Pair(null, 0L));
 		}
 		
 		rewardAccumulator /= hitCount;
 		
-		Pair<Double, Integer> p = new Pair<Double, Integer>(rewardAccumulator, hitCount);
+		Pair<Double, Long> p = new Pair<Double, Long>(rewardAccumulator, hitCount);
 		Pair<Boolean[], Pair> ret = new Pair<Boolean[], Pair>(hits, p);
 		return ret;
 	}

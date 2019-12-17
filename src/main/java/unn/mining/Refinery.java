@@ -26,7 +26,7 @@ public class Refinery {
 	public Model refine() throws Exception {
 		ArrayList<Artifact> artifacts = model.getArtifacts();
 		Long[] weights = new Long[artifacts.size()];
-		Arrays.fill(weights, 0);
+		Arrays.fill(weights, 0L);
 		double[] errors = new double[weights.length];
 		double lastError = 100000.0;
 		
@@ -117,46 +117,65 @@ public class Refinery {
 		if (prevState == null) {
 			for (Integer time : times) {
 				Pair<Boolean[], Pair> data = this.model.predictPlusHits(time, weights);
-				Double prediction = (Double) data.second().first();
-				if (prediction == null) {
-					errorSum += Config.STIMULI_RANGE;
-				} else if (isHigh) {
-					errorSum += Config.STIMULI_MAX_VALUE - prediction;
-				} else {
-					errorSum += prediction - Config.STIMULI_MIN_VALUE;
-				}
 				state.history.put(time, data);
+				Object obj = data.second().first();
+				if (obj == null) {
+					errorSum += Config.STIMULI_RANGE;
+				} else {
+					Double prediction = (Double) obj;
+					if (isHigh) {
+						errorSum += Config.STIMULI_MAX_VALUE - prediction;
+					} else {
+						errorSum += prediction - Config.STIMULI_MIN_VALUE;
+					}
+				}
+				
 			}
 		} else {
 			for (Integer time : times) {
+				state.history.put(time, new Pair<Boolean[], Pair>(new Boolean[weights.length], new Pair(null, 0L)));
+				state.copyHits(prevState, time);
 				Artifact fact = this.model.getArtifacts().get(artifactIndex);
 				Boolean isHit = this.model.isHit(time, artifactIndex);
-
+				Boolean wasHit = prevState.wasHit(time, artifactIndex);
+				long totalHits = prevState.getTotalHits(time);
+				
 				state.setHit(time, artifactIndex, isHit);
-
-				int hitDiff = 0;
 				
-				if (isHit == true) {
+				if (isHit && wasHit) {
+					long hitDiff = 0;
 					hitDiff += weights[artifactIndex];
-				}
-				
-				if (prevState.wasHit(time, artifactIndex)) {
 					Long[] previousWeights = prevState.getPreviousWeights(time);
 					hitDiff -= previousWeights[artifactIndex];
-				}
-				
-				long totalHits = prevState.getTotalHits(time);
-				long totalHitsNew = totalHits + hitDiff;
-				
-				double prediction = prevState.getPrediction(time);
-				double predictionNew = (totalHits * prediction + hitDiff * fact.reward) / totalHitsNew;
-				
-				state.setPrediction(time, artifactIndex, predictionNew, totalHitsNew);
-				
-				if (isHigh) {
-					errorSum += (Config.STIMULI_MAX_VALUE - predictionNew) - (Config.STIMULI_MAX_VALUE - prediction);
-				} else {
-					errorSum += (predictionNew - Config.STIMULI_MIN_VALUE) - (prediction - Config.STIMULI_MIN_VALUE);
+					
+					long totalHitsNew = totalHits + hitDiff;
+					Double prediction = prevState.getPrediction(time);
+					double predictionNew = (totalHits * prediction + hitDiff * fact.reward) / totalHitsNew;			
+					state.setPrediction(time, artifactIndex, predictionNew, totalHitsNew);
+					if (isHigh) {
+						errorSum += (Config.STIMULI_MAX_VALUE - predictionNew) - (Config.STIMULI_MAX_VALUE - prediction);
+					} else {
+						errorSum += (predictionNew - Config.STIMULI_MIN_VALUE) - (prediction - Config.STIMULI_MIN_VALUE);
+					}
+				} else if (isHit || wasHit) {					
+					if (isHit) {
+						long totalHitsNew = weights[artifactIndex];
+						double predictionNew = fact.reward;
+						state.setPrediction(time, artifactIndex, predictionNew, totalHitsNew);
+						if (isHigh) {
+							errorSum += (Config.STIMULI_MAX_VALUE - predictionNew) - Config.STIMULI_RANGE;
+						} else {
+							errorSum += (predictionNew - Config.STIMULI_MIN_VALUE) - Config.STIMULI_RANGE;
+						}
+					} else {
+						Double prediction = prevState.getPrediction(time);
+						state.setPrediction(time, artifactIndex, null, 0L);
+						if (isHigh) {
+							errorSum += Config.STIMULI_RANGE - (Config.STIMULI_MAX_VALUE - prediction);
+						} else {
+							errorSum += Config.STIMULI_RANGE - (prediction - Config.STIMULI_MIN_VALUE);
+						}
+					}
 				}
 			}
 		}
