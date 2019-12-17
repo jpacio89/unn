@@ -23,64 +23,23 @@ public class Refinery {
 		this.miner = miner;
 	}
 	
-	class MyRunnable extends Thread {
-		int index;
-		public double error;
-		long[] tmpWeights;
-		
-		public MyRunnable(long[] _weights, int index) {
-			this.index = index;
-			this.tmpWeights = Arrays.copyOf(_weights, _weights.length);
-		}
-		
-		@Override
-		public void run() {
-			this.tmpWeights[index]++;
-			this.error = calculateError(tmpWeights);
-		}
-	};
-	
 	public Model refine() throws Exception {
 		ArrayList<Artifact> artifacts = model.getArtifacts();
-		long[] weights = new long[artifacts.size()];
+		Long[] weights = new Long[artifacts.size()];
+		Arrays.fill(weights, 0);
 		double[] errors = new double[weights.length];
 		double lastError = 100000.0;
 		
-		for (int j = 0; j < 500; ++j) {			
-			ArrayList<MyRunnable> threads = new ArrayList<MyRunnable>();
+		PreviousState prevState = null;
+		
+		for (int j = 0; j < 500; ++j) {
+			PreviousState[] state = new PreviousState[weights.length];
 			
 			for (int i = 0; i < weights.length; ++i) {
-				MyRunnable thrd = new MyRunnable(weights, i);
-				threads.add(thrd);
-			}
-			
-			int concurrentThreads = 10;
-			
-			for (int i = 0; i < threads.size(); i += concurrentThreads) {
-				for (int l = 0; l < concurrentThreads; ++l) {
-					int idx = i + l;
-					if (idx >= threads.size()) {
-						continue;
-					}
-					threads.get(idx).start();
-				}
-				
-				for (int l = 0; l < concurrentThreads; ++l) {
-					int idx = i + l;
-					if (idx >= threads.size()) {
-						continue;
-					}
-					try {
-						threads.get(idx).join();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-			
-			for (int i = 0; i < weights.length; ++i) {
-				errors[i] = threads.get(i).error;
+				Long[] tmpWeights = Arrays.copyOf(weights, weights.length);
+				tmpWeights[i]++;				
+				state[i] = calculateError(prevState, tmpWeights, i);
+				errors[i] = state[i].getErrorSum();
 			}
 			
 			//	System.out.println(String.format("Minimum Error: %f", minError));
@@ -111,6 +70,7 @@ public class Refinery {
 				break;
 			}
 			
+			prevState = state[minErrorIndex];
 			lastError = minError;
 		}
 		
@@ -124,87 +84,82 @@ public class Refinery {
 		// return refinedModel;
 	}
 	
-	class PreviousState {
-		// Integer => time
-		// Long => Boolean[] wasHit
-		// Pair<Double, Integer>: Double => prediction, Integer => hitCount
-		HashMap<Integer, Triplet<Boolean[], Long[], Pair>> history;
-		
-		public PreviousState() {
-			this.history = new HashMap<Integer, Triplet<Boolean[], Long[], Pair>>();
-		}
-		
-		public long getTotalHits(int time) {
-			return (long) history.get(time).third().second();
-		}
-		
-		public long getPrediction(int time) {
-			return (long) history.get(time).third().first();
-		}
-		
-		public Long[] getPreviousWeights(int time) {
-			return (Long[]) history.get(time).second();
-		}
-		
-		public boolean wasHit(int time, int index) {
-			return history.get(time).first()[index];
-		}
-	}
-	
-	public double calculateError (PreviousState prevState, long[] weights, int artifactIndex) {
+	public PreviousState calculateError (PreviousState prevState, Long[] weights, int artifactIndex) {
 		ArrayList<Integer> highs = this.miner.getHighs();
 		ArrayList<Integer> lows = this.miner.getLows();
 		
 		double errorSum = 0.0;
-		// TODO: if prevState => assign previous error sum
 		
-		if (prevState == null) {
-			for (Integer high : highs) {
-				Pair<Double, Boolean[]> data = this.model.predictPlusHits(high, weights);
-				Double prediction = data.first();
-				if (prediction == null) {
-					errorSum += Config.STIMULI_RANGE;
-				} else {
-					errorSum += Config.STIMULI_MAX_VALUE - prediction;
-				}
-			}
-		} else {
-			for (Integer high : highs) {
-				Artifact fact = this.model.getArtifacts().get(artifactIndex);
-				boolean isHit = this.model.isHit(high, artifactIndex);
-				int hitDiff = 0;
-				
-				if (isHit) {
-					hitDiff += weights[artifactIndex];
-				}
-				
-				if (prevState.wasHit(high, artifactIndex)) {
-					Long[] previousWeights = prevState.getPreviousWeights(high);
-					hitDiff -= previousWeights[artifactIndex];
-				}
-				
-				long totalHits = prevState.getTotalHits(high);
-				double prediction = prevState.getPrediction(high);
-				double predictionDiff = (totalHits * prediction + hitDiff * fact.reward) / (totalHits + hitDiff);
-				errorSum += predictionDiff;
-			}
+		if (prevState != null) {
+			errorSum = prevState.getErrorSum();
 		}
 		
+		PreviousState state = new PreviousState();
+		state.setPreviousWeights(weights);
+		
+		errorSum += calculateErrorPartial (prevState, state, weights, artifactIndex, highs, true);
+		errorSum += calculateErrorPartial (prevState, state, weights, artifactIndex, lows, false);
+		
+		state.setErrorSum(errorSum);
+		
+		return state;
+	}
+	
+	private double calculateErrorPartial (
+			PreviousState prevState,
+			PreviousState state,
+			Long[] weights, 
+			int artifactIndex,
+			ArrayList<Integer> times,
+			boolean isHigh) {
+		double errorSum = 0.0;
+		
 		if (prevState == null) {
-			for (Integer low : lows) {
-				Pair<Double, Boolean[]> data = this.model.predictPlusHits(low, weights);
-				Double prediction = data.first();
+			for (Integer time : times) {
+				Pair<Boolean[], Pair> data = this.model.predictPlusHits(time, weights);
+				Double prediction = (Double) data.second().first();
 				if (prediction == null) {
 					errorSum += Config.STIMULI_RANGE;
+				} else if (isHigh) {
+					errorSum += Config.STIMULI_MAX_VALUE - prediction;
 				} else {
 					errorSum += prediction - Config.STIMULI_MIN_VALUE;
 				}
+				state.history.put(time, data);
 			}
 		} else {
-			
+			for (Integer time : times) {
+				Artifact fact = this.model.getArtifacts().get(artifactIndex);
+				Boolean isHit = this.model.isHit(time, artifactIndex);
+
+				state.setHit(time, artifactIndex, isHit);
+
+				int hitDiff = 0;
+				
+				if (isHit == true) {
+					hitDiff += weights[artifactIndex];
+				}
+				
+				if (prevState.wasHit(time, artifactIndex)) {
+					Long[] previousWeights = prevState.getPreviousWeights(time);
+					hitDiff -= previousWeights[artifactIndex];
+				}
+				
+				long totalHits = prevState.getTotalHits(time);
+				long totalHitsNew = totalHits + hitDiff;
+				
+				double prediction = prevState.getPrediction(time);
+				double predictionNew = (totalHits * prediction + hitDiff * fact.reward) / totalHitsNew;
+				
+				state.setPrediction(time, artifactIndex, predictionNew, totalHitsNew);
+				
+				if (isHigh) {
+					errorSum += (Config.STIMULI_MAX_VALUE - predictionNew) - (Config.STIMULI_MAX_VALUE - prediction);
+				} else {
+					errorSum += (predictionNew - Config.STIMULI_MIN_VALUE) - (prediction - Config.STIMULI_MIN_VALUE);
+				}
+			}
 		}
-		
-		// TODO: return PreviousState
 		
 		return errorSum;
 	}

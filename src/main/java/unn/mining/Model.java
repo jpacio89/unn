@@ -7,6 +7,7 @@ import java.util.HashMap;
 import unn.dataset.Dataset;
 import unn.interfaces.IOperator;
 import utils.Pair;
+import utils.Triplet;
 
 public class Model {
 	final int TEST_SAMPLE_COUNT = 1000;
@@ -51,9 +52,9 @@ public class Model {
 		}
 	}
 
-	public Pair<Double, Boolean[]> predictPlusHits(int time, long[] weights) {
+	public Pair<Boolean[], Pair> predictPlusHits(int time, Long[] weights) {
 		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
-		Pair<Double, Boolean[]> prediction = this.predictPlusHits(inputs, weights);
+		Pair<Boolean[], Pair> prediction = this.predictPlusHits(inputs, weights);
 		return prediction;
 	}
 	
@@ -72,16 +73,16 @@ public class Model {
 		}
 	}
 	
-	public Double predict(HashMap<IOperator, Integer> inputs, long[] weights) {
-		return predictPlusHits(inputs, weights).first();
+	public Double predict(HashMap<IOperator, Integer> inputs, Long[] weights) {
+		return (Double) predictPlusHits(inputs, weights).second().first();
 	}
 	
-	public boolean isHit (int time, int artifactIndex) {
+	public Boolean isHit (int time, int artifactIndex) {
 		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
 		return isHit(inputs, artifactIndex);
 	}
 	
-	public boolean isHit(HashMap<IOperator, Integer> inputs, int artifactIndex) {
+	public Boolean isHit(HashMap<IOperator, Integer> inputs, int artifactIndex) {
 		Artifact artifact = this.artifacts.get(artifactIndex);
 		ArrayList<OperatorHit> parcels = artifact.opHits;
 		
@@ -108,7 +109,7 @@ public class Model {
 		return hit;
 	}
 	
-	public Pair<Double, Boolean[]> predictPlusHits(HashMap<IOperator, Integer> inputs, long[] weights) {
+	public Pair<Boolean[], Pair> predictPlusHits(HashMap<IOperator, Integer> inputs, Long[] weights) {
 		double rewardAccumulator = 0;
 		int hitCount = 0;
 		Boolean[] hits = new Boolean[this.artifacts.size()];
@@ -146,7 +147,9 @@ public class Model {
 		
 		rewardAccumulator /= hitCount;
 		
-		return new Pair<Double, Boolean[]>(rewardAccumulator, hits);
+		Pair<Double, Integer> p = new Pair<Double, Integer>(rewardAccumulator, hitCount);
+		Pair<Boolean[], Pair> ret = new Pair<Boolean[], Pair>(hits, p);
+		return ret;
 	}
 
 	public ArrayList<IOperator> getInputs() {
