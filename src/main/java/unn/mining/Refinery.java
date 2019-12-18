@@ -39,7 +39,7 @@ public class Refinery {
 				Long[] tmpWeights = Arrays.copyOf(weights, weights.length);
 				tmpWeights[i]++;				
 				state[i] = calculateError(prevState, tmpWeights, i);
-				errors[i] = state[i].getErrorSum();
+				errors[i] = state[i].getError();
 			}
 			
 			//	System.out.println(String.format("Minimum Error: %f", minError));
@@ -90,17 +90,12 @@ public class Refinery {
 		
 		double errorSum = 0.0;
 		
-		if (prevState != null) {
-			errorSum = prevState.getErrorSum();
-		}
-		
 		PreviousState state = new PreviousState();
-		state.setPreviousWeights(weights);
 		
 		errorSum += calculateErrorPartial (prevState, state, weights, artifactIndex, highs, true);
 		errorSum += calculateErrorPartial (prevState, state, weights, artifactIndex, lows, false);
 		
-		state.setErrorSum(errorSum);
+		state.setError(errorSum);
 		
 		return state;
 	}
@@ -112,72 +107,35 @@ public class Refinery {
 			int artifactIndex,
 			ArrayList<Integer> times,
 			boolean isHigh) {
+		
 		double errorSum = 0.0;
 		
 		if (prevState == null) {
 			for (Integer time : times) {
-				Pair<Boolean[], Pair> data = this.model.predictPlusHits(time, weights);
-				state.history.put(time, data);
-				Object obj = data.second().first();
-				if (obj == null) {
-					errorSum += Config.STIMULI_RANGE;
-				} else {
-					Double prediction = (Double) obj;
-					if (isHigh) {
-						errorSum += Config.STIMULI_MAX_VALUE - prediction;
-					} else {
-						errorSum += prediction - Config.STIMULI_MIN_VALUE;
-					}
-				}
-				
+				Long[] hitWeights = this.model.predictionHits(time, weights);
+				state.setHitWeights(time, hitWeights);
 			}
-		} else {
-			for (Integer time : times) {
-				state.history.put(time, new Pair<Boolean[], Pair>(new Boolean[weights.length], new Pair(null, 0L)));
-				state.copyHits(prevState, time);
-				Artifact fact = this.model.getArtifacts().get(artifactIndex);
-				Boolean isHit = this.model.isHit(time, artifactIndex);
-				Boolean wasHit = prevState.wasHit(time, artifactIndex);
-				long totalHits = prevState.getTotalHits(time);
-				
-				state.setHit(time, artifactIndex, isHit);
-				
-				if (isHit && wasHit) {
-					long hitDiff = 0;
-					hitDiff += weights[artifactIndex];
-					Long[] previousWeights = prevState.getPreviousWeights(time);
-					hitDiff -= previousWeights[artifactIndex];
-					
-					long totalHitsNew = totalHits + hitDiff;
-					Double prediction = prevState.getPrediction(time);
-					double predictionNew = (totalHits * prediction + hitDiff * fact.reward) / totalHitsNew;			
-					state.setPrediction(time, artifactIndex, predictionNew, totalHitsNew);
-					if (isHigh) {
-						errorSum += (Config.STIMULI_MAX_VALUE - predictionNew) - (Config.STIMULI_MAX_VALUE - prediction);
-					} else {
-						errorSum += (predictionNew - Config.STIMULI_MIN_VALUE) - (prediction - Config.STIMULI_MIN_VALUE);
-					}
-				} else if (isHit || wasHit) {					
-					if (isHit) {
-						long totalHitsNew = weights[artifactIndex];
-						double predictionNew = fact.reward;
-						state.setPrediction(time, artifactIndex, predictionNew, totalHitsNew);
-						if (isHigh) {
-							errorSum += (Config.STIMULI_MAX_VALUE - predictionNew) - Config.STIMULI_RANGE;
-						} else {
-							errorSum += (predictionNew - Config.STIMULI_MIN_VALUE) - Config.STIMULI_RANGE;
-						}
-					} else {
-						Double prediction = prevState.getPrediction(time);
-						state.setPrediction(time, artifactIndex, null, 0L);
-						if (isHigh) {
-							errorSum += Config.STIMULI_RANGE - (Config.STIMULI_MAX_VALUE - prediction);
-						} else {
-							errorSum += Config.STIMULI_RANGE - (prediction - Config.STIMULI_MIN_VALUE);
-						}
-					}
-				}
+		}
+		
+		for (Integer time : times) {
+			if (prevState != null) {
+				Long[] hitWeights = prevState.getHitWeights(time);
+				Long artifactHits = this.model.artifactHits(time, artifactIndex, weights);
+				Long[] newHitWeights = Arrays.copyOf(hitWeights, hitWeights.length);
+				newHitWeights[artifactIndex] = artifactHits;
+				state.setHitWeights(time, newHitWeights);
 			}
+			
+			Long[] hitWeights = state.getHitWeights(time);
+			Double prediction = this.model.predict(time, weights, hitWeights);
+			
+			if (prediction == null) {
+				errorSum += Config.STIMULI_RANGE;
+			} else if (isHigh) {
+				errorSum += Config.STIMULI_MAX_VALUE - prediction;
+			} else {
+				errorSum += prediction - Config.STIMULI_MIN_VALUE;
+			}	
 		}
 		
 		return errorSum;

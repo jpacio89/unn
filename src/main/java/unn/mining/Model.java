@@ -51,16 +51,10 @@ public class Model {
 			predict(time, walker);
 		}
 	}
-
-	public Pair<Boolean[], Pair> predictPlusHits(int time, Long[] weights) {
-		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
-		Pair<Boolean[], Pair> prediction = this.predictPlusHits(inputs, weights);
-		return prediction;
-	}
 	
 	private void predict (int time, StatsWalker walker) {
 		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
-		Double prediction = this.predict(inputs, null);
+		Double prediction = this.predict(inputs, null, null);
 		
 		IOperator[] allArguments = this.dataset.getAllLeaves();
 		int historicAction = this.dataset.getValueByTime(allArguments[allArguments.length - 1], time);
@@ -73,18 +67,91 @@ public class Model {
 		}
 	}
 	
-	public Double predict(HashMap<IOperator, Integer> inputs, Long[] weights) {
-		try {
-			return (Double) predictPlusHits(inputs, weights).second().first();
+	public Double predict(int time, Long[] weights, Long[] _hitWeights) {
+		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
+		return this.predict(inputs, weights, _hitWeights);
+	}
+	
+	public Double predict(HashMap<IOperator, Integer> inputs, Long[] weights, Long[] _hitWeights) {
+		Long[] hitWeights = _hitWeights;
+
+		if (hitWeights == null) {
+			hitWeights = predictionHits(inputs, weights);
 		}
-		catch(Exception e) {
+		
+		double rewardAccumulator = 0;
+		long hitCount = 0;
+			
+		for (int i = 0; i < hitWeights.length; ++i) {
+			Long weight = hitWeights[i];
+
+			if (weight == 0) {
+				continue;
+			}
+			
+			Artifact artifact = this.artifacts.get(i);			
+			rewardAccumulator += artifact.reward * weight * 1.0;
+			hitCount += weight;
+		}
+		
+		if (hitCount == 0) {
 			return null;
 		}
+		
+		rewardAccumulator /= hitCount;
+		
+		return rewardAccumulator;
+	}
+	
+	public Long[] predictionHits (int time, Long[] weights) {
+		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
+		return predictionHits(inputs, weights);
+	}
+	
+	public Long[] predictionHits(HashMap<IOperator, Integer> inputs, Long[] weights) {
+		Long[] hitWeights = new Long[this.artifacts.size()];
+		
+		for (int i = 0; i < this.artifacts.size(); ++i) {
+			Artifact artifact = this.artifacts.get(i);
+			Long weight = artifact.weight;
+			
+			if (weights != null) {
+				weight = weights[i];
+			}
+
+			if (weight != null && weight == 0) {
+				hitWeights[i] = 0L;
+				continue;
+			}
+			
+			boolean hit = isHit(inputs, i);
+			
+			if (hit) {
+				long w = 1;
+				if (weight != null) {
+					w = weight;
+				}				
+				hitWeights[i] = w;
+			} else {
+				hitWeights[i] = 0L;
+			}
+		}
+		
+		return hitWeights;
 	}
 	
 	public Boolean isHit (int time, int artifactIndex) {
 		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
 		return isHit(inputs, artifactIndex);
+	}
+	
+	public Long artifactHits(Integer time, int artifactIndex, Long[] weights) {
+		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
+		boolean isHit = isHit(inputs, artifactIndex);
+		if (isHit) {
+			return weights[artifactIndex];
+		}
+		return 0L;
 	}
 	
 	public Boolean isHit(HashMap<IOperator, Integer> inputs, int artifactIndex) {
@@ -112,49 +179,6 @@ public class Model {
 		}
 		
 		return hit;
-	}
-	
-	public Pair<Boolean[], Pair> predictPlusHits(HashMap<IOperator, Integer> inputs, Long[] weights) {
-		double rewardAccumulator = 0;
-		long hitCount = 0;
-		Boolean[] hits = new Boolean[this.artifacts.size()];
-		
-		for (int i = 0; i < this.artifacts.size(); ++i) {
-			Artifact artifact = this.artifacts.get(i);
-			Long weight = artifact.weight;
-			
-			if (weights != null) {
-				weight = weights[i];
-			}
-
-			if (weight != null && weight == 0) {
-				continue;
-			}
-			
-			boolean hit = isHit(inputs, i);
-			
-			hits[i] = hit;
-			
-			if (hit) {
-				Integer percentage = artifact.reward;
-				long w = 1;
-				if (weight != null) {
-					w = weight;
-				}
-				rewardAccumulator += percentage * w * 1.0;
-				hitCount += w;
-			}
-		}
-		
-		if (hitCount == 0) {
-			return new Pair<Boolean[], Pair>(hits, new Pair(null, 0L));
-		}
-		
-		rewardAccumulator /= hitCount;
-		
-		Pair<Double, Long> p = new Pair<Double, Long>(rewardAccumulator, hitCount);
-		Pair<Boolean[], Pair> ret = new Pair<Boolean[], Pair>(hits, p);
-		return ret;
 	}
 
 	public ArrayList<IOperator> getInputs() {
