@@ -35,7 +35,7 @@ public class OpenML {
 		try {
 			DataSetDescription data = client.dataGet(datasetId);
 			File url = client.datasetGetCsv(data);
-			//File url = new File("/Users/joaocoelho/Documents/Work/UNN/exchange-crawler/dataset/dataset.csv");
+			//File url = new File("/Users/joaocoelho/Documents/Work/UNN/unn/unn-engine/php/dataset/dataset-merge.csv");
 			
 			ArrayList<HashMap<String, String>> datasetMap = readCSV(url);
 			return datasetMap;
@@ -53,7 +53,7 @@ public class OpenML {
 		try {
 			DataSetDescription data = client.dataGet(datasetId);
 			File url = client.datasetGetCsv(data);
-			//File url = new File("/Users/joaocoelho/Documents/Work/UNN/exchange-crawler/dataset/dataset.csv");
+			//File url = new File("/Users/joaocoelho/Documents/Work/UNN/unn/unn-engine/php/dataset/dataset-merge.csv");
 			
 			ArrayList<HashMap<String, String>> datasetMap = readCSV(url);
 			ValueMapper mapper = new ValueMapper(datasetMap);
@@ -92,7 +92,7 @@ public class OpenML {
 						continue;
 					}
 					Integer innerValue = report.getInnerValue(key, input.get(key));
-					System.out.print(String.format("%s-> %s, ", key, innerValue));
+					// System.out.print(String.format("%s-> %s, ", key, innerValue));
 					
 					VTR vtr = new VTR(dataset.getOperatorByClassName(key), innerValue, n, rewardInnerValue);
 					dataset.add(vtr);
