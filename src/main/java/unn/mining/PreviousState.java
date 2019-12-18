@@ -1,17 +1,18 @@
 package unn.mining;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import utils.Pair;
 import utils.Triplet;
 
 public class PreviousState {
-	HashMap<Integer, Long[]> history;
+	HashMap<Integer, ArrayList<Long>> history;
 	Long[] weights;
 	Double errorSum;
 	
 	public PreviousState() {
-		this.history = new HashMap<Integer, Long[]>();
+		this.history = new HashMap<Integer, ArrayList<Long>>();
 	}
 	
 	public void setPreviousWeights(Long[] previousWeights) {
@@ -22,11 +23,11 @@ public class PreviousState {
 		return weights;
 	}
 	
-	public void setHitWeights(int time, Long[] hitWeights) {
+	public void setHitWeights(int time, ArrayList<Long> hitWeights) {
 		this.history.put(time, hitWeights);
 	}
 
-	public Long[] getHitWeights(Integer time) {
+	public ArrayList<Long> getHitWeights(Integer time) {
 		return this.history.get(time);
 	}
 

@@ -28,35 +28,43 @@ public class Refinery {
 		Long[] weights = new Long[artifacts.size()];
 		Arrays.fill(weights, 0L);
 		double[] errors = new double[weights.length];
-		double lastError = 100000.0;
+		double lastError = 1000000000.0;
 		
 		PreviousState prevState = null;
 		
 		for (int j = 0; j < 500; ++j) {
 			PreviousState[] state = new PreviousState[weights.length];
-			
+			Double minError = 1000000000.0;
+			PreviousState bestState = null;
+			int minErrorIndex = -1;
 			for (int i = 0; i < weights.length; ++i) {
 				Long[] tmpWeights = Arrays.copyOf(weights, weights.length);
 				tmpWeights[i]++;				
 				state[i] = calculateError(prevState, tmpWeights, i);
 				errors[i] = state[i].getError();
+				if (errors[i] < minError) {
+					minError = errors[i];
+					bestState = state[i];
+					minErrorIndex = i;
+				}
+				state[i] = null;
 			}
 			
 			//	System.out.println(String.format("Minimum Error: %f", minError));
 			//	System.out.println(String.format("Errors: %s", Arrays.toString(errors)));
 			//	System.out.println(String.format("Weights: %s", Arrays.toString(weights)));
 			
-			double minError = Arrays.stream(errors).min().getAsDouble();
+			//double minError = Arrays.stream(errors).min().getAsDouble();
 			
 			System.out.println(String.format("Minimum Error: %f", minError));
 			
-			int minErrorIndex = -1;
+			/*int minErrorIndex = -1;
 			for (int k = 0; k < errors.length; ++k) {
 				if (errors[k] == minError) {
 					minErrorIndex = k;
 					break;
 				}
-			}
+			}*/
 		
 			if (minError == lastError) {
 				break;
@@ -70,7 +78,7 @@ public class Refinery {
 				break;
 			}
 			
-			prevState = state[minErrorIndex];
+			prevState = bestState;
 			lastError = minError;
 		}
 		
@@ -112,21 +120,22 @@ public class Refinery {
 		
 		if (prevState == null) {
 			for (Integer time : times) {
-				Long[] hitWeights = this.model.predictionHits(time, weights);
+				ArrayList<Long> hitWeights = this.model.predictionHits(time, weights);
 				state.setHitWeights(time, hitWeights);
 			}
 		}
 		
 		for (Integer time : times) {
 			if (prevState != null) {
-				Long[] hitWeights = prevState.getHitWeights(time);
+				ArrayList<Long> hitWeights = prevState.getHitWeights(time);
 				Long artifactHits = this.model.artifactHits(time, artifactIndex, weights);
-				Long[] newHitWeights = Arrays.copyOf(hitWeights, hitWeights.length);
-				newHitWeights[artifactIndex] = artifactHits;
+				ArrayList<Long> newHitWeights = new ArrayList<Long>();
+				newHitWeights.addAll(hitWeights);
+				newHitWeights.set(artifactIndex, artifactHits);
 				state.setHitWeights(time, newHitWeights);
 			}
 			
-			Long[] hitWeights = state.getHitWeights(time);
+			ArrayList<Long> hitWeights = state.getHitWeights(time);
 			Double prediction = this.model.predict(time, weights, hitWeights);
 			
 			if (prediction == null) {

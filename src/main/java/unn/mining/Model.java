@@ -67,13 +67,13 @@ public class Model {
 		}
 	}
 	
-	public Double predict(int time, Long[] weights, Long[] _hitWeights) {
+	public Double predict(int time, Long[] weights, ArrayList<Long> _hitWeights) {
 		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
 		return this.predict(inputs, weights, _hitWeights);
 	}
 	
-	public Double predict(HashMap<IOperator, Integer> inputs, Long[] weights, Long[] _hitWeights) {
-		Long[] hitWeights = _hitWeights;
+	public Double predict(HashMap<IOperator, Integer> inputs, Long[] weights, ArrayList<Long> _hitWeights) {
+		ArrayList<Long> hitWeights = _hitWeights;
 
 		if (hitWeights == null) {
 			hitWeights = predictionHits(inputs, weights);
@@ -82,8 +82,8 @@ public class Model {
 		double rewardAccumulator = 0;
 		long hitCount = 0;
 			
-		for (int i = 0; i < hitWeights.length; ++i) {
-			Long weight = hitWeights[i];
+		for (int i = 0; i < hitWeights.size(); ++i) {
+			Long weight = hitWeights.get(i);
 
 			if (weight == 0) {
 				continue;
@@ -103,13 +103,13 @@ public class Model {
 		return rewardAccumulator;
 	}
 	
-	public Long[] predictionHits (int time, Long[] weights) {
+	public ArrayList<Long> predictionHits (int time, Long[] weights) {
 		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
 		return predictionHits(inputs, weights);
 	}
 	
-	public Long[] predictionHits(HashMap<IOperator, Integer> inputs, Long[] weights) {
-		Long[] hitWeights = new Long[this.artifacts.size()];
+	public ArrayList<Long> predictionHits(HashMap<IOperator, Integer> inputs, Long[] weights) {
+		ArrayList<Long> hitWeights = new ArrayList<Long>();
 		
 		for (int i = 0; i < this.artifacts.size(); ++i) {
 			Artifact artifact = this.artifacts.get(i);
@@ -120,7 +120,7 @@ public class Model {
 			}
 
 			if (weight != null && weight == 0) {
-				hitWeights[i] = 0L;
+				hitWeights.add(0L);
 				continue;
 			}
 			
@@ -130,10 +130,10 @@ public class Model {
 				long w = 1;
 				if (weight != null) {
 					w = weight;
-				}				
-				hitWeights[i] = w;
+				}
+				hitWeights.add(w);
 			} else {
-				hitWeights[i] = 0L;
+				hitWeights.add(0L);
 			}
 		}
 		

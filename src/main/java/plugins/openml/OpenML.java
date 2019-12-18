@@ -101,7 +101,6 @@ public class OpenML {
 				VTR vtr = new VTR(dataset.getOperatorByClassName(this.config.targetFeature), rewardInnerValue, n, rewardInnerValue);
 				dataset.add(vtr);
 				
-				System.out.println();
 				n++;
 			}
 			
