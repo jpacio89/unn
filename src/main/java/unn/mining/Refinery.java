@@ -120,23 +120,42 @@ public class Refinery {
 		
 		if (prevState == null) {
 			for (Integer time : times) {
-				ArrayList<Long> hitWeights = this.model.predictionHits(time, weights);
+				Pair<ArrayList<Long>, Pair<Double, Long>> hitWeights = this.model.predictionHits(time, weights);
 				state.setHitWeights(time, hitWeights);
 			}
 		}
 		
 		for (Integer time : times) {
 			if (prevState != null) {
-				ArrayList<Long> hitWeights = prevState.getHitWeights(time);
+				Pair<ArrayList<Long>, Pair<Double, Long>> hitWeights = prevState.getHitWeights(time);
 				Long artifactHits = this.model.artifactHits(time, artifactIndex, weights);
 				ArrayList<Long> newHitWeights = new ArrayList<Long>();
-				newHitWeights.addAll(hitWeights);
+				newHitWeights.addAll(hitWeights.first());
 				newHitWeights.set(artifactIndex, artifactHits);
-				state.setHitWeights(time, newHitWeights);
+				
+				long hitDiff = artifactHits - hitWeights.first().get(artifactIndex);
+				Double accumulator = hitWeights.second().first();
+				Long hitCount = hitWeights.second().second();
+				Double newPrediction = 0.0;
+				
+				if (hitCount + hitDiff > 0) {
+					newPrediction = (accumulator + (double) (hitDiff * this.model.getArtifacts().get(artifactIndex).reward));
+				}
+				
+				Pair<Double, Long> newOutcome = new Pair<Double, Long>(newPrediction, hitCount + hitDiff);
+				Pair<ArrayList<Long>, Pair<Double, Long>> newHitWeightsPair = new Pair<ArrayList<Long>, Pair<Double, Long>>(newHitWeights, newOutcome);
+				state.setHitWeights(time, newHitWeightsPair);
 			}
 			
-			ArrayList<Long> hitWeights = state.getHitWeights(time);
-			Double prediction = this.model.predict(time, weights, hitWeights);
+			Pair<ArrayList<Long>, Pair<Double, Long>> hitWeights = state.getHitWeights(time);
+			Double prediction = null;
+			
+			if (hitWeights.second().second() > 0) {
+				prediction = hitWeights.second().first() / hitWeights.second().second();
+			}
+			
+			//Double predictionCheck = this.model.predict(time, weights, hitWeights.first());
+			//System.out.println(String.format("%f vs %f", prediction, predictionCheck));
 			
 			if (prediction == null) {
 				errorSum += Config.STIMULI_RANGE;

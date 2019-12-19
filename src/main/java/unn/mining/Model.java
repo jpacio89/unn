@@ -76,7 +76,7 @@ public class Model {
 		ArrayList<Long> hitWeights = _hitWeights;
 
 		if (hitWeights == null) {
-			hitWeights = predictionHits(inputs, weights);
+			hitWeights = predictionHits(inputs, weights).first();
 		}
 		
 		double rewardAccumulator = 0;
@@ -103,13 +103,15 @@ public class Model {
 		return rewardAccumulator;
 	}
 	
-	public ArrayList<Long> predictionHits (int time, Long[] weights) {
+	public Pair<ArrayList<Long>, Pair<Double, Long>> predictionHits (int time, Long[] weights) {
 		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
 		return predictionHits(inputs, weights);
 	}
 	
-	public ArrayList<Long> predictionHits(HashMap<IOperator, Integer> inputs, Long[] weights) {
+	public Pair<ArrayList<Long>, Pair<Double, Long>> predictionHits(HashMap<IOperator, Integer> inputs, Long[] weights) {
 		ArrayList<Long> hitWeights = new ArrayList<Long>();
+		Double accumulator = 0.0;
+		long hitCount = 0;
 		
 		for (int i = 0; i < this.artifacts.size(); ++i) {
 			Artifact artifact = this.artifacts.get(i);
@@ -132,12 +134,15 @@ public class Model {
 					w = weight;
 				}
 				hitWeights.add(w);
+				
+				accumulator += w * artifact.reward;
+				hitCount += w;
 			} else {
 				hitWeights.add(0L);
 			}
 		}
 		
-		return hitWeights;
+		return new Pair<ArrayList<Long>, Pair<Double, Long>> (hitWeights, new Pair<Double, Long>(accumulator, hitCount));
 	}
 	
 	public Boolean isHit (int time, int artifactIndex) {
