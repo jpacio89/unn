@@ -7,12 +7,22 @@ import utils.Pair;
 import utils.Triplet;
 
 public class PreviousState {
+	HashMap<Integer, Triplet<Long, Double, Long>> summaries;
 	HashMap<Integer, Pair<ArrayList<Long>, Pair<Double, Long>>> history;
 	Long[] weights;
 	Double errorSum;
 	
 	public PreviousState() {
 		this.history = new HashMap<Integer, Pair<ArrayList<Long>, Pair<Double, Long>>>();
+		this.summaries = new HashMap<Integer, Triplet<Long, Double, Long>>();
+	}
+	
+	public void setSummary(Integer time, Triplet<Long, Double, Long> summary) {
+		this.summaries.put(time, summary);
+	}
+	
+	public Triplet<Long, Double, Long> getSummaries(Integer time) {
+		return this.summaries.get(time);
 	}
 	
 	public void setPreviousWeights(Long[] previousWeights) {

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -50,6 +51,8 @@ public class Refinery {
 				state[i] = null;
 			}
 			
+			syncHitWeights(prevState, bestState, minErrorIndex);
+			
 			//	System.out.println(String.format("Minimum Error: %f", minError));
 			//	System.out.println(String.format("Errors: %s", Arrays.toString(errors)));
 			//	System.out.println(String.format("Weights: %s", Arrays.toString(weights)));
@@ -92,6 +95,23 @@ public class Refinery {
 		// return refinedModel;
 	}
 	
+	private void syncHitWeights(PreviousState previousState, PreviousState state, Integer artifactIndex) {
+		for (Entry<Integer, Triplet<Long, Double, Long>> entry : state.summaries.entrySet()) {
+			Integer time = entry.getKey();
+			Triplet<Long, Double, Long> summary = entry.getValue();
+			Pair<ArrayList<Long>, Pair<Double, Long>> hitWeights = previousState.getHitWeights(time);
+			
+			ArrayList<Long> newHitWeights = new ArrayList<Long>();
+			newHitWeights.addAll(hitWeights.first());
+			newHitWeights.set(artifactIndex, summary.first());
+			
+			Pair<Double, Long> newOutcome = new Pair<Double, Long>(summary.second(), summary.third());
+			Pair<ArrayList<Long>, Pair<Double, Long>> newHitWeightsPair = new Pair<ArrayList<Long>, Pair<Double, Long>>(newHitWeights, newOutcome);
+			state.setHitWeights(time, newHitWeightsPair);
+		}
+		
+	}
+	
 	public PreviousState calculateError (PreviousState prevState, Long[] weights, int artifactIndex) {
 		ArrayList<Integer> highs = this.miner.getHighs();
 		ArrayList<Integer> lows = this.miner.getLows();
@@ -126,12 +146,11 @@ public class Refinery {
 		}
 		
 		for (Integer time : times) {
+			Pair<Double, Long> summary = null;
+			
 			if (prevState != null) {
 				Pair<ArrayList<Long>, Pair<Double, Long>> hitWeights = prevState.getHitWeights(time);
 				Long artifactHits = this.model.artifactHits(time, artifactIndex, weights);
-				ArrayList<Long> newHitWeights = new ArrayList<Long>();
-				newHitWeights.addAll(hitWeights.first());
-				newHitWeights.set(artifactIndex, artifactHits);
 				
 				long hitDiff = artifactHits - hitWeights.first().get(artifactIndex);
 				Double accumulator = hitWeights.second().first();
@@ -143,15 +162,18 @@ public class Refinery {
 				}
 				
 				Pair<Double, Long> newOutcome = new Pair<Double, Long>(newPrediction, hitCount + hitDiff);
-				Pair<ArrayList<Long>, Pair<Double, Long>> newHitWeightsPair = new Pair<ArrayList<Long>, Pair<Double, Long>>(newHitWeights, newOutcome);
-				state.setHitWeights(time, newHitWeightsPair);
+				summary = newOutcome;
+				
+				state.setSummary(time, new Triplet<Long, Double, Long>(artifactHits, newPrediction, hitCount + hitDiff));
+				summary = newOutcome;
+			} else {
+				summary = state.getHitWeights(time).second();
 			}
 			
-			Pair<ArrayList<Long>, Pair<Double, Long>> hitWeights = state.getHitWeights(time);
 			Double prediction = null;
 			
-			if (hitWeights.second().second() > 0) {
-				prediction = hitWeights.second().first() / hitWeights.second().second();
+			if (summary.second() > 0) {
+				prediction = summary.first() / summary.second();
 			}
 			
 			//Double predictionCheck = this.model.predict(time, weights, hitWeights.first());
@@ -163,7 +185,7 @@ public class Refinery {
 				errorSum += Config.STIMULI_MAX_VALUE - prediction;
 			} else {
 				errorSum += prediction - Config.STIMULI_MIN_VALUE;
-			}	
+			}
 		}
 		
 		return errorSum;
