@@ -22,7 +22,9 @@ public class Morpher {
 		this.modelTo = modelTo;
 	}
 	
-	public void run(HashMap<IOperator, Integer> inputs, Integer totalVariation) {
+	public HashMap<IOperator, Integer> morphOnce(HashMap<IOperator, Integer> inputs, Integer totalVariation, Integer target) {
+		Double relaxationFactor = 0.1;
+		
 		ArrayList<IOperator> operators = new ArrayList<IOperator>();
 		operators.addAll(inputs.keySet());
 		
@@ -34,6 +36,7 @@ public class Morpher {
 		
 		
 		while (missingVariation > 0) {
+			// TODO: work with steps instead of continuous values
 			int gradient = RandomManager.rand(-missingVariation, missingVariation);
 			
 			IOperator op = operators.get(n);
@@ -60,5 +63,11 @@ public class Morpher {
 		}
 		
 		Double outcome = modelFrom.predict(newInput, null, null);
+		
+		if (Math.abs(outcome - target) < relaxationFactor * Config.STIMULI_RANGE) {
+			return newInput;
+		}
+		
+		return null;
 	}
 }
