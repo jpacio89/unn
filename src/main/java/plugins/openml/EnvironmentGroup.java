@@ -116,14 +116,14 @@ public class EnvironmentGroup {
 		MiningEnvironment from = this.envs.get(classValueFrom);
 		MiningEnvironment to = this.envs.get(classValueTo);
 		
-		UnitReport unitsFrom = from.getUnitReport();
-		UnitReport unitsTo = to.getUnitReport();
+		UnitReport units = from.getUnitReport();
+		//UnitReport unitsTo = to.getUnitReport();
 		
-		OuterValueType typeFrom = unitsFrom.getValues(classValueFrom);
-		OuterValueType typeTo = unitsTo.getValues(classValueTo);
+		//OuterValueType typeFrom = unitsFrom.getValues("\"type\"");
+		//OuterValueType typeTo = unitsTo.getValues("\"type\"");
 		
 		Morpher morpher = new Morpher();
-		morpher.init(from.getModel(), typeFrom, to.getModel(), typeTo);
+		morpher.init(from.getModel(), units, to.getModel());
 		
 		HashMap<IOperator, Integer> ret = morpher.morph(inputs);
 		return ret;

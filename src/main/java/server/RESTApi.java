@@ -86,6 +86,18 @@ public class RESTApi extends Thread {
         	ctx.json(report);
         });
         
+        app.post("/morph/:jobId", ctx -> {
+        	// String jobId = ctx.pathParam("jobId");
+        	SimulationConfig conf = ctx.bodyAsClass(SimulationConfig.class);
+
+        	Simulation simulation = new Simulation();
+        	simulation.init(conf, this.group);
+        	simulation.morph();
+        	// SimulationReport report = simulation.getReport();
+        	
+        	//ctx.json(report);
+        });
+        
         app.get("/mine/units/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
         	HashMap<String, UnitReport> reports = this.group.getUnitReports();        	

@@ -12,8 +12,7 @@ import unn.structures.Config;
 import utils.RandomManager;
 
 public class Morpher {
-	OuterValueType unitsFrom;
-	OuterValueType unitsTo;
+	UnitReport units;
 	Model modelFrom;
 	Model modelTo;
 
@@ -21,14 +20,23 @@ public class Morpher {
 		
 	}
 	
-	public void init(Model modelFrom, OuterValueType unitsFrom, Model modelTo, OuterValueType unitsTo) {
+	public void init(Model modelFrom, UnitReport units, Model modelTo) {
 		this.modelFrom = modelFrom;
 		this.modelTo = modelTo;
-		this.unitsFrom = unitsFrom;
-		this.unitsTo = unitsTo;
+		this.units = units;
 	}
 	
 	public HashMap<IOperator, Integer> morph(HashMap<IOperator, Integer> inputs) {
+		IOperator[] allArguments = this.modelFrom.getDataset().getAllLeaves();
+		
+		/*HashMap<IOperator, Integer> inputsObjs = new HashMap<IOperator, Integer>();
+		
+		for (IOperator op : allArguments) {
+			if (inputs.containsKey(op.toString())) {
+				inputsObjs.put(op, inputs.get(op.toString()));
+			}
+		}*/
+		
 		Integer totalVariation = 1;
 		
 		// TODO: make this better
@@ -57,28 +65,28 @@ public class Morpher {
 		Integer missingVariation = totalVariation;
 		int n = 0;
 		
-		ArrayList<Integer> allPotentialValues = this.unitsFrom.getAllInnerValues();
-		
 		while (missingVariation > 0) {
-			int indexGuess = RandomManager.rand(0, allPotentialValues.size());
-			int upDown = RandomManager.rand(0, 1);
-			int gradient = upDown == 0 ? -allPotentialValues.get(indexGuess) : allPotentialValues.get(indexGuess);
+			if (n >= operators.size()) {
+				n = operators.size() - 1;
+				System.out.println("|Morpher| Overflow!");
+			}
 			
 			IOperator op = operators.get(n);
 			Integer val = inputs.get(op);
-			Integer newVal = val + gradient;
 			
-			if (newVal < Config.STIMULI_MIN_VALUE) {
-				newVal = Config.STIMULI_MIN_VALUE;
-			}
+			ArrayList<Integer> allPotentialValues = this.units.getValues(operators.get(n).toString()).getAllInnerValues();
+			Integer pivot = allPotentialValues.indexOf(val);
 			
-			if (newVal > Config.STIMULI_MAX_VALUE) {
-				newVal = Config.STIMULI_MAX_VALUE;
-			}
+			int indexGuess = RandomManager.rand(
+				Math.max(0, pivot - totalVariation), 
+				Math.min(pivot + totalVariation, allPotentialValues.size() - 1)
+			);
 			
-			missingVariation -= Math.abs(gradient);
+			Integer newVal = allPotentialValues.get(indexGuess);
+			
+			missingVariation -= Math.abs(pivot - indexGuess);
 			newInput.put(op, newVal);
-			n = (n + 1) % operators.size();
+			n = (n + 1); // % operators.size();
 		}
 		
 		for (IOperator op : operators) {
@@ -87,7 +95,7 @@ public class Morpher {
 			}
 		}
 		
-		Double outcome = modelFrom.predict(newInput, null, null);
+		Double outcome = modelTo.predict(newInput, null, null);
 		
 		if (Math.abs(outcome - target) < relaxationFactor * Config.STIMULI_RANGE) {
 			return newInput;
