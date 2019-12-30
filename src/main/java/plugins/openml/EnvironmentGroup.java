@@ -5,10 +5,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import unn.interfaces.IOperator;
 import unn.mining.Artifact;
 import unn.mining.MiningStatusObservable;
 import unn.mining.Model;
 import unn.mining.StatsWalker;
+import unn.morphing.Morpher;
 import unn.structures.MiningStatus;
 
 public class EnvironmentGroup {
@@ -101,6 +103,30 @@ public class EnvironmentGroup {
 		}
 
 		return report;
+	}
+	
+	// TODO: for now values passed in are INNER values
+	public HashMap<IOperator, Integer> morph(HashMap<IOperator, Integer> inputs, String classValueFrom, String classValueTo) {
+		/*MiningEnvironment seedEnv = new MiningEnvironment(this.datasetId);
+		seedEnv.init(config);
+
+		UnitReport units = seedEnv.getUnitReport();
+		
+		OuterValueType vType = units.getValues(config.targetFeature);*/
+		MiningEnvironment from = this.envs.get(classValueFrom);
+		MiningEnvironment to = this.envs.get(classValueTo);
+		
+		UnitReport unitsFrom = from.getUnitReport();
+		UnitReport unitsTo = to.getUnitReport();
+		
+		OuterValueType typeFrom = unitsFrom.getValues(classValueFrom);
+		OuterValueType typeTo = unitsTo.getValues(classValueTo);
+		
+		Morpher morpher = new Morpher();
+		morpher.init(from.getModel(), typeFrom, to.getModel(), typeTo);
+		
+		HashMap<IOperator, Integer> ret = morpher.morph(inputs);
+		return ret;
 	}
 
 	public HashMap<String, MiningEnvironment> getEnvironments() {

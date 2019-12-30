@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import unn.structures.Config;
+
 public class ValueMapper {
 	ArrayList<HashMap<String, String>> dataset;
 	UnitReport report;

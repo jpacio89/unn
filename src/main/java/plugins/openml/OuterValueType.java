@@ -1,3 +1,7 @@
 package plugins.openml;
 
-public class OuterValueType {}
+import java.util.ArrayList;
+
+public abstract class OuterValueType {
+	public abstract ArrayList<Integer> getAllInnerValues();
+}

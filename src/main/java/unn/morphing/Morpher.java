@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import plugins.openml.OuterValueType;
+import plugins.openml.UnitReport;
 import unn.interfaces.IOperator;
 import unn.mining.Model;
 import unn.structures.Config;
 import utils.RandomManager;
 
 public class Morpher {
+	OuterValueType unitsFrom;
+	OuterValueType unitsTo;
 	Model modelFrom;
 	Model modelTo;
 
@@ -17,9 +21,28 @@ public class Morpher {
 		
 	}
 	
-	public void init(Model modelFrom, Model modelTo) {
+	public void init(Model modelFrom, OuterValueType unitsFrom, Model modelTo, OuterValueType unitsTo) {
 		this.modelFrom = modelFrom;
 		this.modelTo = modelTo;
+		this.unitsFrom = unitsFrom;
+		this.unitsTo = unitsTo;
+	}
+	
+	public HashMap<IOperator, Integer> morph(HashMap<IOperator, Integer> inputs) {
+		Integer totalVariation = 1;
+		
+		// TODO: make this better
+		for (int i = 0; i < 10000; ++i) {
+			HashMap<IOperator, Integer> ret = morphOnce(inputs, totalVariation, Config.STIMULI_MAX_VALUE);
+			if (ret != null) {
+				return ret;
+			}
+			if (i % 1000 == 0) {
+				totalVariation++;
+			}
+		}
+		
+		return null;
 	}
 	
 	public HashMap<IOperator, Integer> morphOnce(HashMap<IOperator, Integer> inputs, Integer totalVariation, Integer target) {
@@ -34,10 +57,12 @@ public class Morpher {
 		Integer missingVariation = totalVariation;
 		int n = 0;
 		
+		ArrayList<Integer> allPotentialValues = this.unitsFrom.getAllInnerValues();
 		
 		while (missingVariation > 0) {
-			// TODO: work with steps instead of continuous values
-			int gradient = RandomManager.rand(-missingVariation, missingVariation);
+			int indexGuess = RandomManager.rand(0, allPotentialValues.size());
+			int upDown = RandomManager.rand(0, 1);
+			int gradient = upDown == 0 ? -allPotentialValues.get(indexGuess) : allPotentialValues.get(indexGuess);
 			
 			IOperator op = operators.get(n);
 			Integer val = inputs.get(op);
