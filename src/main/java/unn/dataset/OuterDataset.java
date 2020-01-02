@@ -1,6 +1,7 @@
 package unn.dataset;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class OuterDataset {
 	ArrayList<String> header;
@@ -9,6 +10,11 @@ public class OuterDataset {
 	public OuterDataset() {
 		this.header = new ArrayList<String>();
 		this.body = new ArrayList<ArrayList<String>>();
+	}
+	
+	public void setHeader(String[] features) {
+		this.header.clear();
+		Collections.addAll(this.header, features);
 	}
 	
 	public int featureCount() {
@@ -27,7 +33,13 @@ public class OuterDataset {
 		return this.body.get(index);
 	}
 	
-	public void addRow(ArrayList<String> row) {
-		this.body.add(row);
+	public void addSample(String[] sample) {
+		ArrayList<String> sampleCollection = new ArrayList<String>();
+		Collections.addAll(sampleCollection, sample);
+		this.body.add(sampleCollection);
+	}
+	
+	public void addSample(ArrayList<String> sample) {
+		this.body.add(sample);
 	}
 }

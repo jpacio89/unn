@@ -8,4 +8,12 @@ public class FilesystemLocator extends DatasetLocator {
 	public FilesystemLocator(String path) {
 		this.path = path;
 	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
 }
