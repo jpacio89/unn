@@ -61,24 +61,30 @@ public class InnerDatasetLoader {
 				refInnerValue = report.getInnerValue(config.targetFeature, config.targetOuterValue);
 			}
 			
-			for (HashMap<String, String> input : datasetMap) {
+			int targetFeatureIndex = this.outerDataset.getFeatureIndex(this.config.targetFeature);
+			
+			for (int i = 0; i < this.outerDataset.sampleCount(); ++i) {
 				if (this.statusObservable != null) {
-					this.statusObservable.updateProgress(n, datasetMap.size());
+					this.statusObservable.updateProgress(n, this.outerDataset.sampleCount());
 				}
 				
-				Integer rewardInnerValue = report.getInnerValue(this.config.targetFeature, input.get(this.config.targetFeature));
+				String outerTargetValue = this.outerDataset.getFeatureAtSample(i, targetFeatureIndex);
+				Integer rewardInnerValue = report.getInnerValue(this.config.targetFeature, outerTargetValue);
 				
 				rewardInnerValue = JobConfig.mapReward(refInnerValue, rewardInnerValue);
 				
-				for (String key : input.keySet()) {
+				int j = 0;
+				for (String key : this.outerDataset.getHeader()) {
 					if (this.config.featureBlacklist != null && Arrays.stream(this.config.featureBlacklist).anyMatch(key::equals)) {
 						continue;
 					}
-					Integer innerValue = report.getInnerValue(key, input.get(key));
-					// System.out.print(String.format("%s-> %s, ", key, innerValue));
 					
+					String outerFeatureValue = this.outerDataset.getFeatureAtSample(i, j);
+					Integer innerValue = report.getInnerValue(key, outerFeatureValue);					
 					VTR vtr = new VTR(dataset.getOperatorByClassName(key), innerValue, n, rewardInnerValue);
+					
 					dataset.add(vtr);
+					j++;
 				}
 				
 				VTR vtr = new VTR(dataset.getOperatorByClassName(this.config.targetFeature), rewardInnerValue, n, rewardInnerValue);
@@ -86,8 +92,8 @@ public class InnerDatasetLoader {
 				
 				n++;
 			}
-			
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
