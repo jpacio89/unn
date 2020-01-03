@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import unn.dataset.Dataset;
+import unn.dataset.InnerDataset;
 import unn.interfaces.IOperator;
 import unn.mining.StatsWalker;
 import unn.operations.OperatorDescriptor;
@@ -139,13 +139,13 @@ public class PostgresManager // implements IDatabaseManager
 		}
 	}
 	
-	public static Dataset select(String market) {
+	public static InnerDataset select(String market) {
 		init ();
 		
 		operators = getOperators();
 		operatorsWithReward = getAllOperators();
 		
-		Dataset dataset = new Dataset();
+		InnerDataset dataset = new InnerDataset();
 		dataset.setTrainingLeaves(operators);
 		dataset.setAllLeaves(operatorsWithReward);
 		

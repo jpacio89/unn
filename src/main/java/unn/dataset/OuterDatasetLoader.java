@@ -1,8 +1,8 @@
 package unn.dataset;
 
-public class OuterDatasetFactory {
+public class OuterDatasetLoader {
 	
-	public OuterDatasetFactory() {}
+	public OuterDatasetLoader() {}
 	
 	public OuterDataset load (DatasetLocator locator) throws Exception {
 		if (locator instanceof OpenMLLocator) {

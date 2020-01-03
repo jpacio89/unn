@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import plugins.openml.JobConfig;
 import plugins.openml.UnitReport;
-import unn.dataset.Dataset;
+import unn.dataset.InnerDataset;
 import unn.dataset.DatasetParser;
 import unn.interfaces.IEnvironment;
 import unn.interfaces.IOperator;
@@ -39,7 +39,7 @@ public class TradeEnvironment implements IEnvironment {
 			System.out.println(String.format("Launching market %s", market));
 			System.out.println(String.format(" Select from database"));
 			
-			Dataset dbDataset = PostgresManager.select(market);
+			InnerDataset dbDataset = PostgresManager.select(market);
 			
 			System.out.println(String.format(" Initializing miner"));
 			

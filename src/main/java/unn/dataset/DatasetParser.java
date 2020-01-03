@@ -12,11 +12,11 @@ import unn.structures.VTR;
 
 public class DatasetParser {
 
-	public static Dataset parseFromFile(String filePath) {
+	public static InnerDataset parseFromFile(String filePath) {
 		ArrayList<IOperator> args = null;
 		IOperator[] localArgs = null;
 		
-		Dataset dataset = new Dataset();
+		InnerDataset dataset = new InnerDataset();
 		
 		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 		    String line;

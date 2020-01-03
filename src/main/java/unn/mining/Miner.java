@@ -3,7 +3,7 @@ package unn.mining;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import unn.dataset.Dataset;
+import unn.dataset.InnerDataset;
 import unn.interfaces.IOperator;
 import unn.structures.Config;
 
@@ -11,7 +11,7 @@ public class Miner {
 	public final int MIN_WHEAT_COUNT = 0;
 	public final long MINING_TIME = (long) (1 * 60 * 1000);
 	
-	Dataset dataset;
+	InnerDataset dataset;
 	Model model;
 	boolean isReady;
 	
@@ -23,7 +23,7 @@ public class Miner {
 
 	private long miningStartTime;
 	
-	public Miner(Dataset dataset, MiningStatusObservable statusObservable) {
+	public Miner(InnerDataset dataset, MiningStatusObservable statusObservable) {
 		this.dataset = dataset;
 		this.trainTimeSets = new ArrayList<ArrayList<Integer>>();
 		this.testTimeSets = new ArrayList<ArrayList<Integer>>();

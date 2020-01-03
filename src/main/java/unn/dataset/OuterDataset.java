@@ -2,6 +2,7 @@ package unn.dataset;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class OuterDataset {
 	ArrayList<String> header;
@@ -29,8 +30,21 @@ public class OuterDataset {
 		return this.header;
 	}
 	
-	public ArrayList<String> getRow(int index) {
+	public ArrayList<String> getSample(int index) {
 		return this.body.get(index);
+	}
+
+	public HashMap<String, String> getSampleAsMap(int index) {
+		ArrayList<String> sample = this.body.get(index);
+		HashMap<String, String> sampleMap = new HashMap<String, String>();
+		
+		for (int i = 0; i < sample.size(); ++i) {
+			String featureValue = sample.get(i);
+			String featureName = header.get (i);
+			sampleMap.put(featureName, featureValue);
+		}
+		
+		return sampleMap;
 	}
 	
 	public void addSample(String[] sample) {
@@ -41,5 +55,13 @@ public class OuterDataset {
 	
 	public void addSample(ArrayList<String> sample) {
 		this.body.add(sample);
+	}
+
+	public int getFeatureIndex(String feature) {
+		return this.header.indexOf(feature);
+	}
+
+	public String getFeatureAtSample(int sampleIndex, int featureIndex) {
+		return this.body.get(sampleIndex).get(featureIndex);
 	}
 }

@@ -8,7 +8,7 @@ import unn.structures.VTR;
 import utils.MultiplesHashMap;
 import utils.RandomManager;
 
-public class Dataset {
+public class InnerDataset {
 	ArrayList<Integer> times;
 	HashMap<Integer, Integer> timedRewards;
 	HashMap<IOperator, HashMap<Integer, Integer>> timedValues;
@@ -17,7 +17,7 @@ public class Dataset {
 	ArrayList<IOperator> args;
 	IOperator[] localArgs;
 	
-	public Dataset() {
+	public InnerDataset() {
 		this.times = new ArrayList<Integer>();
 		this.timedRewards = new HashMap<Integer, Integer>();
 		this.timedValues = new HashMap<IOperator, HashMap<Integer, Integer>>();

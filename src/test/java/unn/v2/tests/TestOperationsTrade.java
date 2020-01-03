@@ -3,7 +3,7 @@ package unn.v2.tests;
 import org.junit.Test;
 
 import plugins.crypto.trade.bot.PostgresManager;
-import unn.dataset.Dataset;
+import unn.dataset.InnerDataset;
 import unn.mining.Miner;
 import unn.mining.MiningStatusObservable;
 import unn.structures.Config;
@@ -25,7 +25,7 @@ public class TestOperationsTrade
 		Config.STIMULI_MIN_VALUE = -10;
 		Config.STIMULI_MAX_VALUE = 10;
 		
-		Dataset dbDataset = PostgresManager.select("ETHBTC");
+		InnerDataset dbDataset = PostgresManager.select("ETHBTC");
 		
 		// Dataset dataset = loadDataset();
 		// Model model = null;

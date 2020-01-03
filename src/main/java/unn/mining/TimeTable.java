@@ -3,7 +3,7 @@ package unn.mining;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import unn.dataset.Dataset;
+import unn.dataset.InnerDataset;
 import unn.interfaces.IOperator;
 import unn.operations.OperatorDescriptor;
 import unn.operations.RAW;
@@ -17,14 +17,14 @@ public class TimeTable {
 	HashMap<IOperator, Integer> operatorIndex;
 	ArrayList<IOperator> leafs;
 	ArrayList<OperatorHit> opHits;
-	Dataset dataset;
+	InnerDataset dataset;
 	
 	int reward;
 	MultiplesHashMap<Integer, OperatorHit> findings;
 	MultiplesHashMap<OperatorHit, Integer> opHitPresences;
 	MiningStatusObservable miningStatusObservable;
 	
-	public TimeTable(Dataset dataset, int reward, MiningStatusObservable statusObservable) {
+	public TimeTable(InnerDataset dataset, int reward, MiningStatusObservable statusObservable) {
 		this.dataset = dataset;
 		this.opHits = new ArrayList<OperatorHit>();
 		this.operatorIndex = new HashMap<>();

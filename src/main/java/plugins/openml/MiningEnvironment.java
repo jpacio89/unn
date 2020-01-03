@@ -3,7 +3,7 @@ package plugins.openml;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import unn.dataset.Dataset;
+import unn.dataset.InnerDataset;
 import unn.dataset.DatasetParser;
 import unn.interfaces.IEnvironment;
 import unn.interfaces.IOperator;
@@ -18,7 +18,7 @@ import unn.structures.MiningStatus;
 public class MiningEnvironment implements IEnvironment {
 	private int datasetId;
 	private UnitReport unitReport;
-	private Dataset dbDataset;
+	private InnerDataset dbDataset;
 	// private JobConfig config;
 	private Model refinedModel;
 	private MiningStatusObservable statusObservable;

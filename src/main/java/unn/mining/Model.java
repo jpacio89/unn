@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import unn.dataset.Dataset;
+import unn.dataset.InnerDataset;
 import unn.interfaces.IOperator;
 import utils.Pair;
 import utils.Triplet;
@@ -13,16 +13,16 @@ public class Model {
 	final int TEST_SAMPLE_COUNT = 1000;
 	
 	StatsWalker walker;
-	Dataset dataset;
+	InnerDataset dataset;
 	ArrayList<Artifact> artifacts;
 	
-	public Model(Dataset dataset) {
+	public Model(InnerDataset dataset) {
 		this.dataset = dataset;
 		this.artifacts = new ArrayList<Artifact>();
 		this.walker = new StatsWalker();
 	}
 	
-	public Model(Dataset dataset, ArrayList<Artifact> sublist) {
+	public Model(InnerDataset dataset, ArrayList<Artifact> sublist) {
 		this.dataset = dataset;
 		this.artifacts = sublist;
 	}
@@ -54,6 +54,7 @@ public class Model {
 	
 	private void predict (int time, StatsWalker walker) {
 		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
+		// TODO: simulation endpoint does not account for weights???
 		Double prediction = this.predict(inputs, null, null);
 		
 		IOperator[] allArguments = this.dataset.getAllLeaves();
@@ -194,7 +195,7 @@ public class Model {
 		return this.artifacts;
 	}
 
-	public Dataset getDataset() {
+	public InnerDataset getDataset() {
 		return this.dataset;
 	}
 	

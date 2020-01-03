@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import unn.dataset.Dataset;
+import unn.dataset.InnerDataset;
 import unn.structures.Config;
 import utils.Pair;
 import utils.RandomManager;

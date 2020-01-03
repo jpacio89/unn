@@ -4,26 +4,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import unn.dataset.OuterDataset;
 import unn.structures.Config;
 
 public class ValueMapper {
-	ArrayList<HashMap<String, String>> dataset;
+	OuterDataset dataset;
 	UnitReport report;
 	
-	public ValueMapper(ArrayList<HashMap<String, String>> dataset) {
+	public ValueMapper(OuterDataset dataset) {
 		this.dataset = dataset;
 		this.report = new UnitReport(); 
 	}
 	
 	public void reportUnits(String feature, Integer numericGroupCount) {
 		boolean isNumeric = true;
-		double minVal = Double.MAX_VALUE;
-		double maxVal = Double.MIN_VALUE;
 		HashMap<String, String> vals = new HashMap<String, String>();
 		ArrayList<Double> numericValues = new ArrayList<Double>();
 		
-		for (HashMap<String, String> input : this.dataset) {
-			String v = input.get(feature);
+		int featureIndex = this.dataset.getFeatureIndex(feature);
+		
+		for (int i = 0; i < this.dataset.sampleCount(); ++i) {
+			String v = this.dataset.getFeatureAtSample(i, featureIndex);
 			
 			try {
 				double vDouble = Double.parseDouble(v);
@@ -54,6 +55,6 @@ public class ValueMapper {
 	}
 	
 	public Set<String> getFeatures() {
-		return this.dataset.get(0).keySet();
+		return new HashSet<String>(this.dataset.getHeader());
 	}
 }

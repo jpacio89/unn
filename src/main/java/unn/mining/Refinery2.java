@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import unn.dataset.Dataset;
+import unn.dataset.InnerDataset;
 import unn.structures.Config;
 import utils.RandomManager;
 
