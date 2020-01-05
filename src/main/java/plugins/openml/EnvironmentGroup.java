@@ -5,29 +5,47 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import unn.dataset.DatasetLocator;
+import unn.dataset.OuterDataset;
+import unn.dataset.OuterDatasetLoader;
 import unn.interfaces.IOperator;
 import unn.mining.Artifact;
 import unn.mining.MiningStatusObservable;
 import unn.mining.Model;
 import unn.mining.StatsWalker;
 import unn.morphing.Morpher;
+import unn.structures.Context;
 import unn.structures.MiningStatus;
 
 public class EnvironmentGroup {
 	private int datasetId;
 	private HashMap<String, MiningEnvironment> envs;
 	private JobConfig config;
+	private Context context;
+	private OuterDataset outerDataset;
 
-	public EnvironmentGroup(int datasetId) {
+	public EnvironmentGroup(Context context, int datasetId) {
 		this.envs = new HashMap<String, MiningEnvironment>();
 		this.datasetId = datasetId;
+		this.context = context;
 	}
 
 	public void mine(JobConfig config) {
 		this.config = config;
-
-		MiningEnvironment seedEnv = new MiningEnvironment(this.datasetId);
-		seedEnv.init(config);
+		
+		// TODO: pass Locator to this call
+		DatasetLocator locator = null;
+		
+		try {
+			OuterDatasetLoader loader = new OuterDatasetLoader();
+			this.outerDataset = loader.load(locator);
+		} 
+		catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
+		MiningEnvironment seedEnv = new MiningEnvironment(this.outerDataset);
+		seedEnv.init(this.context, config);
 
 		UnitReport units = seedEnv.getUnitReport();
 		OuterValueType vType = units.getValues(config.targetFeature);
@@ -36,19 +54,20 @@ public class EnvironmentGroup {
 			DiscreteSet set = (DiscreteSet) vType;
 
 			for (String value : set.values) {
-				MiningEnvironment env = new MiningEnvironment(this.datasetId);
+				MiningEnvironment env = new MiningEnvironment(this.outerDataset);
 				envs.put(value, env);
 			}
 			
 			for (String value : set.values) {
-				MiningEnvironment env = envs.get(value);
-				config.setTargetOuterValue(value);
-
-				env.init(config);
-
 				try {
+					MiningEnvironment env = envs.get(value);
+					JobConfig newConfig = (JobConfig) config.clone();
+					newConfig.setTargetOuterValue(value);
+					this.context.registerJobConfig(newConfig);
+					env.init(this.context, newConfig);
 					env.mine();
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -57,19 +76,20 @@ public class EnvironmentGroup {
 			ArrayList<Integer> innerValues = numericMapper.getAllInnerValues();
 
 			for (Integer innerValue : innerValues) {
-				MiningEnvironment env = new MiningEnvironment(this.datasetId);
+				MiningEnvironment env = new MiningEnvironment(this.outerDataset);
 				envs.put(Integer.toString(innerValue), env);
 			}
 			
 			for (Integer innerValue : innerValues) {
-				MiningEnvironment env = envs.get(Integer.toString(innerValue));
-				config.setTargetInnerValue(innerValue);	
-
-				env.init(config);
-
 				try {
+					MiningEnvironment env = envs.get(Integer.toString(innerValue));
+					JobConfig newConfig = (JobConfig) config.clone();
+					newConfig.setTargetInnerValue(innerValue);
+					this.context.registerJobConfig(newConfig);
+					env.init(this.context, newConfig);
 					env.mine();
-				} catch (Exception e) {
+				} 
+				catch (Exception e) {
 					e.printStackTrace();
 				}
 			}

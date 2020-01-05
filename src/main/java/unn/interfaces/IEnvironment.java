@@ -6,6 +6,7 @@ import java.util.HashMap;
 import plugins.openml.JobConfig;
 import plugins.openml.UnitReport;
 import unn.mining.StatsWalker;
+import unn.structures.Context;
 
 public interface IEnvironment {
 	
@@ -15,7 +16,7 @@ public interface IEnvironment {
 	
 	Double predict(String spaceId, HashMap<IOperator, Integer> values);
 	
-	void init(JobConfig config);
+	void init(Context context, JobConfig config);
 	
 	StatsWalker mine() throws Exception;
 

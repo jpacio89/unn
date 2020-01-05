@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import unn.dataset.InnerDataset;
+import unn.dataset.InnerDatasetLoader;
+import unn.dataset.OuterDataset;
 import unn.dataset.DatasetParser;
 import unn.interfaces.IEnvironment;
 import unn.interfaces.IOperator;
@@ -13,19 +15,22 @@ import unn.mining.Model;
 import unn.mining.StatsWalker;
 import unn.mining.Refinery;
 import unn.structures.Config;
+import unn.structures.Context;
 import unn.structures.MiningStatus;
 
 public class MiningEnvironment implements IEnvironment {
 	private int datasetId;
 	private UnitReport unitReport;
-	private InnerDataset dbDataset;
+	//private InnerDataset dbDataset;
 	// private JobConfig config;
 	private Model refinedModel;
-	private MiningStatusObservable statusObservable;
+	private Context context;
+	private JobConfig config;
+	private OuterDataset outerDataset;
+	private InnerDataset innerDataset;
 	
-	public MiningEnvironment(int datasetId) {
-		this.datasetId = datasetId;
-		this.statusObservable = new MiningStatusObservable();
+	public MiningEnvironment(OuterDataset outerDataset) {
+		this.outerDataset = outerDataset;
 	}
 	
 	@Override
@@ -36,31 +41,36 @@ public class MiningEnvironment implements IEnvironment {
 		return this.refinedModel.getInputs();
 	}
 	
+	private MiningStatusObservable getStatusObservable() {
+		return this.context.getStatusObservable(this.config.jobSessionId);
+	}
 	
-	public void init(JobConfig config) {
-		// this.config = config;
-		this.statusObservable.updateStatusLabel("LOADING");
+	public void init(Context context, JobConfig config) {
+		System.out.println(String.format("[MiningEnvironment] Initializing miner"));
 		
-		OpenML ml = new OpenML();
-		ml.init(config, this.statusObservable);
+		this.config = config;
+		this.context = context;
+		getStatusObservable().updateStatusLabel("LOADING");
 		
-		System.out.println(String.format(" Initializing miner"));
+		InnerDatasetLoader loader = new InnerDatasetLoader();
+		loader.init(this.context, this.config, this.outerDataset);
+		this.innerDataset = loader.load();
 		
-		this.dbDataset = ml.getDataset(this.datasetId);
-		this.unitReport = ml.getUnitReport();
+		// TODO: implement getters
+		/* this.unitReport = ml.getUnitReport(); */
 	}
 	
 	public StatsWalker mine() throws Exception {
 		this.refinedModel = null;
 		
-		this.statusObservable.updateStatusLabel("BUFFERING");
+		getStatusObservable().updateStatusLabel("BUFFERING");
 		
-		Miner miner = new Miner(dbDataset, statusObservable);
+		Miner miner = new Miner(this.innerDataset, getStatusObservable());
 		miner.init();
 		
 		if (!miner.ready()) {
 			System.out.println(String.format(" Not enough data. Skipping..."));
-			this.statusObservable.updateStatusLabel("DONE");
+			getStatusObservable().updateStatusLabel("DONE");
 			return null;
 		}
 		
@@ -68,7 +78,7 @@ public class MiningEnvironment implements IEnvironment {
 		
 		miner.mine();
 		
-		this.statusObservable.updateStatusLabel("OPTIMIZING");
+		getStatusObservable().updateStatusLabel("OPTIMIZING");
 		
 		Model model = miner.getModel();
 		Refinery refinery = new Refinery(miner, model);
@@ -80,19 +90,18 @@ public class MiningEnvironment implements IEnvironment {
 		this.refinedModel = refinery.refine();
 		//this.refinedModel = model;
 		
-		int countMin = dbDataset.count(Config.STIMULI_MIN_VALUE);
-		int countNull = dbDataset.count(Config.STIMULI_NULL_VALUE);
-		int countMax = dbDataset.count(Config.STIMULI_MAX_VALUE);
+		int countMin = this.innerDataset.count(Config.STIMULI_MIN_VALUE);
+		int countNull = this.innerDataset.count(Config.STIMULI_NULL_VALUE);
+		int countMax = this.innerDataset.count(Config.STIMULI_MAX_VALUE);
 		
 		System.out.println("Min Count = " + countMin);
 		System.out.println("Null Count = " + countNull);
 		System.out.println("Max Count = " + countMax);
 		
-		dbDataset.shrink();
+		this.innerDataset.shrink();
 		
-		this.statusObservable.updateStatusLabel("DONE");
+		getStatusObservable().updateStatusLabel("DONE");
 		
-		// refined.getStatsWalker().printTimes();
 		return this.refinedModel.getStatsWalker();
 	}
 	
@@ -131,6 +140,6 @@ public class MiningEnvironment implements IEnvironment {
 	}
 	
 	public MiningStatus getMiningStatus() {
-		return this.statusObservable.getStatus();
+		return getStatusObservable().getStatus();
 	}
 }

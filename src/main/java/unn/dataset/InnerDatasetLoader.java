@@ -14,17 +14,20 @@ import plugins.openml.ValueMapper;
 import unn.interfaces.IOperator;
 import unn.operations.OperatorDescriptor;
 import unn.operations.RAW;
+import unn.structures.Context;
 import unn.structures.VTR;
 
 public class InnerDatasetLoader {
 	OuterDataset outerDataset;
 	JobConfig config;
+	Context context;
 	
 	public InnerDatasetLoader() {}
 	
-	public void init(JobConfig config, OuterDataset outerDataset) {
+	public void init(Context context, JobConfig config, OuterDataset outerDataset) {
 		this.outerDataset = outerDataset;
 		this.config = config;
+		this.context = context;
 	}
 	
 	public InnerDataset load () {

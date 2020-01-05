@@ -15,6 +15,7 @@ import plugins.openml.UnitReport;
 import unn.interfaces.IEnvironment;
 import unn.simulation.Simulation;
 import unn.simulation.SimulationReport;
+import unn.structures.Context;
 import unn.structures.MiningStatus;
 
 public class RESTApi extends Thread {
@@ -46,7 +47,8 @@ public class RESTApi extends Thread {
         app.post("/dataset/mine/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
         	JobConfig conf = ctx.bodyAsClass(JobConfig.class);
-        	this.group = new EnvironmentGroup(Integer.parseInt(datasetId));
+        	Context unnContext = new Context();
+        	this.group = new EnvironmentGroup(unnContext, Integer.parseInt(datasetId));
         	
     		new Thread(new Runnable() {
 				@Override
