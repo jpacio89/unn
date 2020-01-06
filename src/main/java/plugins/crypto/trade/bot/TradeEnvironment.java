@@ -15,6 +15,7 @@ import unn.mining.Model;
 import unn.mining.Refinery;
 import unn.mining.StatsWalker;
 import unn.structures.Config;
+import unn.structures.Context;
 
 public class TradeEnvironment implements IEnvironment {
 	HashMap<String, Model> models;
@@ -99,7 +100,6 @@ public class TradeEnvironment implements IEnvironment {
 		return null;
 	}
 
-	@Override
 	public void init(JobConfig config) {
 		// TODO Auto-generated method stub
 		
@@ -115,6 +115,12 @@ public class TradeEnvironment implements IEnvironment {
 	public StatsWalker getStatsWalker() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void init(Context context, JobConfig config) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

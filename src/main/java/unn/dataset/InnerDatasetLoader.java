@@ -12,12 +12,16 @@ import plugins.openml.JobConfig;
 import plugins.openml.UnitReport;
 import plugins.openml.ValueMapper;
 import unn.interfaces.IOperator;
+import unn.mining.MiningStatusObservable;
 import unn.operations.OperatorDescriptor;
 import unn.operations.RAW;
 import unn.structures.Context;
 import unn.structures.VTR;
 
 public class InnerDatasetLoader {
+	// TODO: refactor this
+	private UnitReport unitReport;
+	
 	OuterDataset outerDataset;
 	JobConfig config;
 	Context context;
@@ -52,7 +56,7 @@ public class InnerDatasetLoader {
 			ArrayList<IOperator> leaves = getOperators(mapper.getFeatures(), this.config.targetFeature, true);
 			UnitReport report = mapper.getReport();
 			this.unitReport = report;
-			this.unitReport.setFeatures(this.features);
+			this.unitReport.setFeatures(this.outerDataset.getHeader().toArray(new String[this.outerDataset.getHeader().size()]));
 			
 			dataset.setTrainingLeaves(getOperators(mapper.getFeatures(), this.config.targetFeature, false));
 			dataset.setAllLeaves(leaves);
@@ -67,8 +71,8 @@ public class InnerDatasetLoader {
 			int targetFeatureIndex = this.outerDataset.getFeatureIndex(this.config.targetFeature);
 			
 			for (int i = 0; i < this.outerDataset.sampleCount(); ++i) {
-				if (this.statusObservable != null) {
-					this.statusObservable.updateProgress(n, this.outerDataset.sampleCount());
+				if (getStatusObservable() != null) {
+					getStatusObservable().updateProgress(n, this.outerDataset.sampleCount());
 				}
 				
 				String outerTargetValue = this.outerDataset.getFeatureAtSample(i, targetFeatureIndex);
@@ -97,7 +101,6 @@ public class InnerDatasetLoader {
 			}
 		} 
 		catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -127,5 +130,13 @@ public class InnerDatasetLoader {
 		}
 		
 		return operators;
+	}
+	
+	private MiningStatusObservable getStatusObservable() {
+		return this.context.getStatusObservable(this.config.jobSessionId);
+	}
+	
+	public UnitReport getUnitReport() {
+		return this.unitReport;
 	}
 }

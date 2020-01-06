@@ -1,6 +1,5 @@
 package server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.javalin.Javalin;
@@ -9,9 +8,9 @@ import plugins.openml.EnvironmentGroup;
 import plugins.openml.JobConfig;
 import plugins.openml.MiningEnvironment;
 import plugins.openml.MiningReport;
-import plugins.openml.OpenML;
 import plugins.openml.SimulationConfig;
 import plugins.openml.UnitReport;
+import unn.dataset.OpenMLLocator;
 import unn.interfaces.IEnvironment;
 import unn.simulation.Simulation;
 import unn.simulation.SimulationReport;
@@ -23,7 +22,11 @@ public class RESTApi extends Thread {
 	IEnvironment env;
 	String datasetId;
 	
-	public RESTApi() {}
+	Context unnContext;
+	
+	public RESTApi() {
+		this.unnContext = new Context();
+	}
 	
 	public void run() {
 		Javalin app = Javalin.create(config -> {
@@ -34,9 +37,15 @@ public class RESTApi extends Thread {
         
         app.post("/dataset/load/:id", ctx -> {
         	this.datasetId = ctx.pathParam("id");
-    		IEnvironment env = new MiningEnvironment(Integer.parseInt(datasetId));
+        	this.group = new EnvironmentGroup(unnContext, Integer.parseInt(datasetId));
+        	
+        	// TODO: fix hardcoded openml dataset id
+        	this.group.load(new OpenMLLocator(Integer.parseInt(datasetId)));
+
+        	// TODO: refactor this
+    		IEnvironment env = new MiningEnvironment(this.group.getOuterDataset());
     		this.env = env;
-			env.init(JobConfig.DEFAULT);
+			env.init(this.unnContext, JobConfig.DEFAULT);
         });
         
         app.get("/dataset/units/:jobId", ctx -> {
@@ -47,8 +56,6 @@ public class RESTApi extends Thread {
         app.post("/dataset/mine/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
         	JobConfig conf = ctx.bodyAsClass(JobConfig.class);
-        	Context unnContext = new Context();
-        	this.group = new EnvironmentGroup(unnContext, Integer.parseInt(datasetId));
         	
     		new Thread(new Runnable() {
 				@Override
@@ -114,10 +121,12 @@ public class RESTApi extends Thread {
         
         app.get("/dataset/raw/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
-        	OpenML ml = new OpenML();
+        	
+        	// TODO: refactor this to use OuterDataset
+        	/*OpenML ml = new OpenML();
         	ml.init(this.group.getConfig(), null);
-        	ArrayList<HashMap<String, String>> rawDataset = ml.getRawDataset(Integer.parseInt(this.datasetId));
-			ctx.json(rawDataset);
+        	ArrayList<HashMap<String, String>> rawDataset = ml.getRawDataset(Integer.parseInt(this.datasetId));*/
+			//ctx.json(rawDataset);
         });
         
         app.get("/feature/histogram/:jobId", ctx -> {
@@ -128,9 +137,10 @@ public class RESTApi extends Thread {
         	JobConfig config = new JobConfig();
         	config.groupCount.put(feature, Integer.parseInt(groupCount));
         	
-    		IEnvironment env = new MiningEnvironment(Integer.parseInt(datasetId));    		
-			env.init(config);
+        	// TODO: refactor this
+    		IEnvironment env = new MiningEnvironment(this.group.getOuterDataset());
     		this.env = env;
+			env.init(this.unnContext, config);
         });
 	}
 }

@@ -29,13 +29,8 @@ public class EnvironmentGroup {
 		this.datasetId = datasetId;
 		this.context = context;
 	}
-
-	public void mine(JobConfig config) {
-		this.config = config;
-		
-		// TODO: pass Locator to this call
-		DatasetLocator locator = null;
-		
+	
+	public void load(DatasetLocator locator) {		
 		try {
 			OuterDatasetLoader loader = new OuterDatasetLoader();
 			this.outerDataset = loader.load(locator);
@@ -43,6 +38,10 @@ public class EnvironmentGroup {
 		catch (Exception e1) {
 			e1.printStackTrace();
 		}
+	}
+
+	public void mine(JobConfig config) {
+		this.config = config;
 		
 		MiningEnvironment seedEnv = new MiningEnvironment(this.outerDataset);
 		seedEnv.init(this.context, config);
@@ -171,5 +170,9 @@ public class EnvironmentGroup {
 		}
 		
 		return statuses;
+	}
+
+	public OuterDataset getOuterDataset() {
+		return outerDataset;
 	}
 }
