@@ -30,7 +30,7 @@ public class EnvironmentGroup {
 		this.context = context;
 	}
 	
-	public void load(DatasetLocator locator) {		
+	public void load(DatasetLocator locator) {
 		try {
 			OuterDatasetLoader loader = new OuterDatasetLoader();
 			this.outerDataset = loader.load(locator);

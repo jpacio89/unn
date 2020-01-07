@@ -70,6 +70,10 @@ public class InnerDatasetLoader {
 			
 			int targetFeatureIndex = this.outerDataset.getFeatureIndex(this.config.targetFeature);
 			
+			if (targetFeatureIndex < 0) {
+				return null;
+			}
+			
 			for (int i = 0; i < this.outerDataset.sampleCount(); ++i) {
 				if (getStatusObservable() != null) {
 					getStatusObservable().updateProgress(n, this.outerDataset.sampleCount());

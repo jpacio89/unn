@@ -26,7 +26,7 @@ public class FilesystemDatasetSource {
 			
 			String header = reader.readLine();
 			dataset.setHeader(header.split(separator));
-			String line = null;
+			String line = header;
 			
 			while (line != null) {
 				line = reader.readLine();

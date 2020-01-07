@@ -11,6 +11,7 @@ import plugins.openml.MiningReport;
 import plugins.openml.SimulationConfig;
 import plugins.openml.UnitReport;
 import unn.dataset.OpenMLLocator;
+import unn.dataset.OuterDataset;
 import unn.interfaces.IEnvironment;
 import unn.simulation.Simulation;
 import unn.simulation.SimulationReport;
@@ -121,12 +122,8 @@ public class RESTApi extends Thread {
         
         app.get("/dataset/raw/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
-        	
-        	// TODO: refactor this to use OuterDataset
-        	/*OpenML ml = new OpenML();
-        	ml.init(this.group.getConfig(), null);
-        	ArrayList<HashMap<String, String>> rawDataset = ml.getRawDataset(Integer.parseInt(this.datasetId));*/
-			//ctx.json(rawDataset);
+        	OuterDataset outerDataset = this.group.getOuterDataset();
+        	ctx.json(outerDataset);
         });
         
         app.get("/feature/histogram/:jobId", ctx -> {

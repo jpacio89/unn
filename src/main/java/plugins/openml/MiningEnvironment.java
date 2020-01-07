@@ -42,7 +42,11 @@ public class MiningEnvironment implements IEnvironment {
 	}
 	
 	private MiningStatusObservable getStatusObservable() {
-		return this.context.getStatusObservable(this.config.jobSessionId);
+		MiningStatusObservable obs = this.context.getStatusObservable(this.config.jobSessionId);
+		if (obs != null) {
+			return obs;
+		}
+		return new MiningStatusObservable();
 	}
 	
 	public void init(Context context, JobConfig config) {
@@ -55,9 +59,7 @@ public class MiningEnvironment implements IEnvironment {
 		InnerDatasetLoader loader = new InnerDatasetLoader();
 		loader.init(this.context, this.config, this.outerDataset);
 		this.innerDataset = loader.load();
-		
-		// TODO: implement getters
-		/* this.unitReport = ml.getUnitReport(); */
+		this.unitReport = loader.getUnitReport();
 	}
 	
 	public StatsWalker mine() throws Exception {
