@@ -87,6 +87,7 @@ public class InnerDatasetLoader {
 				int j = 0;
 				for (String key : this.outerDataset.getHeader()) {
 					if (this.config.featureBlacklist != null && Arrays.stream(this.config.featureBlacklist).anyMatch(key::equals)) {
+						j++;
 						continue;
 					}
 					

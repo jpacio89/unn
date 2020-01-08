@@ -42,6 +42,9 @@ public class MiningEnvironment implements IEnvironment {
 	}
 	
 	private MiningStatusObservable getStatusObservable() {
+		if (this.context == null) {
+			return new MiningStatusObservable();
+		}
 		MiningStatusObservable obs = this.context.getStatusObservable(this.config.jobSessionId);
 		if (obs != null) {
 			return obs;
