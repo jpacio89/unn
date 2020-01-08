@@ -30,6 +30,14 @@ public class OuterDataset {
 		return this.header;
 	}
 	
+	public ArrayList<ArrayList<String>> getBody() {
+		return body;
+	}
+
+	public void setBody(ArrayList<ArrayList<String>> body) {
+		this.body = body;
+	}
+
 	public ArrayList<String> getSample(int index) {
 		return this.body.get(index);
 	}
