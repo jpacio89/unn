@@ -2,11 +2,12 @@ package unn.session.actors;
 
 import unn.session.actions.ActionResult;
 import unn.session.actions.LoadAction;
+import unn.session.actions.SaveAction;
 
-public class LoadActor extends Actor {
-	LoadAction action;
+public class SaveActor extends Actor {
+	SaveAction action;
 	
-	public LoadActor(LoadAction action) {
+	public SaveActor(SaveAction action) {
 		this.action = action;
 	}
 

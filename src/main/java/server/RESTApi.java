@@ -10,15 +10,19 @@ import plugins.openml.MiningEnvironment;
 import plugins.openml.MiningReport;
 import plugins.openml.SimulationConfig;
 import plugins.openml.UnitReport;
+import unn.dataset.DatasetLocator;
 import unn.dataset.OpenMLLocator;
 import unn.dataset.OuterDataset;
 import unn.interfaces.IEnvironment;
+import unn.session.Session;
+import unn.session.actions.LoadAction;
 import unn.simulation.Simulation;
 import unn.simulation.SimulationReport;
 import unn.structures.Context;
 import unn.structures.MiningStatus;
 
 public class RESTApi extends Thread {
+	Session session;
 	EnvironmentGroup group;
 	IEnvironment env;
 	String datasetId;
@@ -38,12 +42,18 @@ public class RESTApi extends Thread {
         
         app.post("/dataset/load/:id", ctx -> {
         	this.datasetId = ctx.pathParam("id");
+        	
+        	// TODO: deprecate group
         	this.group = new EnvironmentGroup(unnContext, Integer.parseInt(datasetId));
+        	this.session = new Session(unnContext);
+        	
+        	DatasetLocator locator = new OpenMLLocator(Integer.parseInt(datasetId));        	
+        	this.session.act(new LoadAction(locator));
         	
         	// TODO: fix hardcoded openml dataset id
-        	this.group.load(new OpenMLLocator(Integer.parseInt(datasetId)));
-
-        	// TODO: refactor this
+        	this.group.load(locator);
+        	
+        	// TODO: remove this
     		IEnvironment env = new MiningEnvironment(this.group.getOuterDataset());
     		this.env = env;
 			env.init(this.unnContext, JobConfig.DEFAULT);

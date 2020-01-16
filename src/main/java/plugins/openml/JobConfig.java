@@ -52,7 +52,7 @@ public class JobConfig {
 	}
 
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
+	public Object clone() throws CloneNotSupportedException {
 		JobConfig newConf = new JobConfig();
 		newConf.targetFeature = this.targetFeature;
 		newConf.targetOuterValue = this.targetOuterValue;
