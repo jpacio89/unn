@@ -11,19 +11,22 @@ import plugins.openml.MiningReport;
 import plugins.openml.SimulationConfig;
 import plugins.openml.UnitReport;
 import unn.dataset.DatasetLocator;
+import unn.dataset.FilesystemLocator;
 import unn.dataset.OpenMLLocator;
 import unn.dataset.OuterDataset;
 import unn.interfaces.IEnvironment;
 import unn.session.Session;
 import unn.session.actions.LoadAction;
-import unn.simulation.Simulation;
+import unn.session.actions.MineAction;
+import unn.session.actions.PredictAction;
+import unn.simulation.Prediction;
 import unn.simulation.SimulationReport;
 import unn.structures.Context;
 import unn.structures.MiningStatus;
 
 public class RESTApi extends Thread {
 	Session session;
-	EnvironmentGroup group;
+	// EnvironmentGroup group;
 	IEnvironment env;
 	String datasetId;
 	
@@ -44,19 +47,15 @@ public class RESTApi extends Thread {
         	this.datasetId = ctx.pathParam("id");
         	
         	// TODO: deprecate group
-        	this.group = new EnvironmentGroup(unnContext, Integer.parseInt(datasetId));
+        	// this.group = new EnvironmentGroup(unnContext, Integer.parseInt(datasetId));
         	this.session = new Session(unnContext);
         	
-        	DatasetLocator locator = new OpenMLLocator(Integer.parseInt(datasetId));        	
-        	this.session.act(new LoadAction(locator));
+        	//DatasetLocator locator = new OpenMLLocator(Integer.parseInt(datasetId));     
+        	DatasetLocator locator = new FilesystemLocator("/Users/joaocoelho/Documents/Work/UNN/unn-datasets/espiritualidade/espiritualidade.csv");
+
+        	this.session.act(new LoadAction(unnContext, session, locator));
         	
-        	// TODO: fix hardcoded openml dataset id
-        	this.group.load(locator);
-        	
-        	// TODO: remove this
-    		IEnvironment env = new MiningEnvironment(this.group.getOuterDataset());
-    		this.env = env;
-			env.init(this.unnContext, JobConfig.DEFAULT);
+        	generateUnitReport(JobConfig.DEFAULT);
         });
         
         app.get("/dataset/units/:jobId", ctx -> {
@@ -72,7 +71,7 @@ public class RESTApi extends Thread {
 				@Override
 				public void run() {
 		    		try {
-		    			group.mine(conf);
+		    			session.act(new MineAction(conf));
 					}
 		    		catch (Exception e) {
 						e.printStackTrace();
@@ -83,26 +82,20 @@ public class RESTApi extends Thread {
         
         app.get("/mine/report/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
-        	// IEnvironment env = this.env;
-        	MiningReport report = group.getReport();
+        	MiningReport report = this.session.getReport();
 			ctx.json(report);
         });
         
         app.get("/mine/status/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
-        	HashMap<String, MiningStatus> statuses = group.getMiningStatuses();
+        	HashMap<String, MiningStatus> statuses = this.session.getMiningStatuses();
 			ctx.json(statuses);
         });
         
         app.post("/simulate/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
         	SimulationConfig conf = ctx.bodyAsClass(SimulationConfig.class);
-
-        	Simulation simulation = new Simulation();
-        	simulation.init(conf, this.group);
-        	simulation.run();
-        	SimulationReport report = simulation.getReport();
-        	
+        	SimulationReport report = (SimulationReport) this.session.act(new PredictAction(session, conf));
         	ctx.json(report);
         });
         
@@ -110,29 +103,28 @@ public class RESTApi extends Thread {
         	// String jobId = ctx.pathParam("jobId");
         	SimulationConfig conf = ctx.bodyAsClass(SimulationConfig.class);
 
-        	Simulation simulation = new Simulation();
+        	Prediction simulation = new Prediction();
         	simulation.init(conf, this.group);
         	simulation.morph();
-        	// SimulationReport report = simulation.getReport();
         	
         	//ctx.json(report);
         });
         
         app.get("/mine/units/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
-        	HashMap<String, UnitReport> reports = this.group.getUnitReports();        	
+        	HashMap<String, UnitReport> reports = this.session.getUnitReports();        	
         	ctx.json(reports);
         });
         
         app.get("/mine/config/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
-        	JobConfig config = this.group.getConfig();        	
+        	JobConfig config = this.env.getConfig();
         	ctx.json(config);
         });
         
         app.get("/dataset/raw/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
-        	OuterDataset outerDataset = this.group.getOuterDataset();
+        	OuterDataset outerDataset = this.session.getOuterDataset();
         	ctx.json(outerDataset);
         });
         
@@ -143,11 +135,15 @@ public class RESTApi extends Thread {
         	
         	JobConfig config = new JobConfig();
         	config.groupCount.put(feature, Integer.parseInt(groupCount));
-        	
-        	// TODO: refactor this
-    		IEnvironment env = new MiningEnvironment(this.group.getOuterDataset());
-    		this.env = env;
-			env.init(this.unnContext, config);
+        	generateUnitReport(config);
         });
+	}
+	
+	// TODO: refactor this
+	// TODO: apply config changes so that it is properly visualized
+	private void generateUnitReport(JobConfig config) {
+		IEnvironment env = new MiningEnvironment(this.session.getOuterDataset());
+		this.env = env;
+		env.init(this.unnContext, config);
 	}
 }

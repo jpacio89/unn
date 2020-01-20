@@ -23,4 +23,6 @@ public interface IEnvironment {
 	UnitReport getUnitReport();
 
 	StatsWalker getStatsWalker();
+
+	JobConfig getConfig();
 }

@@ -10,21 +10,22 @@ import plugins.openml.MiningEnvironment;
 import plugins.openml.SimulationConfig;
 import plugins.openml.UnitReport;
 import unn.interfaces.IOperator;
+import unn.session.Session;
 import unn.structures.Config;
 import utils.RandomManager;
 
-public class Simulation {
+public class Prediction {
 	SimulationConfig config;
-	EnvironmentGroup goup;
+	Session session;
 	SimulationReport report;
 	
-	public void init(SimulationConfig conf, EnvironmentGroup group) {
+	public void init(SimulationConfig conf, Session session) {
 		this.config = conf;
-		this.goup = group;
+		this.session = session;
 	}
 
 	public void run() {
-		HashMap<String, MiningEnvironment> envs = goup.getEnvironments();
+		HashMap<String, MiningEnvironment> envs = session.getEnvs();
 		this.report = new SimulationReport();
 		
 		for (Entry<String, MiningEnvironment> env : envs.entrySet()) {
@@ -77,7 +78,7 @@ public class Simulation {
 	}
 	
 	public void morph() {
-		HashMap<String, MiningEnvironment> envs = goup.getEnvironments();
+		HashMap<String, MiningEnvironment> envs = session.getEnvironments();
 		this.report = new SimulationReport();
 		
 		for (Entry<String, MiningEnvironment> env : envs.entrySet()) {
@@ -128,7 +129,7 @@ public class Simulation {
 	    	// TODO: fix this - make generic
 	    	HashMap<String, Boolean> classValue = this.config.seeds.get("\"type\"");
 	    	for (String type : classValue.keySet()) {
-	    		goup.morph(values, type, "mammal");
+	    		session.morph(values, type, "mammal");
 	    		break;
 	    	}
 	    	

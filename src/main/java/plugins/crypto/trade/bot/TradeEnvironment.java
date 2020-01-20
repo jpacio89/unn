@@ -123,5 +123,11 @@ public class TradeEnvironment implements IEnvironment {
 		
 	}
 
+	@Override
+	public JobConfig getConfig() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

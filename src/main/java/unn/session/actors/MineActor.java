@@ -33,9 +33,6 @@ public class MineActor extends Actor {
 		
 		// TODO: remove this from Session
 		HashMap<String, MiningEnvironment> envs = this.session.getEnvs();
-		
-		// TODO: action is config??
-		// this.config = config;
 		JobConfig config = buildConfig();
 		
 		MiningEnvironment seedEnv = new MiningEnvironment(dataset);
@@ -90,10 +87,12 @@ public class MineActor extends Actor {
 				}
 			}
 		}
+		
+		// TODO: fix this
+		return null;
 	}
 	
 	private JobConfig buildConfig() {
-		// TODO: implement
-		return null;
+		return this.action.getConf();
 	}
 }

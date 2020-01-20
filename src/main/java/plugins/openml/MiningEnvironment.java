@@ -147,4 +147,12 @@ public class MiningEnvironment implements IEnvironment {
 	public MiningStatus getMiningStatus() {
 		return getStatusObservable().getStatus();
 	}
+
+	public JobConfig getConfig() {
+		return config;
+	}
+
+	public void setConfig(JobConfig config) {
+		this.config = config;
+	}
 }

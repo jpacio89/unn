@@ -6,6 +6,8 @@ import unn.session.actions.MineAction;
 import unn.session.actions.PredictAction;
 import unn.session.actions.QueryAction;
 import unn.session.actions.SaveAction;
+import unn.simulation.Prediction;
+import unn.simulation.SimulationReport;
 
 public class PredictActor extends Actor {
 	PredictAction action;
@@ -15,8 +17,9 @@ public class PredictActor extends Actor {
 	}
 
 	public ActionResult run() {
-		return null;
+		Prediction prediction = new Prediction();
+    	prediction.init(this.action.getConf(), this.action.getSession());
+    	prediction.run();
+		return prediction.getReport();
 	}
-
-	
 }
