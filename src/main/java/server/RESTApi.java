@@ -28,6 +28,7 @@ public class RESTApi extends Thread {
 	Session session;
 	// EnvironmentGroup group;
 	IEnvironment env;
+	JobConfig mineConfig;
 	String datasetId;
 	
 	Context unnContext;
@@ -50,8 +51,8 @@ public class RESTApi extends Thread {
         	// this.group = new EnvironmentGroup(unnContext, Integer.parseInt(datasetId));
         	this.session = new Session(unnContext);
         	
-        	//DatasetLocator locator = new OpenMLLocator(Integer.parseInt(datasetId));     
-        	DatasetLocator locator = new FilesystemLocator("/Users/joaocoelho/Documents/Work/UNN/unn-datasets/espiritualidade/espiritualidade.csv");
+        	DatasetLocator locator = new OpenMLLocator(Integer.parseInt(datasetId));     
+        	//DatasetLocator locator = new FilesystemLocator("/Users/joaocoelho/Documents/Work/UNN/unn-datasets/espiritualidade/espiritualidade.csv");
 
         	this.session.act(new LoadAction(unnContext, session, locator));
         	
@@ -65,13 +66,13 @@ public class RESTApi extends Thread {
         
         app.post("/dataset/mine/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
-        	JobConfig conf = ctx.bodyAsClass(JobConfig.class);
+        	this.mineConfig = ctx.bodyAsClass(JobConfig.class);
         	
     		new Thread(new Runnable() {
 				@Override
 				public void run() {
 		    		try {
-		    			session.act(new MineAction(conf));
+		    			session.act(new MineAction(mineConfig));
 					}
 		    		catch (Exception e) {
 						e.printStackTrace();
@@ -99,7 +100,7 @@ public class RESTApi extends Thread {
         	ctx.json(report);
         });
         
-        app.post("/morph/:jobId", ctx -> {
+        /*app.post("/morph/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
         	SimulationConfig conf = ctx.bodyAsClass(SimulationConfig.class);
 
@@ -108,7 +109,7 @@ public class RESTApi extends Thread {
         	simulation.morph();
         	
         	//ctx.json(report);
-        });
+        });*/
         
         app.get("/mine/units/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
@@ -117,9 +118,7 @@ public class RESTApi extends Thread {
         });
         
         app.get("/mine/config/:jobId", ctx -> {
-        	// String jobId = ctx.pathParam("jobId");
-        	JobConfig config = this.env.getConfig();
-        	ctx.json(config);
+        	ctx.json(mineConfig);
         });
         
         app.get("/dataset/raw/:jobId", ctx -> {

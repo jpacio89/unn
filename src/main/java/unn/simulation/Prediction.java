@@ -77,7 +77,7 @@ public class Prediction {
 		}
 	}
 	
-	public void morph() {
+	/*public void morph() {
 		HashMap<String, MiningEnvironment> envs = session.getEnvironments();
 		this.report = new SimulationReport();
 		
@@ -135,7 +135,7 @@ public class Prediction {
 	    	
 	    	break;
 		}
-	}
+	}*/
 
 	public SimulationReport getReport() {
 		return this.report;
