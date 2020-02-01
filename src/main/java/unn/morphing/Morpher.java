@@ -1,106 +1,90 @@
 package unn.morphing;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 
-import plugins.openml.OuterValueType;
+import plugins.openml.EnvironmentGroup;
+import plugins.openml.MiningEnvironment;
 import plugins.openml.UnitReport;
 import unn.interfaces.IOperator;
-import unn.mining.Model;
+import unn.session.Session;
 import unn.structures.Config;
 import utils.RandomManager;
 
 public class Morpher {
-	UnitReport units;
-	Model modelFrom;
-	Model modelTo;
+	MorphConfig config;
+	Session session;
+	// MorphReport report;
+	
+	public void init(MorphConfig conf, Session session) {
+		this.config = conf;
+		this.session = session;
+	}
+	
+	public void morph() {
+		HashMap<String, MiningEnvironment> envs = session.getEnvs();
+		// this.report = new MorphReport();
+		
+		for (Entry<String, MiningEnvironment> env : envs.entrySet()) {
+			// String feature = env.getKey();
+			ArrayList<IOperator> inputs = env.getValue().getInputs("");
+			UnitReport unitReport = env.getValue().getUnitReport();
+			
+	    	if (inputs == null) {
+	    		continue;
+	    	}
+	    	
+	    	HashMap<IOperator, Integer> values = new HashMap<IOperator, Integer>();
+	    	
+	    	for (IOperator input : inputs) {
+	    		HashMap<String, Boolean> possibleValues = this.config.seeds.get(input.toString());
+	    		
+	    		if (possibleValues == null) {
+	    			ArrayList<Integer> rnds = new ArrayList<Integer>();
+	    			// TODO: fix this for more than boolean features
+	    			rnds.add(Config.STIMULI_MIN_VALUE);
+	    			rnds.add(Config.STIMULI_MAX_VALUE);
+	    			Integer guess = RandomManager.getOne(rnds);
+	    			values.put(input, guess);
+	    			
+	    			System.err.println("Fix this shit!!");
+	    		} else {
+	    			Set<String> possibleValuesSet = possibleValues.keySet();
 
-	public Morpher() {
-		
-	}
-	
-	public void init(Model modelFrom, UnitReport units, Model modelTo) {
-		this.modelFrom = modelFrom;
-		this.modelTo = modelTo;
-		this.units = units;
-	}
-	
-	public HashMap<IOperator, Integer> morph(HashMap<IOperator, Integer> inputs) {
-		IOperator[] allArguments = this.modelFrom.getDataset().getAllLeaves();
-		
-		/*HashMap<IOperator, Integer> inputsObjs = new HashMap<IOperator, Integer>();
-		
-		for (IOperator op : allArguments) {
-			if (inputs.containsKey(op.toString())) {
-				inputsObjs.put(op, inputs.get(op.toString()));
-			}
-		}*/
-		
-		Integer totalVariation = 1;
-		
-		// TODO: make this better
-		for (int i = 0; i < 10000; ++i) {
-			HashMap<IOperator, Integer> ret = morphOnce(inputs, totalVariation, Config.STIMULI_MAX_VALUE);
-			if (ret != null) {
-				return ret;
-			}
-			if (i % 1000 == 0) {
-				totalVariation++;
-			}
+		    		// TODO: fix this shit!!!!!
+	    			for (String seedValueName : possibleValuesSet) {
+			    		Boolean isOn = possibleValues.get(seedValueName);
+			    		
+			    		if (!isOn) {
+			    			continue;
+			    		}
+			    		
+			    		Integer rewardInnerValue = unitReport.getInnerValue(input.toString(), seedValueName);
+			    		values.put(input, rewardInnerValue);
+			    		break;
+	    			}
+	    		}
+	    	}
+	    	
+	    	//if (values.containsKey(goup.getConfig().targetFeature)) {
+	    	//	System.err.println("Result was mistakenly fed into the query.");
+	    	//}
+	    	
+	    	// TODO: fix this - make generic
+	    	HashMap<String, Boolean> classValue = this.config.seeds.get("\"type\"");
+	    	for (String type : classValue.keySet()) {
+	    		session.morph(values, type, "mammal");
+	    		break;
+	    	}
+	    	
+	    	break;
 		}
-		
-		return null;
 	}
-	
-	public HashMap<IOperator, Integer> morphOnce(HashMap<IOperator, Integer> inputs, Integer totalVariation, Integer target) {
-		Double relaxationFactor = 0.1;
-		
-		ArrayList<IOperator> operators = new ArrayList<IOperator>();
-		operators.addAll(inputs.keySet());
-		
-		Collections.shuffle(operators);
-		
-		HashMap<IOperator, Integer> newInput = new HashMap<IOperator, Integer>();
-		Integer missingVariation = totalVariation;
-		int n = 0;
-		
-		while (missingVariation > 0) {
-			if (n >= operators.size()) {
-				n = operators.size() - 1;
-				System.out.println("|Morpher| Overflow!");
-			}
-			
-			IOperator op = operators.get(n);
-			Integer val = inputs.get(op);
-			
-			ArrayList<Integer> allPotentialValues = this.units.getValues(operators.get(n).toString()).getAllInnerValues();
-			Integer pivot = allPotentialValues.indexOf(val);
-			
-			int indexGuess = RandomManager.rand(
-				Math.max(0, pivot - totalVariation), 
-				Math.min(pivot + totalVariation, allPotentialValues.size() - 1)
-			);
-			
-			Integer newVal = allPotentialValues.get(indexGuess);
-			
-			missingVariation -= Math.abs(pivot - indexGuess);
-			newInput.put(op, newVal);
-			n = (n + 1); // % operators.size();
-		}
-		
-		for (IOperator op : operators) {
-			if (!newInput.containsKey(op)) {
-				newInput.put(op, inputs.get(op));
-			}
-		}
-		
-		Double outcome = modelTo.predict(newInput, null, null);
-		
-		if (Math.abs(outcome - target) < relaxationFactor * Config.STIMULI_RANGE) {
-			return newInput;
-		}
-		
-		return null;
-	}
+
+	//public MorphReport getReport() {
+	//	return this.report;
+	//}
+
 }

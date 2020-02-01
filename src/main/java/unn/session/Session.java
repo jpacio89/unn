@@ -11,9 +11,11 @@ import plugins.openml.UnitReport;
 import unn.dataset.DatasetLocator;
 import unn.dataset.OuterDataset;
 import unn.dataset.OuterDatasetLoader;
+import unn.interfaces.IOperator;
 import unn.mining.Artifact;
 import unn.mining.Model;
 import unn.mining.StatsWalker;
+import unn.morphing.MorpherOld;
 import unn.session.actions.Action;
 import unn.session.actions.ActionResult;
 import unn.session.actions.LoadAction;
@@ -116,6 +118,30 @@ public class Session {
 		}
 
 		return report;
+	}
+	
+	// TODO: refactor this
+	public HashMap<IOperator, Integer> morph(HashMap<IOperator, Integer> inputs, String classValueFrom, String classValueTo) {
+		/*MiningEnvironment seedEnv = new MiningEnvironment(this.datasetId);
+		seedEnv.init(config);
+
+		UnitReport units = seedEnv.getUnitReport();
+		
+		OuterValueType vType = units.getValues(config.targetFeature);*/
+		MiningEnvironment from = this.envs.get(classValueFrom);
+		MiningEnvironment to = this.envs.get(classValueTo);
+		
+		UnitReport units = from.getUnitReport();
+		//UnitReport unitsTo = to.getUnitReport();
+		
+		//OuterValueType typeFrom = unitsFrom.getValues("\"type\"");
+		//OuterValueType typeTo = unitsTo.getValues("\"type\"");
+		
+		MorpherOld morpher = new MorpherOld();
+		morpher.init(from.getModel(), units, to.getModel());
+		
+		HashMap<IOperator, Integer> ret = morpher.morph(inputs);
+		return ret;
 	}
 	
 	// TODO: refactor this

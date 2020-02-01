@@ -13,7 +13,7 @@ import unn.mining.Artifact;
 import unn.mining.MiningStatusObservable;
 import unn.mining.Model;
 import unn.mining.StatsWalker;
-import unn.morphing.Morpher;
+import unn.morphing.MorpherOld;
 import unn.structures.Context;
 import unn.structures.MiningStatus;
 
@@ -141,7 +141,7 @@ public class EnvironmentGroup {
 		//OuterValueType typeFrom = unitsFrom.getValues("\"type\"");
 		//OuterValueType typeTo = unitsTo.getValues("\"type\"");
 		
-		Morpher morpher = new Morpher();
+		MorpherOld morpher = new MorpherOld();
 		morpher.init(from.getModel(), units, to.getModel());
 		
 		HashMap<IOperator, Integer> ret = morpher.morph(inputs);

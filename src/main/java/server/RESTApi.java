@@ -15,9 +15,11 @@ import unn.dataset.FilesystemLocator;
 import unn.dataset.OpenMLLocator;
 import unn.dataset.OuterDataset;
 import unn.interfaces.IEnvironment;
+import unn.morphing.MorphConfig;
 import unn.session.Session;
 import unn.session.actions.LoadAction;
 import unn.session.actions.MineAction;
+import unn.session.actions.MorphAction;
 import unn.session.actions.PredictAction;
 import unn.simulation.Prediction;
 import unn.simulation.SimulationReport;
@@ -100,16 +102,12 @@ public class RESTApi extends Thread {
         	ctx.json(report);
         });
         
-        /*app.post("/morph/:jobId", ctx -> {
+        app.post("/morph/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
-        	SimulationConfig conf = ctx.bodyAsClass(SimulationConfig.class);
-
-        	Prediction simulation = new Prediction();
-        	simulation.init(conf, this.group);
-        	simulation.morph();
-        	
+        	MorphConfig conf = ctx.bodyAsClass(MorphConfig.class);
+        	/*MorphReport report = (MorphReport) */this.session.act(new MorphAction(session, conf));
         	//ctx.json(report);
-        });*/
+        });
         
         app.get("/mine/units/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
