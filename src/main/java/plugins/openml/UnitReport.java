@@ -46,7 +46,12 @@ public class UnitReport {
 				return null;
 			}
 			
-			int innerValue = (int) (Config.STIMULI_MIN_VALUE + index * Math.floor((Config.STIMULI_MAX_VALUE - Config.STIMULI_MIN_VALUE) / (type.cardinal() - 1)));
+			int innerValue = Config.STIMULI_MIN_VALUE;
+			
+			if (type.cardinal() > 1) {
+				innerValue = (int) (Config.STIMULI_MIN_VALUE + index * Math.floor((Config.STIMULI_MAX_VALUE - Config.STIMULI_MIN_VALUE) / (type.cardinal() - 1)));
+			}
+			
 			return innerValue;
 		}
 		else if (valueType instanceof NumericMapper) {
