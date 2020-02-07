@@ -1,12 +1,15 @@
 package unn.operations;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import unn.interfaces.IOperator;
 
-public class RAW extends BaseOperator
+public class RAW extends BaseOperator implements Serializable
 {
+	private static final long serialVersionUID = 9162259575884363749L;
+
 	public RAW (int v) {
 		super();
 		

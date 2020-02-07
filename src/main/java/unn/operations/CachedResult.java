@@ -1,9 +1,13 @@
 package unn.operations;
 
+import java.io.Serializable;
+
 import utils.Misc;
 
-class CachedResult
+class CachedResult implements Serializable
 {
+	private static final long serialVersionUID = -1399346447352915112L;
+	
 	boolean defined_;
 	boolean sigdefined_;
 	

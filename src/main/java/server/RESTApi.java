@@ -17,10 +17,12 @@ import unn.dataset.OuterDataset;
 import unn.interfaces.IEnvironment;
 import unn.morphing.MorphConfig;
 import unn.session.Session;
-import unn.session.actions.LoadAction;
+import unn.session.actions.LoadDatasetAction;
 import unn.session.actions.MineAction;
 import unn.session.actions.MorphAction;
 import unn.session.actions.PredictAction;
+import unn.session.actions.SaveModelAction;
+import unn.session.actors.PersistenceActor;
 import unn.simulation.Prediction;
 import unn.simulation.SimulationReport;
 import unn.structures.Context;
@@ -53,12 +55,30 @@ public class RESTApi extends Thread {
         	// this.group = new EnvironmentGroup(unnContext, Integer.parseInt(datasetId));
         	this.session = new Session(unnContext);
         	
-        	DatasetLocator locator = new OpenMLLocator(Integer.parseInt(datasetId));     
-        	//DatasetLocator locator = new FilesystemLocator("/Users/joaocoelho/Documents/Work/UNN/unn-datasets/espiritualidade/espiritualidade.csv");
+        	// DatasetLocator locator = new OpenMLLocator(Integer.parseInt(datasetId));     
+        	DatasetLocator locator = new FilesystemLocator("/Users/joaocoelho/Documents/Work/UNN/unn/unn-extras/stock-influencers/etoro.csv");
 
-        	this.session.act(new LoadAction(unnContext, session, locator));
+        	this.session.act(new LoadDatasetAction(unnContext, session, locator));
         	
         	generateUnitReport(JobConfig.DEFAULT);
+        });
+
+        app.post("/save/session/:jobId", ctx -> {
+        	// String jobId = ctx.pathParam("jobId");
+        	SaveModelAction action = new SaveModelAction();
+        	action.setPathTemplate("dummy.session");
+        	action.setSession(this.session);
+        	PersistenceActor saver = new PersistenceActor(action);
+        	saver.write();
+        });
+        
+        app.post("/load/session/:jobId", ctx -> {
+        	// String jobId = ctx.pathParam("jobId");
+        	SaveModelAction action = new SaveModelAction();
+        	action.setPathTemplate("dummy.session");
+        	action.setSession(this.session);
+        	PersistenceActor saver = new PersistenceActor(action);
+        	this.session = saver.read();
         });
         
         app.get("/dataset/units/:jobId", ctx -> {

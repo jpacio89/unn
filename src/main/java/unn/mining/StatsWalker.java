@@ -1,9 +1,11 @@
 package unn.mining;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import unn.structures.Config;
 
-public class StatsWalker {
+public class StatsWalker implements Serializable {
+	private static final long serialVersionUID = -5115126641533695064L;
 	ArrayList<Integer> possibleValues;
 	int[][] hitMatrix;
 	int outlier;

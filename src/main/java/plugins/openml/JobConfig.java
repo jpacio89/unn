@@ -1,5 +1,6 @@
 package plugins.openml;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,7 +10,8 @@ import java.util.UUID;
 import unn.structures.Config;
 
 
-public class JobConfig {
+public class JobConfig implements Serializable {
+	private static final long serialVersionUID = 3698978410470063835L;
 	public final static JobConfig DEFAULT = new JobConfig("", new LinkedList<String>());
 	
 	public String jobSessionId;

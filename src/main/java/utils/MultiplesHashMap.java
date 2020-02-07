@@ -1,12 +1,14 @@
 package utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class MultiplesHashMap<Key, Value>
+public class MultiplesHashMap<Key, Value> implements Serializable
 {
+	private static final long serialVersionUID = -3874688565215087822L;
 	private HashMap<Key, ArrayList <Value>> map_;
 	private int array_max_size_;
 	

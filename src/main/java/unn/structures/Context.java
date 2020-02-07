@@ -1,11 +1,13 @@
 package unn.structures;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 import plugins.openml.JobConfig;
 import unn.mining.MiningStatusObservable;
 
-public class Context {
+public class Context implements Serializable {
+	private static final long serialVersionUID = 329875276429497910L;
 	private HashMap<String, MiningStatusObservable> statusObservables;
 	
 	public Context() {

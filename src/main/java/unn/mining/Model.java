@@ -1,5 +1,6 @@
 package unn.mining;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,7 +10,9 @@ import unn.interfaces.IOperator;
 import utils.Pair;
 import utils.Triplet;
 
-public class Model {
+public class Model implements Serializable {
+	private static final long serialVersionUID = 6696314435525368206L;
+
 	final int TEST_SAMPLE_COUNT = 1000;
 	
 	StatsWalker walker;

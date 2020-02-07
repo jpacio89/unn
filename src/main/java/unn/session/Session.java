@@ -1,5 +1,6 @@
 package unn.session;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,23 +19,24 @@ import unn.mining.StatsWalker;
 import unn.morphing.MorpherOld;
 import unn.session.actions.Action;
 import unn.session.actions.ActionResult;
-import unn.session.actions.LoadAction;
+import unn.session.actions.LoadDatasetAction;
 import unn.session.actions.MineAction;
 import unn.session.actions.MorphAction;
 import unn.session.actions.PredictAction;
 import unn.session.actions.QueryAction;
-import unn.session.actions.SaveAction;
+import unn.session.actions.SaveModelAction;
 import unn.session.actors.Actor;
 import unn.session.actors.LoadActor;
 import unn.session.actors.MineActor;
 import unn.session.actors.MorphActor;
 import unn.session.actors.PredictActor;
 import unn.session.actors.QueryActor;
-import unn.session.actors.SaveActor;
+import unn.session.actors.PersistenceActor;
 import unn.structures.Context;
 import unn.structures.MiningStatus;
 
-public class Session {
+public class Session implements Serializable {
+	private static final long serialVersionUID = -4066182105363905590L;
 	private Context context;
 	private OuterDataset outerDataset;
 	private HashMap<String, MiningEnvironment> envs;
@@ -57,12 +59,12 @@ public class Session {
 	public ActionResult act(Action _action) {
 		Actor actor = null;
 		
-		if (_action instanceof LoadAction) {
-			LoadAction action = (LoadAction) _action;
+		if (_action instanceof LoadDatasetAction) {
+			LoadDatasetAction action = (LoadDatasetAction) _action;
 			actor = new LoadActor(action);
-		} else if (_action instanceof SaveAction) {
-			SaveAction action = (SaveAction) _action;
-			actor = new SaveActor(action);
+		} else if (_action instanceof SaveModelAction) {
+			SaveModelAction action = (SaveModelAction) _action;
+			actor = new PersistenceActor(action);
 		} else if (_action instanceof QueryAction) {
 			QueryAction action = (QueryAction) _action;
 			actor = new QueryActor(action);
@@ -77,7 +79,7 @@ public class Session {
 			actor = new MorphActor(action);
 		}
 		
-		ActionResult result = actor.run();
+		ActionResult result = actor.write();
 		return result;
 	}
 	

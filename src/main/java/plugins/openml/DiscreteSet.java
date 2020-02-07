@@ -1,10 +1,12 @@
 package plugins.openml;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import unn.structures.Config;
 
-public class DiscreteSet extends OuterValueType {
+public class DiscreteSet extends OuterValueType implements Serializable {
+	private static final long serialVersionUID = 2644249077021570502L;
 	public final ArrayList<String> values;
 	
 	public DiscreteSet(ArrayList<String> _values) {

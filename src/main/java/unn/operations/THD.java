@@ -1,13 +1,15 @@
 package unn.operations;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import unn.interfaces.IOperator;
 import unn.structures.Config;
 
-public class THD extends BaseOperator implements IOperator
+public class THD extends BaseOperator implements IOperator, Serializable
 {
+	private static final long serialVersionUID = -312207879886911131L;
 	IOperator v, lb;
 
 	public THD (IOperator v, IOperator lb) {

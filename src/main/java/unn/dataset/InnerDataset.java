@@ -1,5 +1,6 @@
 package unn.dataset;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -8,7 +9,8 @@ import unn.structures.VTR;
 import utils.MultiplesHashMap;
 import utils.RandomManager;
 
-public class InnerDataset {
+public class InnerDataset implements Serializable {
+	private static final long serialVersionUID = 4804115730789995484L;
 	ArrayList<Integer> times;
 	HashMap<Integer, Integer> timedRewards;
 	HashMap<IOperator, HashMap<Integer, Integer>> timedValues;

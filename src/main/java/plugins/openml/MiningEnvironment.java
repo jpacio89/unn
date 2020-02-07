@@ -1,5 +1,6 @@
 package plugins.openml;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,7 +19,8 @@ import unn.structures.Config;
 import unn.structures.Context;
 import unn.structures.MiningStatus;
 
-public class MiningEnvironment implements IEnvironment {
+public class MiningEnvironment implements IEnvironment, Serializable {
+	private static final long serialVersionUID = -8783414205445675354L;
 	private int datasetId;
 	private UnitReport unitReport;
 	//private InnerDataset dbDataset;

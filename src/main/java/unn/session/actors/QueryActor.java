@@ -1,9 +1,9 @@
 package unn.session.actors;
 
 import unn.session.actions.ActionResult;
-import unn.session.actions.LoadAction;
+import unn.session.actions.LoadDatasetAction;
 import unn.session.actions.QueryAction;
-import unn.session.actions.SaveAction;
+import unn.session.actions.SaveModelAction;
 
 public class QueryActor extends Actor {
 	QueryAction action;
@@ -12,7 +12,7 @@ public class QueryActor extends Actor {
 		this.action = action;
 	}
 
-	public ActionResult run() {
+	public ActionResult write() {
 		return null;
 	}
 

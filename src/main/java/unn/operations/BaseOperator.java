@@ -1,9 +1,12 @@
 package unn.operations;
 
+import java.io.Serializable;
+
 import unn.interfaces.IOperator;
 
-public abstract class BaseOperator implements IOperator
+public abstract class BaseOperator implements IOperator, Serializable
 {
+	private static final long serialVersionUID = 2944349782766148256L;
 	CachedResult cache_;
 	OperatorDescriptor operatorDescriptor_;
 	

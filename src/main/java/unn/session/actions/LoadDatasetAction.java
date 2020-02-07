@@ -4,12 +4,12 @@ import unn.dataset.DatasetLocator;
 import unn.session.Session;
 import unn.structures.Context;
 
-public class LoadAction extends Action {
+public class LoadDatasetAction extends Action {
 	DatasetLocator locator;
 	Context context;
 	Session session;
 	
-	public LoadAction(Context _context, Session _session, DatasetLocator _locator) {
+	public LoadDatasetAction(Context _context, Session _session, DatasetLocator _locator) {
 		this.locator = _locator;
 		this.context = _context;
 		this.session = _session;

@@ -1,10 +1,12 @@
 package unn.mining;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 
 import unn.structures.MiningStatus;
 
-public class MiningStatusObservable {
+public class MiningStatusObservable implements Serializable {
+	private static final long serialVersionUID = 3347895302371098327L;
 	MiningStatus status;
 	
 	public MiningStatusObservable() {

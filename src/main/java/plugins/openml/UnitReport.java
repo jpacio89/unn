@@ -1,12 +1,14 @@
 package plugins.openml;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
 import unn.structures.Config;
 
-public class UnitReport {
+public class UnitReport implements Serializable {
+	private static final long serialVersionUID = 7533264487477193079L;
 	public final HashMap<String, OuterValueType> units;
 	public String[] features;
 	

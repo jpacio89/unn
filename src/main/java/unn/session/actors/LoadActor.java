@@ -4,16 +4,16 @@ import plugins.openml.JobConfig;
 import plugins.openml.MiningEnvironment;
 import unn.interfaces.IEnvironment;
 import unn.session.actions.ActionResult;
-import unn.session.actions.LoadAction;
+import unn.session.actions.LoadDatasetAction;
 
 public class LoadActor extends Actor {
-	LoadAction action;
+	LoadDatasetAction action;
 	
-	public LoadActor(LoadAction action) {
+	public LoadActor(LoadDatasetAction action) {
 		this.action = action;
 	}
 
-	public ActionResult run() {	
+	public ActionResult write() {	
     	// TODO: fix hardcoded openml dataset id
     	this.action.getSession().loadOuterDataset(this.action.getLocator());
     	

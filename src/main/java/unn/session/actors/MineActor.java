@@ -12,10 +12,10 @@ import plugins.openml.UnitReport;
 import unn.dataset.OuterDataset;
 import unn.session.Session;
 import unn.session.actions.ActionResult;
-import unn.session.actions.LoadAction;
+import unn.session.actions.LoadDatasetAction;
 import unn.session.actions.MineAction;
 import unn.session.actions.QueryAction;
-import unn.session.actions.SaveAction;
+import unn.session.actions.SaveModelAction;
 import unn.structures.Context;
 
 public class MineActor extends Actor {
@@ -27,7 +27,7 @@ public class MineActor extends Actor {
 		this.action = action;
 	}
 
-	public ActionResult run() {
+	public ActionResult write() {
 		OuterDataset dataset = this.session.getOuterDataset();
 		Context context = this.session.getContext();
 		

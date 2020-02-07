@@ -1,5 +1,6 @@
 package plugins.openml;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,7 +12,8 @@ import utils.Domain;
 import utils.Pair;
 import utils.Range;
 
-public class NumericMapper extends OuterValueType {
+public class NumericMapper extends OuterValueType implements Serializable {
+	private static final long serialVersionUID = 1744475762857207392L;
 	public int groupCount;
 	public ArrayList<Double> possibleValues;
 	public ArrayList<Pair<Double, Double>> mapperBounds;

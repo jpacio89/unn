@@ -1,10 +1,12 @@
 package unn.dataset;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class OuterDataset {
+public class OuterDataset implements Serializable {
+	private static final long serialVersionUID = 8073990196346689566L;
 	ArrayList<String> header;
 	ArrayList<ArrayList<String>> body;
 	

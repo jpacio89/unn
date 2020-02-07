@@ -1,6 +1,9 @@
 package unn.operations;
 
-public class OperatorDescriptor {
+import java.io.Serializable;
+
+public class OperatorDescriptor implements Serializable {
+	private static final long serialVersionUID = -8619446287413861217L;
 	private String classId;
 	private String vtrName;
 	private int vtrIdx;

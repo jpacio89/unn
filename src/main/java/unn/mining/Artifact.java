@@ -1,11 +1,13 @@
 package unn.mining;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import unn.interfaces.IOperator;
 import utils.CombinationUtils;
 
-public class Artifact {
+public class Artifact implements Serializable {
+	private static final long serialVersionUID = 5903929353773746851L;
 	public ArrayList<OperatorHit> opHits;
 	public ArrayList<Integer> wheatTimes;
 	public int reward;

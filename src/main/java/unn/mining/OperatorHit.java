@@ -1,8 +1,11 @@
 package unn.mining;
 
+import java.io.Serializable;
+
 import unn.interfaces.IOperator;
 
-public class OperatorHit {
+public class OperatorHit implements Serializable {
+	private static final long serialVersionUID = 6076337110545632229L;
 	public IOperator operator;
 	public int hit;
 	
