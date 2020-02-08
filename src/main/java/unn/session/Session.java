@@ -6,12 +6,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import plugins.openml.JobConfig;
 import plugins.openml.MiningEnvironment;
 import plugins.openml.MiningReport;
 import plugins.openml.UnitReport;
 import unn.dataset.DatasetLocator;
 import unn.dataset.OuterDataset;
 import unn.dataset.OuterDatasetLoader;
+import unn.interfaces.IEnvironment;
 import unn.interfaces.IOperator;
 import unn.mining.Artifact;
 import unn.mining.Model;
@@ -40,6 +42,8 @@ public class Session implements Serializable {
 	private Context context;
 	private OuterDataset outerDataset;
 	private HashMap<String, MiningEnvironment> envs;
+	IEnvironment env;
+	JobConfig mineConfig;
 	
 	public Session(Context context) {
 		this.envs = new HashMap<String, MiningEnvironment>();
@@ -89,6 +93,25 @@ public class Session implements Serializable {
 	
 	public Context getContext() {
 		return this.context;
+	}
+	
+	public IEnvironment getEnv() {
+		return env;
+	}
+
+	// TODO: refactor this
+	public void setEnv(IEnvironment env) {
+		this.env = env;
+	}
+
+	// TODO: refactor this
+	public JobConfig getMineConfig() {
+		return mineConfig;
+	}
+
+	// TODO: refactor this
+	public void setMineConfig(JobConfig mineConfig) {
+		this.mineConfig = mineConfig;
 	}
 
 	// TODO: refactor this

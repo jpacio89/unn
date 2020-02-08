@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import io.javalin.Javalin;
 
-import plugins.openml.EnvironmentGroup;
 import plugins.openml.JobConfig;
 import plugins.openml.MiningEnvironment;
 import plugins.openml.MiningReport;
@@ -23,16 +22,12 @@ import unn.session.actions.MorphAction;
 import unn.session.actions.PredictAction;
 import unn.session.actions.SaveModelAction;
 import unn.session.actors.PersistenceActor;
-import unn.simulation.Prediction;
 import unn.simulation.SimulationReport;
 import unn.structures.Context;
 import unn.structures.MiningStatus;
 
 public class RESTApi extends Thread {
 	Session session;
-	// EnvironmentGroup group;
-	IEnvironment env;
-	JobConfig mineConfig;
 	String datasetId;
 	
 	Context unnContext;
@@ -83,18 +78,18 @@ public class RESTApi extends Thread {
         
         app.get("/dataset/units/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
-        	ctx.json(this.env.getUnitReport());
+        	ctx.json(this.session.getEnv().getUnitReport());
         });
         
         app.post("/dataset/mine/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
-        	this.mineConfig = ctx.bodyAsClass(JobConfig.class);
+        	this.session.setMineConfig(ctx.bodyAsClass(JobConfig.class));
         	
     		new Thread(new Runnable() {
 				@Override
 				public void run() {
 		    		try {
-		    			session.act(new MineAction(mineConfig));
+		    			session.act(new MineAction(session.getMineConfig()));
 					}
 		    		catch (Exception e) {
 						e.printStackTrace();
@@ -136,7 +131,7 @@ public class RESTApi extends Thread {
         });
         
         app.get("/mine/config/:jobId", ctx -> {
-        	ctx.json(mineConfig);
+        	ctx.json(this.session.getMineConfig());
         });
         
         app.get("/dataset/raw/:jobId", ctx -> {
@@ -160,7 +155,7 @@ public class RESTApi extends Thread {
 	// TODO: apply config changes so that it is properly visualized
 	private void generateUnitReport(JobConfig config) {
 		IEnvironment env = new MiningEnvironment(this.session.getOuterDataset());
-		this.env = env;
+		this.session.setEnv(env);
 		env.init(this.unnContext, config);
 	}
 }
