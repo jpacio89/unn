@@ -84,6 +84,9 @@ public class RESTApi extends Thread {
         	ArrayList<String> sessions = new ArrayList<String>();
         	File f = new File("./sessions");
             for (String pathname : f.list()) {
+            	if (!pathname.endsWith(".session")) {
+            		continue;
+            	}
             	sessions.add(pathname.replace(".session", ""));
             }
             ctx.json(sessions);
