@@ -39,13 +39,15 @@ import unn.structures.MiningStatus;
 
 public class Session implements Serializable {
 	private static final long serialVersionUID = -4066182105363905590L;
+	private String sessionName;
 	private Context context;
 	private OuterDataset outerDataset;
 	private HashMap<String, MiningEnvironment> envs;
 	IEnvironment env;
 	JobConfig mineConfig;
 	
-	public Session(Context context) {
+	public Session(String sessionName, Context context) {
+		this.sessionName = sessionName;
 		this.envs = new HashMap<String, MiningEnvironment>();
 		this.context = context;
 	}
@@ -97,6 +99,14 @@ public class Session implements Serializable {
 	
 	public IEnvironment getEnv() {
 		return env;
+	}
+
+	public String getSessionName() {
+		return sessionName;
+	}
+
+	public void setSessionName(String sessionName) {
+		this.sessionName = sessionName;
 	}
 
 	// TODO: refactor this

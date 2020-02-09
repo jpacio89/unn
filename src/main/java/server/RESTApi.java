@@ -1,5 +1,7 @@
 package server;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.javalin.Javalin;
@@ -44,11 +46,12 @@ public class RESTApi extends Thread {
         app.get("/", ctx -> ctx.result("UNN server running."));
         
         app.post("/dataset/load/:id", ctx -> {
+        	String name = ctx.queryParam("name");
         	this.datasetId = ctx.pathParam("id");
         	
         	// TODO: deprecate group
         	// this.group = new EnvironmentGroup(unnContext, Integer.parseInt(datasetId));
-        	this.session = new Session(unnContext);
+        	this.session = new Session(name, unnContext);
         	
         	// DatasetLocator locator = new OpenMLLocator(Integer.parseInt(datasetId));     
         	DatasetLocator locator = new FilesystemLocator("/Users/joaocoelho/Documents/Work/UNN/unn/unn-extras/stock-influencers/etoro.csv");
@@ -61,7 +64,7 @@ public class RESTApi extends Thread {
         app.post("/save/session/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
         	SaveModelAction action = new SaveModelAction();
-        	action.setPathTemplate("dummy.session");
+        	action.setPathTemplate(String.format("./sessions/%s.session", this.session.getSessionName()));
         	action.setSession(this.session);
         	PersistenceActor saver = new PersistenceActor(action);
         	saver.write();
@@ -69,11 +72,21 @@ public class RESTApi extends Thread {
         
         app.post("/load/session/:jobId", ctx -> {
         	// String jobId = ctx.pathParam("jobId");
+        	String name = ctx.queryParam("name");
         	SaveModelAction action = new SaveModelAction();
-        	action.setPathTemplate("dummy.session");
+        	action.setPathTemplate(String.format("./sessions/%s.session", name));
         	action.setSession(this.session);
         	PersistenceActor saver = new PersistenceActor(action);
         	this.session = saver.read();
+        });
+        
+        app.get("/list/saved/sessions", ctx -> {
+        	ArrayList<String> sessions = new ArrayList<String>();
+        	File f = new File("./sessions");
+            for (String pathname : f.list()) {
+            	sessions.add(pathname.replace(".session", ""));
+            }
+            ctx.json(sessions);
         });
         
         app.get("/dataset/units/:jobId", ctx -> {
