@@ -165,6 +165,11 @@ public class RESTApi extends Thread {
         	config.groupCount.put(feature, Integer.parseInt(groupCount));
         	generateUnitReport(config);
         });
+        
+        app.get("/session/features/:sessionId", ctx -> {
+        	// String jobId = ctx.pathParam("sessionId");
+        	ctx.json(this.session.getFeatures());
+        });
 	}
 	
 	// TODO: refactor this

@@ -68,6 +68,14 @@ public class UnitReport implements Serializable {
 
 	public void setFeatures(String[] features) {
 		this.features = features;
-		
+	}
+	
+	public ArrayList<String> getFeatures() {
+		ArrayList<String> features = new ArrayList<String>();
+		if (this.units == null) {
+			return features;
+		}
+		features.addAll(this.units.keySet());
+		return features;
 	}
 }

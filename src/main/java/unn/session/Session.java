@@ -200,5 +200,9 @@ public class Session implements Serializable {
 		
 		return reports;
 	}
+
+	public ArrayList<String> getFeatures() {
+		return this.env.getUnitReport().getFeatures();
+	}
 	
 }
