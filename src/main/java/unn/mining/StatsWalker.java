@@ -33,7 +33,7 @@ public class StatsWalker implements Serializable {
 	}
 	
 	public void addHit2Matrix(Integer time, Integer expected, Integer guess) {
-		int relaxation = (int) 0.1 * Config.STIMULI_MAX_VALUE * 2;
+		int relaxation = (int) (0.1 * Config.STIMULI_MAX_VALUE);
 		
 		if (guess > 0) {
 			guess = guess > Config.STIMULI_MAX_VALUE - relaxation ? Config.STIMULI_MAX_VALUE : guess;
