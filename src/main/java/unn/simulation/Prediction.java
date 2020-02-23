@@ -74,6 +74,7 @@ public class Prediction {
 	    	
 	    	Double prediction = env.getValue().predict("", values);
 	    	this.report.predictions.put(env.getKey(), prediction);
+	    	this.report.confusionMatrixes.put(env.getKey(), env.getValue().getStatsWalker().getHitMatrix());
 		}
 	}
 	
