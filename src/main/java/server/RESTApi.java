@@ -53,9 +53,10 @@ public class RESTApi extends Thread {
         	// this.group = new EnvironmentGroup(unnContext, Integer.parseInt(datasetId));
         	this.session = new Session(name, unnContext);
         	
-        	// DatasetLocator locator = new OpenMLLocator(Integer.parseInt(datasetId));     
-        	DatasetLocator locator = new FilesystemLocator("/Users/joaocoelho/Documents/Work/UNN/unn/unn-extras/stock-influencers/etoro.csv");
-
+        	DatasetLocator locator = new OpenMLLocator(Integer.parseInt(datasetId));     
+        	//DatasetLocator locator = new FilesystemLocator("/Users/joaocoelho/Documents/Work/UNN/unn/unn-extras/stock-influencers/etoro.csv");
+        	//DatasetLocator locator = new FilesystemLocator("/Users/joaocoelho/Documents/Work/UNN/unn/unn-extras/bet-net/data/superbru.csv");
+        	
         	this.session.act(new LoadDatasetAction(unnContext, session, locator));
         	
         	generateUnitReport(JobConfig.DEFAULT);
