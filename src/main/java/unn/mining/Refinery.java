@@ -26,89 +26,108 @@ public class Refinery {
 	
 	public Model refine() throws Exception {
 		ArrayList<Artifact> artifacts = model.getArtifacts();
-		double minError = 1000000000.0;
-		ArrayList<Integer> subsetFinal = null;
+		Long[] weights = new Long[artifacts.size()];
+		Arrays.fill(weights, 0L);
+		double[] errors = new double[weights.length];
+		double lastError = 1000000000.0;
 		
-		for(int i = 0; i < 10000; ++i) {
-			double lastError = minError;
-			
-			ArrayList<Integer> subsetCandidate = new ArrayList<Integer>();
-			
-			for(int j = 0; j < 10; ++j) {
-				while(true) {
-					Artifact rndArtifact = RandomManager.getOne(artifacts);
-					int index = artifacts.indexOf(rndArtifact);
-					
-					if (subsetCandidate.contains(index)) {
-						continue;
-					}
-					
-					Long[] weights = new Long[artifacts.size()];
-					Arrays.fill(weights, 0L);
-					weights[index] = 1L;
-					
-					for (int _index : subsetCandidate) {
-						weights[_index] = 1L;
-					}
-					
-					PreviousState state = calculateError(lastError, weights);
-					
-					if (state != null) {
-						double error = state.getError();
-						if (error < lastError) {
-							lastError = error;
-							subsetCandidate.add(index);
-						} else {
-							break;
-						}
-					} else {
-						break;
-					}
-				}	
+		PreviousState prevState = null;
+		
+		for (int j = 0; j < 500; ++j) {
+			PreviousState[] state = new PreviousState[weights.length];
+			Double minError = 1000000000.0;
+			PreviousState bestState = null;
+			int minErrorIndex = -1;
+			for (int i = 0; i < weights.length; ++i) {
+				Long[] tmpWeights = Arrays.copyOf(weights, weights.length);
+				tmpWeights[i]++;				
+				state[i] = calculateError(minError, prevState, tmpWeights, i);
+				if (state[i] == null) {
+					continue;
+				}
+				errors[i] = state[i].getError();
+				if (errors[i] < minError) {
+					minError = errors[i];
+					bestState = state[i];
+					minErrorIndex = i;
+				}
+				state[i] = null;
 			}
 			
-			if (lastError < minError) {
-				subsetFinal = subsetCandidate;
-				minError = lastError;
-				System.out.println(String.format("Minimum Error: %f", minError));
+			syncHitWeights(prevState, bestState, minErrorIndex);
+			
+			//	System.out.println(String.format("Minimum Error: %f", minError));
+			//	System.out.println(String.format("Errors: %s", Arrays.toString(errors)));
+			//	System.out.println(String.format("Weights: %s", Arrays.toString(weights)));
+			
+			//double minError = Arrays.stream(errors).min().getAsDouble();
+			
+			System.out.println(String.format("Minimum Error: %f", minError));
+			
+			/*int minErrorIndex = -1;
+			for (int k = 0; k < errors.length; ++k) {
+				if (errors[k] == minError) {
+					minErrorIndex = k;
+					break;
+				}
+			}*/
+		
+			if (minError == lastError) {
+				break;
+			} else if (minError > lastError) {
+				throw new Exception();
 			}
 			
-			if (minError == 0.0) {
+			weights[minErrorIndex]++;
+			
+			if (minError < 1.0 || lastError - minError < 0.5) {
 				break;
 			}
+			
+			prevState = bestState;
+			lastError = minError;
 		}
 		
-		ArrayList<Artifact> newArtifacts = new ArrayList<Artifact>();
-		
-		for(int index : subsetFinal) {
-			newArtifacts.add(artifacts.get(index));
+		for (int i = 0; i < weights.length; ++i) {
+			artifacts.get(i).weight = weights[i];
 		}
 		
-		Model refined = new Model(this.model.getDataset(), newArtifacts);
-		miner.gatherStats(refined);
+		miner.gatherStats(model);
 		
-		return refined;
+		return model;
+		// return refinedModel;
 	}
 	
-	public PreviousState calculateError (double maxError, Long[] weights) {
+	private void syncHitWeights(PreviousState previousState, PreviousState state, Integer artifactIndex) {
+		for (Entry<Integer, Triplet<Long, Double, Long>> entry : state.summaries.entrySet()) {
+			Integer time = entry.getKey();
+			Triplet<Long, Double, Long> summary = entry.getValue();
+			Pair<ArrayList<Long>, Pair<Double, Long>> hitWeights = previousState.getHitWeights(time);
+			
+			ArrayList<Long> newHitWeights = new ArrayList<Long>();
+			newHitWeights.addAll(hitWeights.first());
+			newHitWeights.set(artifactIndex, summary.first());
+			
+			Pair<Double, Long> newOutcome = new Pair<Double, Long>(summary.second(), summary.third());
+			Pair<ArrayList<Long>, Pair<Double, Long>> newHitWeightsPair = new Pair<ArrayList<Long>, Pair<Double, Long>>(newHitWeights, newOutcome);
+			state.setHitWeights(time, newHitWeightsPair);
+		}
+		
+	}
+	
+	public PreviousState calculateError (double maxError, PreviousState prevState, Long[] weights, int artifactIndex) {
 		ArrayList<Integer> highs = this.miner.getHighs();
 		ArrayList<Integer> lows = this.miner.getLows();
 		
 		double errorSum = 0.0;
 		
 		PreviousState state = new PreviousState();
+		
+		//errorSum += calculateErrorPartial (prevState, state, weights, artifactIndex, highs, true);
+		//errorSum += calculateErrorPartial (prevState, state, weights, artifactIndex, lows, false);
 		Double err = null;
 		
-		
-		err = calculateErrorPartial(maxError, weights, highs, true);
-		
-		if (err != null) {
-			errorSum += err;
-		} else {
-			return null;
-		}
-		
-		err = calculateErrorPartial(maxError, weights, lows, false);
+		err = calculateErrorPartial(maxError, prevState, state, weights, artifactIndex, highs, true);
 		
 		if (err != null) {
 			errorSum += err;
@@ -116,6 +135,13 @@ public class Refinery {
 			return null;
 		}
 		
+		err = calculateErrorPartial(maxError, prevState, state, weights, artifactIndex, lows, false);
+		
+		if (err != null) {
+			errorSum += err;
+		} else {
+			return null;
+		}
 		state.setError(errorSum);
 		
 		return state;
@@ -123,15 +149,46 @@ public class Refinery {
 	
 	private Double calculateErrorPartial (
 			double maxError,
-			Long[] weights,
+			PreviousState prevState,
+			PreviousState state,
+			Long[] weights, 
+			int artifactIndex,
 			ArrayList<Integer> times,
 			boolean isHigh) {
 		
 		double errorSum = 0.0;
 		
+		if (prevState == null) {
+			for (Integer time : times) {
+				Pair<ArrayList<Long>, Pair<Double, Long>> hitWeights = this.model.predictionHits(time, weights);
+				state.setHitWeights(time, hitWeights);
+			}
+		}
+		
 		for (Integer time : times) {
-			Pair<ArrayList<Long>, Pair<Double, Long>> hitWeights = this.model.predictionHits(time, weights);
-			Pair<Double, Long> summary = hitWeights.second();
+			Pair<Double, Long> summary = null;
+			
+			if (prevState != null) {
+				Pair<ArrayList<Long>, Pair<Double, Long>> hitWeights = prevState.getHitWeights(time);
+				Long artifactHits = this.model.artifactHits(time, artifactIndex, weights);
+				
+				long hitDiff = artifactHits - hitWeights.first().get(artifactIndex);
+				Double accumulator = hitWeights.second().first();
+				Long hitCount = hitWeights.second().second();
+				Double newPrediction = 0.0;
+				
+				if (hitCount + hitDiff > 0) {
+					newPrediction = (accumulator + (double) (hitDiff * this.model.getArtifacts().get(artifactIndex).reward));
+				}
+				
+				Pair<Double, Long> newOutcome = new Pair<Double, Long>(newPrediction, hitCount + hitDiff);
+				summary = newOutcome;
+				
+				state.setSummary(time, new Triplet<Long, Double, Long>(artifactHits, newPrediction, hitCount + hitDiff));
+				summary = newOutcome;
+			} else {
+				summary = state.getHitWeights(time).second();
+			}
 			
 			Double prediction = null;
 			
@@ -157,6 +214,4 @@ public class Refinery {
 		
 		return errorSum;
 	}
-
-	
 }
