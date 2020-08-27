@@ -28,23 +28,36 @@ import unn.simulation.SimulationReport;
 import unn.structures.Context;
 import unn.structures.MiningStatus;
 
+import static spark.Spark.get;
+import static spark.Spark.post;
+
 public class RESTApi extends Thread {
 	Session session;
 	String datasetId;
+	int port;
 	
 	Context unnContext;
 	
-	public RESTApi() {
+	public RESTApi(int port) {
+		this.port = port;
 		this.unnContext = new Context();
 	}
 	
 	public void run() {
-		Javalin app = Javalin.create(config -> {
+		/*Javalin app = Javalin.create(config -> {
             config.enableCorsForOrigin("http://localhost:8080/");
         });
-		app.start(7000);
-        app.get("/", ctx -> ctx.result("UNN server running."));
-        
+		app.start(this.port);
+        app.get("/", ctx -> ctx.result("UNN server running."));*/
+
+		get("/", (request, response) -> {
+			return "unn server running";
+		});
+
+		post("/dataset/load/:id", (request, response) -> {
+			return "unn server running";
+		});
+
         app.post("/dataset/load/:id", ctx -> {
         	String name = ctx.queryParam("name");
         	this.datasetId = ctx.pathParam("id");
@@ -171,6 +184,23 @@ public class RESTApi extends Thread {
         	// String jobId = ctx.pathParam("sessionId");
         	ctx.json(this.session.getFeatures());
         });
+        
+        
+        app.get("/session/:sessionId/feedforward/descriptor", ctx -> {
+        	// TODO: implement
+        });
+        
+        app.get("/session/:sessionId/feedforward/serve", ctx -> {
+        	// TODO: implement
+        });
+        
+        app.post("/session/:sessionId/feedforward/push", ctx -> {
+        	// TODO: implement
+        });
+        
+        app.post("/session/:sessionId/feedforward/subscribe", ctx -> {
+        	// TODO: implement
+        });
 	}
 	
 	// TODO: refactor this
@@ -181,3 +211,66 @@ public class RESTApi extends Thread {
 		env.init(this.unnContext, config);
 	}
 }
+
+/*
+package com.unn.maestro.service;
+
+		import com.google.gson.Gson;
+		import com.unn.maestro.Config;
+		import com.unn.maestro.models.*;
+		import com.unn.maestro.models.MinerNotification;
+
+		import static spark.Spark.get;
+		import static spark.Spark.post;
+
+public class DataController {
+	static final String SUCCESS = new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
+	static Maestro maestro;
+
+	public DataController() { }
+
+	public static void serve() {
+		initMaestro();
+		initRoutes();
+	}
+
+	private static void initMaestro() {
+		maestro = new Maestro();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				maestro.run();
+			}
+		}).start();
+	}
+
+	private static void initRoutes() {
+		// NOTE: subordinated agents report to a Maestro instance and get Datacenter location from it
+		get("/datacenter/locator", (request, response) -> {
+			DatacenterLocator locator = new DatacenterLocator()
+					.withProtocol(Config.DATACENTER_PROTOCOL)
+					.withHost(Config.DATACENTER_HOST)
+					.withPort(Config.DATACENTER_PORT);
+			return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, null, locator));
+		});
+
+		post("/agent/register", (request, response) -> {
+			Agent agent = new Gson().fromJson(request.body(), Agent.class);
+			maestro.bindAgent(agent);
+			return SUCCESS;
+		});
+
+		post("/maestro/target", (request, response) -> {
+			MiningTarget target = new Gson().fromJson(request.body(), MiningTarget.class);
+			maestro.bindTarget(target);
+			return SUCCESS;
+		});
+
+		post("/maestro/miner/notify", (request, response) -> {
+			MinerNotification notification = new Gson().fromJson(request.body(), MinerNotification.class);
+			maestro.setNotification(notification);
+			return SUCCESS;
+		});
+	}
+}
+ */

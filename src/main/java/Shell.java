@@ -5,7 +5,7 @@ public class Shell {
 	// private static Logger logger = Logger.getLogger(Shell.class.toString());
 	
 	public static void main(String[] args) throws Exception {		
-		startServer();
+		startServer(args);
 		
 		/*Scanner scanner = new Scanner(System.in);
 		while (true) {
@@ -22,8 +22,9 @@ public class Shell {
 		}*/
 	}
 	
-	private static void startServer() {
-		RESTApi api = new RESTApi();
+	private static void startServer(String[] args) {
+		int port = args.length > 0 ? Integer.parseInt(args[0]) : 7000;
+		RESTApi api = new RESTApi(port);
 		api.start();
 	}
 }
