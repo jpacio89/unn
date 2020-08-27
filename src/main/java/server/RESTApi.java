@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.google.gson.Gson;
 import io.javalin.Javalin;
 
 import plugins.openml.JobConfig;
@@ -27,11 +28,14 @@ import unn.session.actors.PersistenceActor;
 import unn.simulation.SimulationReport;
 import unn.structures.Context;
 import unn.structures.MiningStatus;
+import unn.structures.StandardResponse;
+import unn.structures.StatusResponse;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
 
 public class RESTApi extends Thread {
+	static final String SUCCESS = new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
 	Session session;
 	String datasetId;
 	int port;
@@ -50,9 +54,7 @@ public class RESTApi extends Thread {
 		app.start(this.port);
         app.get("/", ctx -> ctx.result("UNN server running."));*/
 
-		get("/", (request, response) -> {
-			return "unn server running";
-		});
+		get("/", (request, response) -> "unn server running");
 
 		post("/dataset/load/:id", (request, response) -> {
 			String name = request.queryParams("name");
@@ -69,7 +71,7 @@ public class RESTApi extends Thread {
 			this.session.act(new LoadDatasetAction(unnContext, session, locator));
 
 			generateUnitReport(JobConfig.DEFAULT);
-			return "";
+			return SUCCESS;
 		});
 
 		post("/save/session/:jobId", (request, response) -> {
@@ -79,7 +81,7 @@ public class RESTApi extends Thread {
         	action.setSession(this.session);
         	PersistenceActor saver = new PersistenceActor(action);
         	saver.write();
-        	return "";
+			return SUCCESS;
         });
 
 		post("/load/session/:jobId", (request, response) -> {
@@ -90,7 +92,7 @@ public class RESTApi extends Thread {
         	action.setSession(this.session);
         	PersistenceActor saver = new PersistenceActor(action);
         	this.session = saver.read();
-        	return "";
+			return SUCCESS;
         });
 
 		get("/list/saved/sessions", (request, response) -> {
@@ -102,18 +104,22 @@ public class RESTApi extends Thread {
             	}
             	sessions.add(pathname.replace(".session", ""));
             }
-            ctx.json(sessions);
+			return new Gson().toJson(new StandardResponse(
+				StatusResponse.SUCCESS, null, sessions
+			));
         });
 
 		get("/dataset/units/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
-        	ctx.json(this.session.getEnv().getUnitReport());
+			return new Gson().toJson(new StandardResponse(
+				StatusResponse.SUCCESS, null, this.session.getEnv().getUnitReport()
+			));
         });
 
 		post("/dataset/mine/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
-        	this.session.setMineConfig(ctx.bodyAsClass(JobConfig.class));
-        	
+			JobConfig conf = new Gson().fromJson(request.body(), JobConfig.class);
+        	this.session.setMineConfig(conf);
     		new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -125,83 +131,99 @@ public class RESTApi extends Thread {
 					}
 				}
     		}).start();
+			return SUCCESS;
         });
 
 		get("/mine/report/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	MiningReport report = this.session.getReport();
-			ctx.json(report);
+			return new Gson().toJson(new StandardResponse(
+				StatusResponse.SUCCESS, null, report
+			));
         });
 
 		get("/mine/status/:jobI", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	HashMap<String, MiningStatus> statuses = this.session.getMiningStatuses();
-			ctx.json(statuses);
+			return new Gson().toJson(new StandardResponse(
+				StatusResponse.SUCCESS, null, statuses
+			));
         });
 
 		post("/simulate/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
-        	SimulationConfig conf = ctx.bodyAsClass(SimulationConfig.class);
+			SimulationConfig conf = new Gson().fromJson(request.body(), SimulationConfig.class);
         	SimulationReport report = (SimulationReport) this.session.act(new PredictAction(session, conf));
-        	ctx.json(report);
+			return new Gson().toJson(new StandardResponse(
+				StatusResponse.SUCCESS, null, report
+			));
         });
 
 		post("/morph/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
-        	MorphConfig conf = ctx.bodyAsClass(MorphConfig.class);
+			MorphConfig conf = new Gson().fromJson(request.body(), MorphConfig.class);
         	/*MorphReport report = (MorphReport) */this.session.act(new MorphAction(session, conf));
         	//ctx.json(report);
+			return SUCCESS;
         });
 
 		get("/mine/units/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
-        	HashMap<String, UnitReport> reports = this.session.getUnitReports();        	
-        	ctx.json(reports);
+        	HashMap<String, UnitReport> reports = this.session.getUnitReports();
+			return new Gson().toJson(new StandardResponse(
+				StatusResponse.SUCCESS, null, reports
+			));
         });
 
 		get("/mine/config/:jobId", (request, response) -> {
-        	ctx.json(this.session.getMineConfig());
+			return new Gson().toJson(new StandardResponse(
+				StatusResponse.SUCCESS, null, this.session.getMineConfig()
+			));
         });
 
 		get("/dataset/raw/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	OuterDataset outerDataset = this.session.getOuterDataset();
-        	ctx.json(outerDataset);
+			return new Gson().toJson(new StandardResponse(
+				StatusResponse.SUCCESS, null, outerDataset
+			));
         });
 
 		get("/feature/histogram/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
-        	String feature = ctx.queryParam("feature");
-        	String groupCount = ctx.queryParam("groupCount");
-        	
+        	String feature = request.queryParams("feature");
+        	String groupCount = request.queryParams("groupCount");
         	JobConfig config = new JobConfig();
         	config.groupCount.put(feature, Integer.parseInt(groupCount));
         	generateUnitReport(config);
+			return SUCCESS;
         });
 
 		get("/session/features/:sessionId", (request, response) -> {
         	// String jobId = ctx.pathParam("sessionId");
-        	ctx.json(this.session.getFeatures());
+			return new Gson().toJson(new StandardResponse(
+				StatusResponse.SUCCESS, null, this.session.getFeatures()
+			));
         });
 
 		get("/session/:sessionId/feedforward/descriptor", (request, response) -> {
         	// TODO: implement
-			return "";
+			return SUCCESS;
         });
 
 		get("/session/:sessionId/feedforward/serve", (request, response) -> {
         	// TODO: implement
-			return "";
+			return SUCCESS;
         });
 
 		post("/session/:sessionId/feedforward/push", (request, response) -> {
         	// TODO: implement
-			return "";
+			return SUCCESS;
         });
 
 		post("/session/:sessionId/feedforward/subscribe", (request, response) -> {
         	// TODO: implement
-			return "";
+			return SUCCESS;
         });
 	}
 	
