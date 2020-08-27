@@ -55,46 +55,45 @@ public class RESTApi extends Thread {
 		});
 
 		post("/dataset/load/:id", (request, response) -> {
-			return "unn server running";
+			String name = request.queryParams("name");
+			this.datasetId = request.params("id");
+
+			// TODO: deprecate group
+			// this.group = new EnvironmentGroup(unnContext, Integer.parseInt(datasetId));
+			this.session = new Session(name, unnContext);
+
+			DatasetLocator locator = new OpenMLLocator(Integer.parseInt(datasetId));
+			//DatasetLocator locator = new FilesystemLocator("/Users/joaocoelho/Documents/Work/UNN/unn/unn-extras/stock-influencers/etoro.csv");
+			//DatasetLocator locator = new FilesystemLocator("/Users/joaocoelho/Documents/Work/UNN/unn/unn-extras/bet-net/data/superbru.csv");
+
+			this.session.act(new LoadDatasetAction(unnContext, session, locator));
+
+			generateUnitReport(JobConfig.DEFAULT);
+			return "";
 		});
 
-        app.post("/dataset/load/:id", ctx -> {
-        	String name = ctx.queryParam("name");
-        	this.datasetId = ctx.pathParam("id");
-        	
-        	// TODO: deprecate group
-        	// this.group = new EnvironmentGroup(unnContext, Integer.parseInt(datasetId));
-        	this.session = new Session(name, unnContext);
-        	
-        	DatasetLocator locator = new OpenMLLocator(Integer.parseInt(datasetId));     
-        	//DatasetLocator locator = new FilesystemLocator("/Users/joaocoelho/Documents/Work/UNN/unn/unn-extras/stock-influencers/etoro.csv");
-        	//DatasetLocator locator = new FilesystemLocator("/Users/joaocoelho/Documents/Work/UNN/unn/unn-extras/bet-net/data/superbru.csv");
-        	
-        	this.session.act(new LoadDatasetAction(unnContext, session, locator));
-        	
-        	generateUnitReport(JobConfig.DEFAULT);
-        });
-
-        app.post("/save/session/:jobId", ctx -> {
-        	// String jobId = ctx.pathParam("jobId");
+		post("/save/session/:jobId", (request, response) -> {
+        	// String jobId = request.params("jobId");
         	SaveModelAction action = new SaveModelAction();
         	action.setPathTemplate(String.format("./sessions/%s.session", this.session.getSessionName()));
         	action.setSession(this.session);
         	PersistenceActor saver = new PersistenceActor(action);
         	saver.write();
+        	return "";
         });
-        
-        app.post("/load/session/:jobId", ctx -> {
-        	// String jobId = ctx.pathParam("jobId");
-        	String name = ctx.queryParam("name");
+
+		post("/load/session/:jobId", (request, response) -> {
+			// String jobId = request.params("jobId");
+			String name = request.queryParams("name");
         	SaveModelAction action = new SaveModelAction();
         	action.setPathTemplate(String.format("./sessions/%s.session", name));
         	action.setSession(this.session);
         	PersistenceActor saver = new PersistenceActor(action);
         	this.session = saver.read();
+        	return "";
         });
-        
-        app.get("/list/saved/sessions", ctx -> {
+
+		get("/list/saved/sessions", (request, response) -> {
         	ArrayList<String> sessions = new ArrayList<String>();
         	File f = new File("./sessions");
             for (String pathname : f.list()) {
@@ -105,13 +104,13 @@ public class RESTApi extends Thread {
             }
             ctx.json(sessions);
         });
-        
-        app.get("/dataset/units/:jobId", ctx -> {
+
+		get("/dataset/units/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	ctx.json(this.session.getEnv().getUnitReport());
         });
-        
-        app.post("/dataset/mine/:jobId", ctx -> {
+
+		post("/dataset/mine/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	this.session.setMineConfig(ctx.bodyAsClass(JobConfig.class));
         	
@@ -127,50 +126,50 @@ public class RESTApi extends Thread {
 				}
     		}).start();
         });
-        
-        app.get("/mine/report/:jobId", ctx -> {
+
+		get("/mine/report/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	MiningReport report = this.session.getReport();
 			ctx.json(report);
         });
-        
-        app.get("/mine/status/:jobId", ctx -> {
+
+		get("/mine/status/:jobI", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	HashMap<String, MiningStatus> statuses = this.session.getMiningStatuses();
 			ctx.json(statuses);
         });
-        
-        app.post("/simulate/:jobId", ctx -> {
+
+		post("/simulate/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	SimulationConfig conf = ctx.bodyAsClass(SimulationConfig.class);
         	SimulationReport report = (SimulationReport) this.session.act(new PredictAction(session, conf));
         	ctx.json(report);
         });
-        
-        app.post("/morph/:jobId", ctx -> {
+
+		post("/morph/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	MorphConfig conf = ctx.bodyAsClass(MorphConfig.class);
         	/*MorphReport report = (MorphReport) */this.session.act(new MorphAction(session, conf));
         	//ctx.json(report);
         });
-        
-        app.get("/mine/units/:jobId", ctx -> {
+
+		get("/mine/units/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	HashMap<String, UnitReport> reports = this.session.getUnitReports();        	
         	ctx.json(reports);
         });
-        
-        app.get("/mine/config/:jobId", ctx -> {
+
+		get("/mine/config/:jobId", (request, response) -> {
         	ctx.json(this.session.getMineConfig());
         });
-        
-        app.get("/dataset/raw/:jobId", ctx -> {
+
+		get("/dataset/raw/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	OuterDataset outerDataset = this.session.getOuterDataset();
         	ctx.json(outerDataset);
         });
-        
-        app.get("/feature/histogram/:jobId", ctx -> {
+
+		get("/feature/histogram/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	String feature = ctx.queryParam("feature");
         	String groupCount = ctx.queryParam("groupCount");
@@ -179,27 +178,30 @@ public class RESTApi extends Thread {
         	config.groupCount.put(feature, Integer.parseInt(groupCount));
         	generateUnitReport(config);
         });
-        
-        app.get("/session/features/:sessionId", ctx -> {
+
+		get("/session/features/:sessionId", (request, response) -> {
         	// String jobId = ctx.pathParam("sessionId");
         	ctx.json(this.session.getFeatures());
         });
-        
-        
-        app.get("/session/:sessionId/feedforward/descriptor", ctx -> {
+
+		get("/session/:sessionId/feedforward/descriptor", (request, response) -> {
         	// TODO: implement
+			return "";
         });
-        
-        app.get("/session/:sessionId/feedforward/serve", ctx -> {
+
+		get("/session/:sessionId/feedforward/serve", (request, response) -> {
         	// TODO: implement
+			return "";
         });
-        
-        app.post("/session/:sessionId/feedforward/push", ctx -> {
+
+		post("/session/:sessionId/feedforward/push", (request, response) -> {
         	// TODO: implement
+			return "";
         });
-        
-        app.post("/session/:sessionId/feedforward/subscribe", ctx -> {
+
+		post("/session/:sessionId/feedforward/subscribe", (request, response) -> {
         	// TODO: implement
+			return "";
         });
 	}
 	
@@ -211,66 +213,3 @@ public class RESTApi extends Thread {
 		env.init(this.unnContext, config);
 	}
 }
-
-/*
-package com.unn.maestro.service;
-
-		import com.google.gson.Gson;
-		import com.unn.maestro.Config;
-		import com.unn.maestro.models.*;
-		import com.unn.maestro.models.MinerNotification;
-
-		import static spark.Spark.get;
-		import static spark.Spark.post;
-
-public class DataController {
-	static final String SUCCESS = new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
-	static Maestro maestro;
-
-	public DataController() { }
-
-	public static void serve() {
-		initMaestro();
-		initRoutes();
-	}
-
-	private static void initMaestro() {
-		maestro = new Maestro();
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				maestro.run();
-			}
-		}).start();
-	}
-
-	private static void initRoutes() {
-		// NOTE: subordinated agents report to a Maestro instance and get Datacenter location from it
-		get("/datacenter/locator", (request, response) -> {
-			DatacenterLocator locator = new DatacenterLocator()
-					.withProtocol(Config.DATACENTER_PROTOCOL)
-					.withHost(Config.DATACENTER_HOST)
-					.withPort(Config.DATACENTER_PORT);
-			return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, null, locator));
-		});
-
-		post("/agent/register", (request, response) -> {
-			Agent agent = new Gson().fromJson(request.body(), Agent.class);
-			maestro.bindAgent(agent);
-			return SUCCESS;
-		});
-
-		post("/maestro/target", (request, response) -> {
-			MiningTarget target = new Gson().fromJson(request.body(), MiningTarget.class);
-			maestro.bindTarget(target);
-			return SUCCESS;
-		});
-
-		post("/maestro/miner/notify", (request, response) -> {
-			MinerNotification notification = new Gson().fromJson(request.body(), MinerNotification.class);
-			maestro.setNotification(notification);
-			return SUCCESS;
-		});
-	}
-}
- */
