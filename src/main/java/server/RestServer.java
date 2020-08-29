@@ -31,10 +31,9 @@ import unn.structures.MiningStatus;
 import unn.structures.StandardResponse;
 import unn.structures.StatusResponse;
 
-import static spark.Spark.get;
-import static spark.Spark.post;
+import static spark.Spark.*;
 
-public class RESTApi extends Thread {
+public class RestServer extends Thread {
 	static final String SUCCESS = new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
 	Session session;
 	String datasetId;
@@ -42,20 +41,15 @@ public class RESTApi extends Thread {
 	
 	Context unnContext;
 	
-	public RESTApi(int port) {
+	public RestServer(int port) {
 		this.port = port;
 		this.unnContext = new Context();
 	}
 	
 	public void run() {
-		/*Javalin app = Javalin.create(config -> {
-            config.enableCorsForOrigin("http://localhost:8080/");
-        });
-		app.start(this.port);
-        app.get("/", ctx -> ctx.result("UNN server running."));*/
-
+		port(8080);
+		before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
 		get("/", (request, response) -> "unn server running");
-
 		post("/dataset/load/:id", (request, response) -> {
 			String name = request.queryParams("name");
 			this.datasetId = request.params("id");
@@ -73,7 +67,6 @@ public class RESTApi extends Thread {
 			generateUnitReport(JobConfig.DEFAULT);
 			return SUCCESS;
 		});
-
 		post("/save/session/:jobId", (request, response) -> {
         	// String jobId = request.params("jobId");
         	SaveModelAction action = new SaveModelAction();
@@ -83,7 +76,6 @@ public class RESTApi extends Thread {
         	saver.write();
 			return SUCCESS;
         });
-
 		post("/load/session/:jobId", (request, response) -> {
 			// String jobId = request.params("jobId");
 			String name = request.queryParams("name");
@@ -94,7 +86,6 @@ public class RESTApi extends Thread {
         	this.session = saver.read();
 			return SUCCESS;
         });
-
 		get("/list/saved/sessions", (request, response) -> {
         	ArrayList<String> sessions = new ArrayList<String>();
         	File f = new File("./sessions");
@@ -108,14 +99,12 @@ public class RESTApi extends Thread {
 				StatusResponse.SUCCESS, null, sessions
 			));
         });
-
 		get("/dataset/units/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
 			return new Gson().toJson(new StandardResponse(
 				StatusResponse.SUCCESS, null, this.session.getEnv().getUnitReport()
 			));
         });
-
 		post("/dataset/mine/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
 			JobConfig conf = new Gson().fromJson(request.body(), JobConfig.class);
@@ -133,7 +122,6 @@ public class RESTApi extends Thread {
     		}).start();
 			return SUCCESS;
         });
-
 		get("/mine/report/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	MiningReport report = this.session.getReport();
@@ -141,7 +129,6 @@ public class RESTApi extends Thread {
 				StatusResponse.SUCCESS, null, report
 			));
         });
-
 		get("/mine/status/:jobI", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	HashMap<String, MiningStatus> statuses = this.session.getMiningStatuses();
@@ -149,7 +136,6 @@ public class RESTApi extends Thread {
 				StatusResponse.SUCCESS, null, statuses
 			));
         });
-
 		post("/simulate/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
 			SimulationConfig conf = new Gson().fromJson(request.body(), SimulationConfig.class);
@@ -158,7 +144,6 @@ public class RESTApi extends Thread {
 				StatusResponse.SUCCESS, null, report
 			));
         });
-
 		post("/morph/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
 			MorphConfig conf = new Gson().fromJson(request.body(), MorphConfig.class);
@@ -166,7 +151,6 @@ public class RESTApi extends Thread {
         	//ctx.json(report);
 			return SUCCESS;
         });
-
 		get("/mine/units/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	HashMap<String, UnitReport> reports = this.session.getUnitReports();
@@ -174,13 +158,11 @@ public class RESTApi extends Thread {
 				StatusResponse.SUCCESS, null, reports
 			));
         });
-
 		get("/mine/config/:jobId", (request, response) -> {
 			return new Gson().toJson(new StandardResponse(
 				StatusResponse.SUCCESS, null, this.session.getMineConfig()
 			));
         });
-
 		get("/dataset/raw/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	OuterDataset outerDataset = this.session.getOuterDataset();
@@ -188,7 +170,6 @@ public class RESTApi extends Thread {
 				StatusResponse.SUCCESS, null, outerDataset
 			));
         });
-
 		get("/feature/histogram/:jobId", (request, response) -> {
         	// String jobId = ctx.pathParam("jobId");
         	String feature = request.queryParams("feature");
@@ -198,29 +179,24 @@ public class RESTApi extends Thread {
         	generateUnitReport(config);
 			return SUCCESS;
         });
-
 		get("/session/features/:sessionId", (request, response) -> {
         	// String jobId = ctx.pathParam("sessionId");
 			return new Gson().toJson(new StandardResponse(
 				StatusResponse.SUCCESS, null, this.session.getFeatures()
 			));
         });
-
 		get("/session/:sessionId/feedforward/descriptor", (request, response) -> {
         	// TODO: implement
 			return SUCCESS;
         });
-
 		get("/session/:sessionId/feedforward/serve", (request, response) -> {
         	// TODO: implement
 			return SUCCESS;
         });
-
 		post("/session/:sessionId/feedforward/push", (request, response) -> {
         	// TODO: implement
 			return SUCCESS;
         });
-
 		post("/session/:sessionId/feedforward/subscribe", (request, response) -> {
         	// TODO: implement
 			return SUCCESS;
