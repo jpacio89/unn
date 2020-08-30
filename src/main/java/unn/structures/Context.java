@@ -9,7 +9,8 @@ import unn.mining.MiningStatusObservable;
 public class Context implements Serializable {
 	private static final long serialVersionUID = 329875276429497910L;
 	private HashMap<String, MiningStatusObservable> statusObservables;
-	
+	private AgentRole role;
+
 	public Context() {
 		this.statusObservables = new HashMap<String, MiningStatusObservable>();
 	}
@@ -25,5 +26,15 @@ public class Context implements Serializable {
 	public void registerJobConfig(JobConfig newConfig) {
 		setStatusObservable(newConfig.jobSessionId, new MiningStatusObservable());
 	}
+
+	public AgentRole getRole() {
+		return this.role;
+	}
+
+	public void setRole(AgentRole role) {
+		this.role = role;
+		// TODO: reset and start mining
+	}
+
 	
 }
