@@ -1,4 +1,7 @@
-package unn.dataset;
+package unn.dataset.filesystem;
+
+import unn.dataset.DatasetLocator;
+import unn.dataset.OuterDataset;
 
 public class FilesystemDatasetProvider {
 	FilesystemLocator locator;

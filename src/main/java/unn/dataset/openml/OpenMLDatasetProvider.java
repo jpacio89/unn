@@ -1,9 +1,13 @@
-package unn.dataset;
+package unn.dataset.openml;
 
 import java.io.File;
 
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.DataSetDescription;
+import unn.dataset.DatasetLocator;
+import unn.dataset.DatasetProvider;
+import unn.dataset.OuterDataset;
+import unn.dataset.filesystem.FilesystemDatasetSource;
 
 public class OpenMLDatasetProvider extends DatasetProvider {
 	final String apiKey = "afd8250e50b774f1cd0b4a4534a1ae90";

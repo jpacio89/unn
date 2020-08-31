@@ -1,4 +1,6 @@
-package unn.dataset;
+package unn.dataset.filesystem;
+
+import unn.dataset.DatasetLocator;
 
 public class FilesystemLocator extends DatasetLocator {
 	String path;

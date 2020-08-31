@@ -19,4 +19,5 @@ public class Config {
 	public static final String DATACENTER_PROTOCOL = "http";
 	public static final String DATACENTER_HOST = "localhost";
 	public static final int DATACENTER_PORT = 8002;
+	
 }

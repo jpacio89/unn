@@ -1,4 +1,6 @@
-package unn.dataset;
+package unn.dataset.openml;
+
+import unn.dataset.DatasetLocator;
 
 public class OpenMLLocator extends DatasetLocator {
 	int datasetId;

@@ -1,4 +1,6 @@
-package unn.dataset;
+package unn.dataset.filesystem;
+
+import unn.dataset.OuterDataset;
 
 import java.io.BufferedReader;
 import java.io.File;
