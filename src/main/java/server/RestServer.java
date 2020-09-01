@@ -110,7 +110,7 @@ public class RestServer extends Thread {
 
 	void registerMyself() {
 		MaestroService service = Utils.getMaestro();
-		Call<DatacenterOrigin> call = service.registerAgent(Config.);
+		Call<DatacenterOrigin> call = service.registerAgent(Config.MYSELF);
 		try {
 			call.execute();
 		} catch (IOException e) {
