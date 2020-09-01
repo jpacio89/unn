@@ -16,8 +16,13 @@ public class Config {
 	public static String DATABASE_USERNAME = "rabbitpt_unn_trade_u";
 	public static String DATABASE_PASSWORD = "Fne{q=CHF~lN";
 
-	public static final String DATACENTER_PROTOCOL = "http";
-	public static final String DATACENTER_HOST = "localhost";
-	public static final int DATACENTER_PORT = 8002;
-	
+	public static String DATACENTER_PROTOCOL = null;
+	public static String DATACENTER_HOST = null;
+	public static int DATACENTER_PORT = -1;
+
+	public static Agent MYSELF = new Agent()
+		.withType("miner")
+		.withProtocol("http")
+		.withHost("localhost")
+		.withPort(7000);
 }
