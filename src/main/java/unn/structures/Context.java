@@ -72,6 +72,7 @@ public class Context implements Serializable {
 		try {
 			DatacenterService service = Utils.getDatacenter();
 			Call<HashMap<String, List<String>>> call = service.getRandomFeatures(role.layer);
+			// TODO bug is the response type that mismatches
 			Response<HashMap<String, List<String>>> response = call.execute();
 			return response.body();
 		}

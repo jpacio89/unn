@@ -20,6 +20,10 @@ public class Config {
 	public static String DATACENTER_HOST = null;
 	public static int DATACENTER_PORT = -1;
 
+	public static String MAESTRO_PROTOCOL = "http";
+	public static String MAESTRO_HOST = "localhost";
+	public static int MAESTRO_PORT = 9002;
+
 	public static Agent MYSELF = new Agent()
 		.withType("miner")
 		.withProtocol("http")

@@ -74,4 +74,24 @@ public class Agent {
     public int hashCode() {
         return Objects.hash(type, protocol, host, port, id);
     }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

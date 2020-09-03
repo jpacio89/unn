@@ -7,6 +7,7 @@ import retrofit2.Retrofit;
 import unn.dataset.DatacenterService;
 import unn.dataset.OuterDataset;
 import unn.structures.Config;
+import unn.structures.Utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,21 +28,9 @@ public class DatacenterDatasetSource {
 		return buildOuterDataset(csv);
 	}
 
-	DatacenterService getDatacenter() {
-		Retrofit retrofit = new Retrofit.Builder()
-			.baseUrl(String.format("%s://%s:%d",
-				Config.DATACENTER_PROTOCOL,
-				Config.DATACENTER_HOST,
-				Config.DATACENTER_PORT))
-			.addConverterFactory(GsonConverterFactory.create())
-			.build();
-		DatacenterService service = retrofit.create(DatacenterService.class);
-		return service;
-	}
-
 	public String fetchDataset(HashMap<String, List<String>> filter) {
 		try {
-			DatacenterService service = this.getDatacenter();
+			DatacenterService service = Utils.getDatacenter();
 			Call<String> call = service.fetchDataset(filter);
 			Response<String> response = call.execute();
 			return response.body();

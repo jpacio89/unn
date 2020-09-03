@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface DatacenterService {
-    @GET("/agent/miner/dataset/body")
+    @POST("/agent/miner/dataset/body")
     Call<String> fetchDataset(@Body HashMap<String, List<String>> options);
 
     @GET("/dataset/features/random/layer/{layer}")

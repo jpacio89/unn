@@ -7,6 +7,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 import unn.dataset.datacenter.DatacenterOrigin;
 import unn.structures.Agent;
+import unn.structures.StandardResponse;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,5 +17,5 @@ public interface MaestroService {
     Call<DatacenterOrigin> findDatacenter();
 
     @POST("/agent/register")
-    Call<> registerAgent(Agent agent);
+    Call<StandardResponse> registerAgent(@Body Agent agent);
 }

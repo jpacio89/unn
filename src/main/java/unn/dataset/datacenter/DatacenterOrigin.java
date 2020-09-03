@@ -35,4 +35,16 @@ public class DatacenterOrigin {
         this.port = port;
         return this;
     }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
 }
