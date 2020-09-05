@@ -7,12 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.unn.common.operations.AgentRole;
+import com.unn.common.utils.Utils;
 import plugins.openml.JobConfig;
 import retrofit2.Call;
-import retrofit2.GsonConverterFactory;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import unn.dataset.DatacenterService;
+import com.unn.common.server.services.DatacenterService;
 import unn.dataset.DatasetLocator;
 import unn.dataset.datacenter.DatacenterLocator;
 import unn.mining.MiningStatusObservable;
@@ -76,7 +76,7 @@ public class Context implements Serializable {
 				}
 				self.session = new Session(uuid.toString(), self);
 				self.session.act(new LoadDatasetAction(self, session, locator));
-				JobConfig conf = new JobConfig(role.target.feature, new ArrayList<>());
+				JobConfig conf = new JobConfig(role.getTarget().getFeature(), new ArrayList<>());
 				self.session.setMineConfig(conf);
 				try {
 					session.act(new MineAction(session.getMineConfig()));
@@ -91,7 +91,7 @@ public class Context implements Serializable {
 	public HashMap<String, List<String>> fetchRandomFeatures() {
 		try {
 			DatacenterService service = Utils.getDatacenter(true);
-			Call<HashMap<String, List<String>>> call = service.getRandomFeatures(role.layer);
+			Call<HashMap<String, List<String>>> call = service.getRandomFeatures(role.getLayer());
 			// TODO bug is the response type that mismatches
 			Response<HashMap<String, List<String>>> response = call.execute();
 			return response.body();

@@ -5,14 +5,17 @@ import java.util.HashMap;
 
 import com.google.gson.Gson;
 
+import com.unn.common.globals.NetworkConfig;
+import com.unn.common.operations.AgentRole;
+import com.unn.common.operations.DatacenterOrigin;
+import com.unn.common.server.StandardResponse;
+import com.unn.common.server.StatusResponse;
+import com.unn.common.utils.Utils;
 import plugins.openml.JobConfig;
 import plugins.openml.MiningEnvironment;
-import plugins.openml.MiningReport;
-import plugins.openml.UnitReport;
 import retrofit2.Call;
 import retrofit2.Response;
-import unn.dataset.MaestroService;
-import unn.dataset.datacenter.DatacenterOrigin;
+import com.unn.common.server.services.MaestroService;
 import unn.interfaces.IEnvironment;
 import unn.session.Session;
 import unn.structures.*;
@@ -105,9 +108,9 @@ public class RestServer extends Thread {
 		try {
 			Response<DatacenterOrigin> response = call.execute();
 			DatacenterOrigin origin = response.body();
-			Config.DATACENTER_PROTOCOL = origin.getProtocol();
-			Config.DATACENTER_HOST = origin.getHost();
-			Config.DATACENTER_PORT = origin.getPort();
+			NetworkConfig.DATACENTER_PROTOCOL = origin.getProtocol();
+			NetworkConfig.DATACENTER_HOST = origin.getHost();
+			NetworkConfig.DATACENTER_PORT = origin.getPort();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

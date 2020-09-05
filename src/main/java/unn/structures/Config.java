@@ -1,5 +1,7 @@
 package unn.structures;
 
+import com.unn.common.operations.Agent;
+
 public class Config {
 	public static int STIMULI_MIN_VALUE = -20;
 	public static int STIMULI_MAX_VALUE =  20;
@@ -15,15 +17,7 @@ public class Config {
 	public static String DATABASE_NAME = "rabbitpt_unn_trade";
 	public static String DATABASE_USERNAME = "rabbitpt_unn_trade_u";
 	public static String DATABASE_PASSWORD = "Fne{q=CHF~lN";
-
-	public static String DATACENTER_PROTOCOL = null;
-	public static String DATACENTER_HOST = null;
-	public static int DATACENTER_PORT = -1;
-
-	public static String MAESTRO_PROTOCOL = "http";
-	public static String MAESTRO_HOST = "localhost";
-	public static int MAESTRO_PORT = 9002;
-
+ 
 	public static Agent MYSELF = new Agent()
 		.withType("miner")
 		.withProtocol("http")
