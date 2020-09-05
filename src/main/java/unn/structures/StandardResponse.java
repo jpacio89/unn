@@ -6,6 +6,8 @@ public class StandardResponse {
     // private JsonElement data;
     private Object data;
 
+    public StandardResponse() { }
+
     public StandardResponse(StatusResponse _status) {
         this.status = _status;
     }

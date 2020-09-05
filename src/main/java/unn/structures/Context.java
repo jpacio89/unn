@@ -2,6 +2,7 @@ package unn.structures;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +18,7 @@ import unn.dataset.datacenter.DatacenterLocator;
 import unn.mining.MiningStatusObservable;
 import unn.session.Session;
 import unn.session.actions.LoadDatasetAction;
+import unn.session.actions.MineAction;
 
 public class Context implements Serializable {
 	private static final long serialVersionUID = 329875276429497910L;
@@ -60,17 +62,35 @@ public class Context implements Serializable {
 			public void run() {
 				// TODO: more user friendly name?
 				UUID uuid = UUID.randomUUID();
-				HashMap<String, List<String>> options = self.fetchRandomFeatures();
+				HashMap<String, List<String>> options = null;
+				DatasetLocator locator = null;
+				int attempts = 0;
+				do {
+					options = self.fetchRandomFeatures();
+					locator = new DatacenterLocator(options);
+					System.out.println(locator.toString());
+				} while(options.size() == 0 && attempts < 10);
+				if (options.size() == 0) {
+					self.role = null;
+					return;
+				}
 				self.session = new Session(uuid.toString(), self);
-				DatasetLocator locator = new DatacenterLocator(options);
 				self.session.act(new LoadDatasetAction(self, session, locator));
+				JobConfig conf = new JobConfig(role.target.feature, new ArrayList<>());
+				self.session.setMineConfig(conf);
+				try {
+					session.act(new MineAction(session.getMineConfig()));
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}).start();
 	}
 
 	public HashMap<String, List<String>> fetchRandomFeatures() {
 		try {
-			DatacenterService service = Utils.getDatacenter();
+			DatacenterService service = Utils.getDatacenter(true);
 			Call<HashMap<String, List<String>>> call = service.getRandomFeatures(role.layer);
 			// TODO bug is the response type that mismatches
 			Response<HashMap<String, List<String>>> response = call.execute();

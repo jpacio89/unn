@@ -21,4 +21,11 @@ public class DatacenterLocator extends DatasetLocator {
 	public void setOptions(HashMap<String, List<String>> options) {
 		this.options = options;
 	}
+
+	@Override
+	public String toString() {
+		return "DatacenterLocator {\n" +
+				"\toptions=" + options +
+				"\n}";
+	}
 }

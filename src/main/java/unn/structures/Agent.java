@@ -1,8 +1,10 @@
 package unn.structures;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class Agent {
+    String uuid;
     String type;
     String protocol;
     String host;
@@ -10,7 +12,7 @@ public class Agent {
     int id;
 
     public Agent() {
-
+        this.uuid = UUID.randomUUID().toString();
     }
 
     public String getType() {
@@ -93,5 +95,13 @@ public class Agent {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

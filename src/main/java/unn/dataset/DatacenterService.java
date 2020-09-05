@@ -1,15 +1,13 @@
 package unn.dataset;
 
 import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
+import retrofit2.http.*;
 
 import java.util.HashMap;
 import java.util.List;
 
 public interface DatacenterService {
+    @Headers({"Accept:text/plain"})
     @POST("/agent/miner/dataset/body")
     Call<String> fetchDataset(@Body HashMap<String, List<String>> options);
 
