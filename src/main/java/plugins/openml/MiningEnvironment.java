@@ -10,11 +10,7 @@ import unn.dataset.OuterDataset;
 import unn.dataset.DatasetParser;
 import unn.interfaces.IEnvironment;
 import unn.interfaces.IOperator;
-import unn.mining.Miner;
-import unn.mining.MiningStatusObservable;
-import unn.mining.Model;
-import unn.mining.StatsWalker;
-import unn.mining.Refinery;
+import unn.mining.*;
 import unn.structures.Config;
 import unn.structures.Context;
 import unn.structures.MiningStatus;
@@ -55,7 +51,7 @@ public class MiningEnvironment implements IEnvironment, Serializable {
 	}
 	
 	public void init(Context context, JobConfig config) {
-		System.out.println(String.format("[MiningEnvironment] Initializing miner"));
+		System.out.println(String.format("|MiningEnvironment| Initializing miner"));
 		
 		this.config = config;
 		this.context = context;
@@ -68,6 +64,7 @@ public class MiningEnvironment implements IEnvironment, Serializable {
 	}
 	
 	public StatsWalker mine() throws Exception {
+		System.out.println(String.format("|MiningEnvironment| Mining"));
 		this.refinedModel = null;
 		
 		getStatusObservable().updateStatusLabel("BUFFERING");
@@ -81,14 +78,12 @@ public class MiningEnvironment implements IEnvironment, Serializable {
 			return null;
 		}
 		
-		System.out.println(String.format(" Mining"));
-		
 		miner.mine();
 		
 		getStatusObservable().updateStatusLabel("OPTIMIZING");
 		
 		Model model = miner.getModel();
-		Refinery refinery = new Refinery(miner, model);
+		RefineryNew refinery = new RefineryNew(miner, model);
 		
 		if (Config.ASSERT) {
 			// refinery.checkConsistency();

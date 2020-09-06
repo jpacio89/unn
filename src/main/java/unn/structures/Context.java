@@ -25,6 +25,7 @@ public class Context implements Serializable {
 	private HashMap<String, MiningStatusObservable> statusObservables;
 	private AgentRole role;
 	private Session session;
+	private Thread minerThread;
 
 	public Context() {
 		this.statusObservables = new HashMap<String, MiningStatusObservable>();
@@ -57,41 +58,56 @@ public class Context implements Serializable {
 
 	void processRole() {
 		final Context self = this;
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				// TODO: more user friendly name?
-				UUID uuid = UUID.randomUUID();
-				HashMap<String, List<String>> options = null;
-				DatasetLocator locator = null;
-				int attempts = 0;
-				do {
-					options = self.fetchRandomFeatures();
-					locator = new DatacenterLocator(options);
-					System.out.println(locator.toString());
-				} while(options.size() == 0 && attempts < 10);
-				if (options.size() == 0) {
-					self.role = null;
-					return;
-				}
-				self.session = new Session(uuid.toString(), self);
-				self.session.act(new LoadDatasetAction(self, session, locator));
-				JobConfig conf = new JobConfig(role.getTarget().getFeature(), new ArrayList<>());
-				self.session.setMineConfig(conf);
-				try {
-					session.act(new MineAction(session.getMineConfig()));
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
+		this.minerThread = new Thread(() -> {
+			DatasetLocator locator = loadDataset();
+			if (locator != null) {
+				mine(locator);
 			}
-		}).start();
+			self.minerThread = null;
+		});
+		this.minerThread.start();
 	}
 
-	public HashMap<String, List<String>> fetchRandomFeatures() {
+	private void mine(DatasetLocator locator) {
+		System.out.println("|Context| Preparing to mine");
+		UUID uuid = UUID.randomUUID();
+		this.session = new Session(uuid.toString(), this);
+		this.session.act(new LoadDatasetAction(this, session, locator));
+		JobConfig conf = new JobConfig(role.getTarget().getFeature().split("@")[0], new ArrayList<>());
+		this.session.setMineConfig(conf);
+		try {
+			session.act(new MineAction(session.getMineConfig()));
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private DatasetLocator loadDataset() {
+		System.out.println("|Context| Loading dataset");
+		HashMap<String, List<String>> options = null;
+		DatasetLocator locator = null;
+		int attempts = 0;
+
+		do {
+			options = this.fetchRandomFeatures(role.getTarget().getFeature());
+			locator = new DatacenterLocator(options);
+			System.out.println(locator.toString());
+		} while(options.size() == 0 && attempts < 10);
+
+		if (options.size() == 0) {
+			this.role = null;
+			return null;
+		}
+		return locator;
+	}
+
+	public HashMap<String, List<String>> fetchRandomFeatures(String targetFeature) {
 		try {
 			DatacenterService service = Utils.getDatacenter(true);
-			Call<HashMap<String, List<String>>> call = service.getRandomFeatures(role.getLayer());
+			ArrayList<String> whitelist = new ArrayList<>();
+			whitelist.add(targetFeature);
+			Call<HashMap<String, List<String>>> call = service.getRandomFeatures(role.getLayer(), whitelist);
 			// TODO bug is the response type that mismatches
 			Response<HashMap<String, List<String>>> response = call.execute();
 			return response.body();

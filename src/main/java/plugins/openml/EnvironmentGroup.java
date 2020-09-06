@@ -92,6 +92,8 @@ public class EnvironmentGroup {
 					e.printStackTrace();
 				}
 			}
+		} else {
+			System.err.println("|EnvironmentGroup| Target feature type not supported.");
 		}
 	}
 

@@ -13,6 +13,7 @@ import com.unn.common.server.StatusResponse;
 import com.unn.common.utils.Utils;
 import plugins.openml.JobConfig;
 import plugins.openml.MiningEnvironment;
+import plugins.openml.MiningReport;
 import retrofit2.Call;
 import retrofit2.Response;
 import com.unn.common.server.services.MaestroService;
@@ -49,11 +50,8 @@ public class RestServer extends Thread {
 			 return StatusResponse.SUCCESS;
         });
 		get("/mine/report", (request, response) -> {
-        	// MiningReport report = this.session().getReport();
-			/*return new Gson().toJson(new StandardResponse(
-				StatusResponse.SUCCESS, null, report
-			));*/
-			return StatusResponse.SUCCESS;
+        	MiningReport report = this.session().getReport();
+			return new Gson().toJson(report);
         });
 		get("/mine/status", (request, response) -> {
         	HashMap<String, MiningStatus> statuses = this.session().getMiningStatuses();

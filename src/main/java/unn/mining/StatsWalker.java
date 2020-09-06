@@ -80,4 +80,36 @@ public class StatsWalker implements Serializable {
 		System.out.println();
 		System.out.println();
 	}
+
+	public static long getSerialVersionUID() {
+		return serialVersionUID;
+	}
+
+	public ArrayList<Integer> getPossibleValues() {
+		return possibleValues;
+	}
+
+	public void setPossibleValues(ArrayList<Integer> possibleValues) {
+		this.possibleValues = possibleValues;
+	}
+
+	public void setHitMatrix(int[][] hitMatrix) {
+		this.hitMatrix = hitMatrix;
+	}
+
+	public int getOutlier() {
+		return outlier;
+	}
+
+	public void setOutlier(int outlier) {
+		this.outlier = outlier;
+	}
+
+	public ArrayList<Integer> getTimes() {
+		return times;
+	}
+
+	public void setTimes(ArrayList<Integer> times) {
+		this.times = times;
+	}
 }
