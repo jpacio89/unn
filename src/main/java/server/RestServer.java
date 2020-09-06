@@ -87,6 +87,7 @@ public class RestServer extends Thread {
         });
 		post("/miner/role", (request, response) -> {
 			AgentRole role = new Gson().fromJson(request.body(), AgentRole.class);
+			System.out.println(String.format("|RestServer| Received role layer=%d", role.getLayer()));
 			this.unnContext.setRole(role);
 			// generateUnitReport(JobConfig.DEFAULT);
 			return SUCCESS;
@@ -120,6 +121,7 @@ public class RestServer extends Thread {
 				if (unnContext.getRole() != null) {
 					break;
 				}
+				System.out.println("|RestServer| Registering myself");
 				MaestroService service = Utils.getMaestro();
 				Call<StandardResponse> call = service.registerAgent(Config.MYSELF);
 				try {
