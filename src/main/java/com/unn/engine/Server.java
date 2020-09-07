@@ -11,12 +11,12 @@ import com.unn.common.operations.DatacenterOrigin;
 import com.unn.common.server.StandardResponse;
 import com.unn.common.server.StatusResponse;
 import com.unn.common.server.services.MaestroService;
+import com.unn.common.utils.SparkUtils;
 import com.unn.common.utils.Utils;
 import com.unn.engine.mining.JobConfig;
 import com.unn.engine.mining.MiningEnvironment;
 import com.unn.engine.mining.MiningReport;
 import com.unn.engine.session.Context;
-import com.unn.engine.mining.MiningStatus;
 import com.unn.engine.interfaces.IEnvironment;
 import com.unn.engine.session.Session;
 import retrofit2.Call;
@@ -27,7 +27,7 @@ import static spark.Spark.*;
 public class Server extends Thread {
 	static final String SUCCESS = new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
 	int port;
-	
+	Thread heartbeats;
 	Context unnContext;
 	
 	public Server(int port) {
@@ -41,64 +41,22 @@ public class Server extends Thread {
 	
 	public void run() {
 		port(this.port);
-		before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
-		get("/", (request, response) -> "com.unn server running");
-		get("/dataset/units", (request, response) -> {
-			/*return new Gson().toJson(new StandardResponse(
-				StatusResponse.SUCCESS, null, this.session().getEnv().getUnitReport()
-			));
-			*/
-			 return StatusResponse.SUCCESS;
-        });
+		SparkUtils.enableCORS("*","POST, GET, OPTIONS", null);
+		get("/", (request, response) -> "com.unn.engine server running");
 		get("/mine/report", (request, response) -> {
         	MiningReport report = this.session().getReport();
 			return new Gson().toJson(report);
-        });
-		get("/mine/status", (request, response) -> {
-        	HashMap<String, MiningStatus> statuses = this.session().getMiningStatuses();
-			return new Gson().toJson(new StandardResponse(
-				StatusResponse.SUCCESS, null, statuses
-			));
-        });
-		get("/mine/units", (request, response) -> {
-        	//HashMap<String, UnitReport> reports = this.session().getUnitReports();
-			/*return new Gson().toJson(new StandardResponse(
-				StatusResponse.SUCCESS, null, reports
-			));*/
-			return StatusResponse.SUCCESS;
-        });
-		get("/mine/config", (request, response) -> {
-			/*return new Gson().toJson(new StandardResponse(
-				StatusResponse.SUCCESS, null, this.session().getMineConfig()
-			));*/
-			return StatusResponse.SUCCESS;
-        });
-		get("/feature/histogram", (request, response) -> {
-        	String feature = request.queryParams("feature");
-        	String groupCount = request.queryParams("groupCount");
-        	JobConfig config = new JobConfig();
-        	config.groupCount.put(feature, Integer.parseInt(groupCount));
-        	generateUnitReport(config);
-			return SUCCESS;
-        });
-		get("/session/features/:sessionId", (request, response) -> {
-			return new Gson().toJson(new StandardResponse(
-				StatusResponse.SUCCESS, null, this.session().getFeatures()
-			));
         });
 		post("/miner/role", (request, response) -> {
 			AgentRole role = new Gson().fromJson(request.body(), AgentRole.class);
 			System.out.println(String.format("|RestServer| Received role layer=%d", role.getLayer()));
 			this.unnContext.setRole(role);
-			// generateUnitReport(JobConfig.DEFAULT);
 			return SUCCESS;
-		});
-
+		}); ijjknjkkjn
 		this.onBooted();
 	}
 
 	void onBooted() {
-		// TODO: send heartbeats
 		this.findDatacenter();
 		this.registerMyself();
 	}
@@ -117,22 +75,36 @@ public class Server extends Thread {
 		}
 	}
 
+	void startHearbeats() {
+		this.heartbeats = new Thread(() -> {
+			for(;;) {
+				MaestroService service = Utils.getMaestro();
+				service.heartbeat(Config.MYSELF);
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		this.heartbeats.start();
+	}
+
 	void registerMyself() {
 		new Thread(() -> {
 			for (;;) {
 				if (unnContext.getRole() != null) {
+					this.startHearbeats();
 					break;
 				}
-				System.out.println("|RestServer| Registering myself");
-				MaestroService service = Utils.getMaestro();
-				Call<StandardResponse> call = service.registerAgent(Config.MYSELF);
 				try {
+					System.out.println("|RestServer| Registering myself");
+					MaestroService service = Utils.getMaestro();
+					Call<StandardResponse> call = service.registerAgent(Config.MYSELF);
 					call.execute();
+					Thread.sleep(1000);
 				} catch (IOException e) {
 					e.printStackTrace();
-				}
-				try {
-					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
