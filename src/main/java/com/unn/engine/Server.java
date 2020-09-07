@@ -52,7 +52,7 @@ public class Server extends Thread {
 			System.out.println(String.format("|RestServer| Received role layer=%d", role.getLayer()));
 			this.unnContext.setRole(role);
 			return SUCCESS;
-		}); ijjknjkkjn
+		});
 		this.onBooted();
 	}
 

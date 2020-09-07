@@ -67,6 +67,14 @@ public class Context implements Serializable {
 		this.minerThread.start();
 	}
 
+	private boolean isModelPublishable() {
+		return true;
+	}
+
+	private void pushPredictions() {
+
+	}
+
 	private void mine(DatasetLocator locator) {
 		System.out.println("|Context| Preparing to mine");
 		UUID uuid = UUID.randomUUID();

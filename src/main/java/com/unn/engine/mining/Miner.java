@@ -58,7 +58,7 @@ public class Miner {
 		int midPointLow = allTimesLow.size() / 2;
 		int midPointHigh = allTimesHigh.size() / 2;
 		
-		System.out.println(String.format(" Training set size: [ %d lows, %d highs ]", midPointLow, midPointHigh));
+		System.out.println(String.format("|Miner| Training set size: lows=%d, highs=%d", midPointLow, midPointHigh));
 		
 		this.trainTimeSets.add(new ArrayList<Integer> (allTimesLow.subList(0, midPointLow)));
 		this.trainTimeSets.add(new ArrayList<Integer> (allTimesHigh.subList(0, midPointHigh)));
@@ -73,16 +73,9 @@ public class Miner {
 		ArrayList<IOperator> booleanLayer = TimeTable.getBooleanParameters (dataset.getTrainingLeaves());
 		Integer[] rewards = { Config.STIMULI_MAX_VALUE, Config.STIMULI_MIN_VALUE };
 		int i = 0;
-		
 		for (Integer reward : rewards) {
 			TimeTable table = new TimeTable(dataset, reward, this.statusObservable);
-			
-			System.out.println(String.format(" TimeTable init: %d", reward));
-			
 			table.init(dataset.getTrainingLeaves(), booleanLayer);
-			
-			System.out.println(String.format(" TimeTable preset: %d", reward));
-			
 			table.presetFindings(this.trainTimeSets.get(i));
 			this.timetables.add(table);
 			i++;

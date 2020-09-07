@@ -53,7 +53,15 @@ public class Model implements Serializable {
 			predict(time, walker);
 		}
 	}
-	
+
+	// NOTE: used to bulk predict inputs
+	private Double predict (int time) {
+		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
+		// TODO: simulation endpoint does not account for weights???
+		Double prediction = this.predict(inputs, null, null);
+		return prediction;
+	}
+
 	private void predict (int time, StatsWalker walker) {
 		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
 		// TODO: simulation endpoint does not account for weights???
@@ -203,12 +211,10 @@ public class Model implements Serializable {
 	
 	private HashMap<IOperator, Integer> getInputsByTime(int time) {
 		HashMap<IOperator, Integer> inputs = new HashMap<IOperator, Integer>();
-		
 		for (IOperator param : this.dataset.getTrainingLeaves()) {
 			int val = this.dataset.getValueByTime(param, time);
 			inputs.put(param, val);
 		}
-		
 		return inputs;
 	}
 }
