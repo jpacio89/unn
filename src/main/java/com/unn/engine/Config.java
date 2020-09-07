@@ -1,6 +1,7 @@
 package com.unn.engine;
 
-import com.common.operations.Agent;
+
+import com.unn.common.operations.Agent;
 
 public class Config {
 	public static int STIMULI_MIN_VALUE = -20;
