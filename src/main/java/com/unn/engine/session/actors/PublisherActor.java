@@ -4,6 +4,7 @@ import com.unn.common.dataset.Dataset;
 import com.unn.common.server.services.DatacenterService;
 import com.unn.common.utils.CSVHelper;
 import com.unn.common.utils.Utils;
+import com.unn.engine.dataset.Datasets;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.metadata.ValueMapper;
@@ -52,12 +53,11 @@ public class PublisherActor extends Actor {
 
 	private OuterDataset fetchUnpredicted() {
 		// TODO: fetch source rows that are predictable and have no prediction yet
-		/*DatacenterService service = Utils.getDatacenter(true);
+		DatacenterService service = Utils.getDatacenter(true);
 		String csv = service.fetchUnpredicted("com.example.namespace");
 		Dataset dataset = new CSVHelper().parse(csv);
 		OuterDataset outerDataset = Datasets.toOuterDataset(dataset);
-		return outerDataset;*/
-		return null;
+		return outerDataset;
 	}
 
 	private ArrayList<Prediction> batchPredict(OuterDataset dataset) {
