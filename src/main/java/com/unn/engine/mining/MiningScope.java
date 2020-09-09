@@ -7,26 +7,22 @@ import java.util.HashMap;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.InnerDatasetLoader;
 import com.unn.engine.dataset.OuterDataset;
-import com.unn.engine.dataset.DatasetParser;
 import com.unn.engine.interfaces.IEnvironment;
 import com.unn.engine.interfaces.IOperator;
-import com.unn.engine.metadata.UnitReport;
 import com.unn.engine.Config;
+import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.session.Context;
 
-public class MiningEnvironment implements IEnvironment, Serializable {
+public class MiningScope implements IEnvironment, Serializable {
 	private static final long serialVersionUID = -8783414205445675354L;
-	private int datasetId;
-	private UnitReport unitReport;
-	//private InnerDataset dbDataset;
-	// private JobConfig config;
+	private ValueMapper mapper;
 	private Model refinedModel;
 	private Context context;
 	private JobConfig config;
 	private OuterDataset outerDataset;
 	private InnerDataset innerDataset;
 	
-	public MiningEnvironment(OuterDataset outerDataset) {
+	public MiningScope(OuterDataset outerDataset) {
 		this.outerDataset = outerDataset;
 	}
 	
@@ -59,7 +55,7 @@ public class MiningEnvironment implements IEnvironment, Serializable {
 		InnerDatasetLoader loader = new InnerDatasetLoader();
 		loader.init(this.context, this.config, this.outerDataset);
 		this.innerDataset = loader.load();
-		this.unitReport = loader.getUnitReport();
+		this.mapper = loader.getValueMapper();
 	}
 	
 	public StatsWalker mine() throws Exception {
@@ -113,8 +109,8 @@ public class MiningEnvironment implements IEnvironment, Serializable {
 		return null;
 	}
 	
-	public UnitReport getUnitReport() {
-		return unitReport;
+	public ValueMapper getMapper() {
+		return mapper;
 	}
 	
 	public Double predict(String key, HashMap<IOperator, Integer> inputs) {
@@ -126,22 +122,6 @@ public class MiningEnvironment implements IEnvironment, Serializable {
 	
 	public Model getModel() {
 		return this.refinedModel;
-	}
-
-	@Override
-	public Integer mapInput(String inputString, String version) {
-		assert "GradientAsDouble.v1".equals(version);
-			
-		double value = Double.parseDouble(inputString);
-		return DatasetParser.mapPrice(value);
-	}
-	
-	public MiningReport getMiningReport() {
-		return null;
-	}
-	
-	public MiningStatus getMiningStatus() {
-		return getStatusObservable().getStatus();
 	}
 
 	public JobConfig getConfig() {

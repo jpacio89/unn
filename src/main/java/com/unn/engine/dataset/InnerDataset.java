@@ -75,6 +75,10 @@ public class InnerDataset implements Serializable {
 		}
 		return RandomManager.getOne(times);
 	}
+
+	public ArrayList<Integer> getTimes() {
+		return this.times;
+	}
 	
 	public ArrayList<Integer> getTimesByReward(Integer reward, Integer elementCount) {
 		ArrayList<Integer> times = this.rewardedTimes.get(reward);

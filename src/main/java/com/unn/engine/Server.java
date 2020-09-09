@@ -1,7 +1,6 @@
 package com.unn.engine;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import com.google.gson.Gson;
 
@@ -13,11 +12,8 @@ import com.unn.common.server.StatusResponse;
 import com.unn.common.server.services.MaestroService;
 import com.unn.common.utils.SparkUtils;
 import com.unn.common.utils.Utils;
-import com.unn.engine.mining.JobConfig;
-import com.unn.engine.mining.MiningEnvironment;
 import com.unn.engine.mining.MiningReport;
 import com.unn.engine.session.Context;
-import com.unn.engine.interfaces.IEnvironment;
 import com.unn.engine.session.Session;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -110,13 +106,5 @@ public class Server extends Thread {
 				}
 			}
 		}).start();
-	}
-	
-	// TODO: refactor this
-	// TODO: apply config changes so that it is properly visualized
-	private void generateUnitReport(JobConfig config) {
-		IEnvironment env = new MiningEnvironment(this.session().getOuterDataset());
-		this.session().setEnv(env);
-		env.init(this.unnContext, config);
 	}
 }

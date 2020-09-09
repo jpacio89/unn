@@ -57,4 +57,16 @@ public class ValueMapper {
 	public Set<String> getFeatures() {
 		return new HashSet<String>(this.dataset.getHeader());
 	}
+
+	public void setFeatures(String[] toArray) {
+		this.report.setFeatures(toArray);
+	}
+
+	public Integer getInnerValue(String targetFeature, String targetOuterValue) {
+		return report.getInnerValue(targetFeature, targetOuterValue);
+	}
+
+	public OuterValueType getValues(String targetFeature) {
+		return this.report.getValues(targetFeature);
+	}
 }

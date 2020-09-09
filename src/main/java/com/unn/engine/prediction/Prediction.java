@@ -1,83 +1,34 @@
 package com.unn.engine.prediction;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import com.unn.engine.mining.MiningEnvironment;
-import com.unn.engine.metadata.UnitReport;
-import com.unn.engine.interfaces.IOperator;
-import com.unn.engine.session.Session;
-import com.unn.engine.Config;
-import com.unn.engine.utils.RandomManager;
-
 public class Prediction {
-	PredictionConfig config;
-	Session session;
-	PredictionReport report;
-	
-	public void init(PredictionConfig conf, Session session) {
-		this.config = conf;
-		this.session = session;
-	}
+    Integer time;
+    Double value;
 
-	public void run() {
-		HashMap<String, MiningEnvironment> envs = session.getEnvs();
-		this.report = new PredictionReport();
-		
-		for (Entry<String, MiningEnvironment> env : envs.entrySet()) {
-			ArrayList<IOperator> inputs = env.getValue().getInputs("");
-			UnitReport unitReport = env.getValue().getUnitReport();
-			
-	    	if (inputs == null) {
-	    		continue;
-	    	}
-	    	
-	    	HashMap<IOperator, Integer> values = new HashMap<IOperator, Integer>();
-	    	
-	    	for (IOperator input : inputs) {
-	    		HashMap<String, Boolean> possibleValues = this.config.seeds.get(input.toString());
-	    		
-	    		if (possibleValues == null) {
-	    			ArrayList<Integer> rnds = new ArrayList<Integer>();
-	    			// TODO: fix this for more than boolean features
-	    			rnds.add(Config.STIMULI_MIN_VALUE);
-	    			rnds.add(Config.STIMULI_MAX_VALUE);
-	    			Integer guess = RandomManager.getOne(rnds);
-	    			values.put(input, guess);
-	    			
-	    			System.err.println("Fix this shit!!");
-	    		} else {
-	    			Set<String> possibleValuesSet = possibleValues.keySet();
+    public Prediction() { }
 
-		    		// TODO: fix this shit!!!!!
-	    			for (String seedValueName : possibleValuesSet) {
-			    		Boolean isOn = possibleValues.get(seedValueName);
-			    		
-			    		if (!isOn) {
-			    			continue;
-			    		}
-			    		
-			    		Integer rewardInnerValue = unitReport.getInnerValue(input.toString(), seedValueName);
-			    		values.put(input, rewardInnerValue);
-			    		break;
-	    			}
-	    		}
-	    	}
-	    	
-	    	//if (values.containsKey(goup.getConfig().targetFeature)) {
-	    	//	System.err.println("Result was mistakenly fed into the query.");
-	    	//}
-	    	
-	    	Double prediction = env.getValue().predict("", values);
-	    	this.report.predictions.put(env.getKey(), prediction);
-	    	this.report.confusionMatrixes.put(env.getKey(), env.getValue().getStatsWalker().getHitMatrix());
-		}
-	}
+    public Integer getTime() {
+        return time;
+    }
 
-	public PredictionReport getReport() {
-		return this.report;
-	}
+    public void setTime(Integer time) {
+        this.time = time;
+    }
 
+    public Double getValue() {
+        return value;
+    }
+
+    public void setValue(Double value) {
+        this.value = value;
+    }
+
+    public Prediction withValue(Double value) {
+        this.value = value;
+        return this;
+    }
+
+    public Prediction withTime(Integer time) {
+        this.time = time;
+        return this;
+    }
 }

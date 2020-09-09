@@ -2,7 +2,7 @@ package com.unn.engine.session.actors;
 
 import com.unn.engine.session.actions.ActionResult;
 import com.unn.engine.session.actions.PredictAction;
-import com.unn.engine.prediction.Prediction;
+import com.unn.engine.prediction.Predictor;
 
 public class PredictActor extends Actor {
 	PredictAction action;
@@ -12,9 +12,9 @@ public class PredictActor extends Actor {
 	}
 
 	public ActionResult write() {
-		Prediction prediction = new Prediction();
-    	prediction.init(this.action.getConf(), this.action.getSession());
-    	prediction.run();
-		return prediction.getReport();
+		Predictor predictor = new Predictor();
+    	predictor.init(this.action.getConf(), this.action.getSession());
+    	predictor.run();
+		return predictor.getReport();
 	}
 }

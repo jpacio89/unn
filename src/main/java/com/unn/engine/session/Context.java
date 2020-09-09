@@ -58,7 +58,7 @@ public class Context implements Serializable {
 	void processRole() {
 		final Context self = this;
 		this.minerThread = new Thread(() -> {
-			DatasetLocator locator = loadDataset();
+			DatasetLocator locator = selectFeatures();
 			if (locator != null) {
 				mine(locator);
 			}
@@ -67,35 +67,32 @@ public class Context implements Serializable {
 		this.minerThread.start();
 	}
 
+
 	private boolean isModelPublishable() {
 		return true;
 	}
 
-	private void pushPredictions() {
-
-	}
-
 	private void mine(DatasetLocator locator) {
-		System.out.println("|Context| Preparing to mine");
-		UUID uuid = UUID.randomUUID();
-		this.session = new Session(uuid.toString(), this);
-		this.session.act(new LoadDatasetAction(this, session, locator));
-		JobConfig conf = new JobConfig(role.getTarget().getFeature().split("@")[0], new ArrayList<>());
-		this.session.setMineConfig(conf);
 		try {
-			session.act(new MineAction(session.getMineConfig()));
-		}
-		catch (Exception e) {
+			System.out.println("|Context| Loading dataset");
+			UUID uuid = UUID.randomUUID();
+			this.session = new Session(uuid.toString(), this);
+			this.session.act(new LoadDatasetAction(locator));
+			System.out.println("|Context| Starting mining");
+			String target = role.getTarget().getFeature().split("@")[0];
+			JobConfig conf = new JobConfig(target, new ArrayList<>());
+			this.session.setMineConfig(conf);
+			session.act(new MineAction());
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private DatasetLocator loadDataset() {
-		System.out.println("|Context| Loading dataset");
+	private DatasetLocator selectFeatures() {
+		System.out.println("|Context| Selecting features to mine");
 		HashMap<String, List<String>> options = null;
 		DatasetLocator locator = null;
 		int attempts = 0;
-
 		do {
 			options = this.fetchRandomFeatures(role.getTarget().getFeature());
 			locator = new DatacenterLocator(options);

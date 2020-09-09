@@ -16,7 +16,7 @@ import com.unn.engine.functions.ValueTimeReward;
 
 public class InnerDatasetLoader {
 	// TODO: refactor this
-	private UnitReport unitReport;
+	private ValueMapper mapper;
 	
 	OuterDataset outerDataset;
 	JobConfig config;
@@ -42,7 +42,7 @@ public class InnerDatasetLoader {
 		InnerDataset dataset = new InnerDataset();
 		
 		try {
-			ValueMapper mapper = new ValueMapper(this.outerDataset);
+			this.mapper = new ValueMapper(this.outerDataset);
 			
 			for (String k : mapper.getFeatures()) {
 				System.out.println(String.format("Feature %s", k));
@@ -50,9 +50,7 @@ public class InnerDatasetLoader {
 			}
 			
 			ArrayList<IOperator> leaves = getOperators(mapper.getFeatures(), this.config.targetFeature, true);
-			UnitReport report = mapper.getReport();
-			this.unitReport = report;
-			this.unitReport.setFeatures(this.outerDataset.getHeader().toArray(new String[this.outerDataset.getHeader().size()]));
+			this.mapper.setFeatures(this.outerDataset.getHeader().toArray(new String[this.outerDataset.getHeader().size()]));
 			
 			dataset.setTrainingLeaves(getOperators(mapper.getFeatures(), this.config.targetFeature, false));
 			dataset.setAllLeaves(leaves);
@@ -61,7 +59,7 @@ public class InnerDatasetLoader {
 			Integer refInnerValue = config.targetInnerValue;
 			
 			if (config.targetOuterValue != null) {
-				refInnerValue = report.getInnerValue(config.targetFeature, config.targetOuterValue);
+				refInnerValue = this.mapper.getInnerValue(config.targetFeature, config.targetOuterValue);
 			}
 			
 			int targetFeatureIndex = this.outerDataset.getFeatureIndex(this.config.targetFeature);
@@ -76,7 +74,7 @@ public class InnerDatasetLoader {
 				}
 				
 				String outerTargetValue = this.outerDataset.getFeatureAtSample(i, targetFeatureIndex);
-				Integer rewardInnerValue = report.getInnerValue(this.config.targetFeature, outerTargetValue);
+				Integer rewardInnerValue = this.mapper.getInnerValue(this.config.targetFeature, outerTargetValue);
 				
 				rewardInnerValue = JobConfig.mapReward(refInnerValue, rewardInnerValue);
 				
@@ -88,7 +86,7 @@ public class InnerDatasetLoader {
 					}
 					
 					String outerFeatureValue = this.outerDataset.getFeatureAtSample(i, j);
-					Integer innerValue = report.getInnerValue(key, outerFeatureValue);					
+					Integer innerValue = this.mapper.getInnerValue(key, outerFeatureValue);
 					ValueTimeReward vtr = new ValueTimeReward(dataset.getOperatorByClassName(key), innerValue, n, rewardInnerValue);
 					
 					dataset.add(vtr);
@@ -137,7 +135,7 @@ public class InnerDatasetLoader {
 		return this.context.getStatusObservable(this.config.jobSessionId);
 	}
 	
-	public UnitReport getUnitReport() {
-		return this.unitReport;
+	public ValueMapper getValueMapper() {
+		return this.mapper;
 	}
 }

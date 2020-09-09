@@ -9,10 +9,8 @@ public class LoadDatasetAction extends Action {
 	Context context;
 	Session session;
 	
-	public LoadDatasetAction(Context _context, Session _session, DatasetLocator _locator) {
+	public LoadDatasetAction(DatasetLocator _locator) {
 		this.locator = _locator;
-		this.context = _context;
-		this.session = _session;
 	}
 
 	public DatasetLocator getLocator() {

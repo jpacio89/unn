@@ -5,9 +5,7 @@ import com.unn.engine.mining.JobConfig;
 public class MineAction extends Action {
 	JobConfig conf;
 	
-	public MineAction(JobConfig _conf) {
-		this.conf = _conf;
-	}
+	public MineAction() { }
 
 	public JobConfig getConf() {
 		return conf;

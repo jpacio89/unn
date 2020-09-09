@@ -1,35 +1,34 @@
-package com.unn.engine.morphing;
+package com.unn.engine.prediction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.unn.engine.mining.MiningEnvironment;
-import com.unn.engine.metadata.UnitReport;
+import com.unn.engine.metadata.ValueMapper;
+import com.unn.engine.mining.MiningScope;
 import com.unn.engine.interfaces.IOperator;
 import com.unn.engine.session.Session;
 import com.unn.engine.Config;
 import com.unn.engine.utils.RandomManager;
 
-public class Morpher {
-	MorphConfig config;
+public class Predictor {
+	PredictionConfig config;
 	Session session;
-	// MorphReport report;
+	PredictionReport report;
 	
-	public void init(MorphConfig conf, Session session) {
+	public void init(PredictionConfig conf, Session session) {
 		this.config = conf;
 		this.session = session;
 	}
-	
-	public void morph() {
-		HashMap<String, MiningEnvironment> envs = session.getEnvs();
-		// this.report = new MorphReport();
+
+	public void run() {
+		HashMap<String, MiningScope> envs = session.getScopes();
+		this.report = new PredictionReport();
 		
-		for (Entry<String, MiningEnvironment> env : envs.entrySet()) {
-			// String feature = env.getKey();
+		for (Entry<String, MiningScope> env : envs.entrySet()) {
 			ArrayList<IOperator> inputs = env.getValue().getInputs("");
-			UnitReport unitReport = env.getValue().getUnitReport();
+			ValueMapper unitReport = env.getValue().getMapper();
 			
 	    	if (inputs == null) {
 	    		continue;
@@ -71,19 +70,14 @@ public class Morpher {
 	    	//	System.err.println("Result was mistakenly fed into the query.");
 	    	//}
 	    	
-	    	// TODO: fix this - make generic
-	    	HashMap<String, Boolean> classValue = this.config.seeds.get("\"type\"");
-	    	for (String type : classValue.keySet()) {
-	    		session.morph(values, type, "mammal");
-	    		break;
-	    	}
-	    	
-	    	break;
+	    	Double prediction = env.getValue().predict("", values);
+	    	this.report.predictions.put(env.getKey(), prediction);
+	    	this.report.confusionMatrixes.put(env.getKey(), env.getValue().getStatsWalker().getHitMatrix());
 		}
 	}
 
-	//public MorphReport getReport() {
-	//	return this.report;
-	//}
+	public PredictionReport getReport() {
+		return this.report;
+	}
 
 }
