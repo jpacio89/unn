@@ -20,10 +20,10 @@ public class InnerDataset implements Serializable {
 	IOperator[] localArgs;
 	
 	public InnerDataset() {
-		this.times = new ArrayList<Integer>();
-		this.timedRewards = new HashMap<Integer, Integer>();
-		this.timedValues = new HashMap<IOperator, HashMap<Integer, Integer>>();
-		this.rewardedTimes = new MultiplesHashMap<Integer, Integer>();
+		this.times = new ArrayList<>();
+		this.timedRewards = new HashMap<>();
+		this.timedValues = new HashMap<>();
+		this.rewardedTimes = new MultiplesHashMap<>();
 	}
 	
 	public void shrink() {
@@ -52,28 +52,12 @@ public class InnerDataset implements Serializable {
 		this.timedRewards.put (vtr.getTime(), vtr.getReward());
 		
 		if (!this.timedValues.containsKey (vtr.getVTRClass())) {
-			HashMap<Integer, Integer> classValues = new HashMap<Integer, Integer>();
+			HashMap<Integer, Integer> classValues = new HashMap<>();
 			classValues.put (vtr.getTime(), vtr.getValue());
 			this.timedValues.put (vtr.getVTRClass(), classValues);
 		} else {
 			this.timedValues.get (vtr.getVTRClass()).put(vtr.getTime(), vtr.getValue());
 		}
-	}
-	
-	public Integer getOneTime() {
-		return RandomManager.getOne(this.times);
-	}
-	
-	public boolean hasTime(int time) {
-		return this.timedRewards.containsKey(time);
-	}
-	
-	public Integer getTimeByReward(Integer reward) {
-		ArrayList<Integer> times = this.rewardedTimes.get(reward);
-		if (times == null) {
-			return null;
-		}
-		return RandomManager.getOne(times);
 	}
 
 	public ArrayList<Integer> getTimes() {
