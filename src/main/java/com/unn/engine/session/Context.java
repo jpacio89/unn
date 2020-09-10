@@ -75,8 +75,7 @@ public class Context implements Serializable {
 	private void mine(DatasetLocator locator) {
 		try {
 			System.out.println("|Context| Loading dataset");
-			UUID uuid = UUID.randomUUID();
-			this.session = new Session(uuid.toString(), this);
+			this.session = new Session(this);
 			this.session.act(new LoadDatasetAction(locator));
 			System.out.println("|Context| Starting mining");
 			String target = role.getTarget().getFeature().split("@")[0];

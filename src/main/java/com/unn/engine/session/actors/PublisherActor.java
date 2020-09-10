@@ -8,6 +8,7 @@ import com.unn.engine.dataset.Datasets;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.metadata.ValueMapper;
+import com.unn.engine.mining.JobConfig;
 import com.unn.engine.mining.MiningScope;
 import com.unn.engine.mining.Model;
 import com.unn.engine.prediction.Prediction;
@@ -62,11 +63,12 @@ public class PublisherActor extends Actor {
 
 	private ArrayList<Prediction> batchPredict(OuterDataset dataset) {
 		// NOTE: receives a OuterDataset, converts to InnerDataset and makes predictions
+		JobConfig job = action.getSession().getMineConfig();
 		ArrayList<Prediction> predictions = new ArrayList<>();
         for (Map.Entry<String, MiningScope> entry : action.getSession().getScopes().entrySet()) {
 			MiningScope scope = entry.getValue();
 			ValueMapper mapper = scope.getMapper();
-			InnerDataset innerDataset = Datasets.toInnerDataset(dataset, mapper);
+			InnerDataset innerDataset = Datasets.toInnerDataset(dataset, mapper, job);
 			for (Integer time : innerDataset.getTimes()) {
 				// TODO: replace nulls
 				Double prediction = scope.predict(null, null);

@@ -20,15 +20,12 @@ import com.unn.engine.session.actors.*;
 
 public class Session implements Serializable {
 	private static final long serialVersionUID = -4066182105363905590L;
-	private String sessionName;
 	private Context context;
 	private OuterDataset outerDataset;
 	private HashMap<String, MiningScope> scopes;
-	IEnvironment env;
 	JobConfig mineConfig;
 	
-	public Session(String sessionName, Context context) {
-		this.sessionName = sessionName;
+	public Session(Context context) {
 		this.scopes = new HashMap<>();
 		this.context = context;
 	}
@@ -82,12 +79,10 @@ public class Session implements Serializable {
 		return this.context;
 	}
 
-	// TODO: refactor this
 	public JobConfig getMineConfig() {
 		return mineConfig;
 	}
 
-	// TODO: refactor this
 	public void setMineConfig(JobConfig mineConfig) {
 		this.mineConfig = mineConfig;
 	}
