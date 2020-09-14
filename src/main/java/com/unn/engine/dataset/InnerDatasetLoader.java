@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Set;
 
 import com.unn.engine.mining.JobConfig;
-import com.unn.engine.metadata.UnitReport;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.interfaces.IOperator;
 import com.unn.engine.mining.MiningStatusObservable;
@@ -49,10 +48,10 @@ public class InnerDatasetLoader {
 				mapper.reportUnits(k, this.config.groupCount.get(k));
 			}
 			
-			ArrayList<IOperator> leaves = getOperators(mapper.getFeatures(), this.config.targetFeature, true);
+			ArrayList<IOperator> leaves = getIdentities(this.config, mapper.getFeatures(), this.config.targetFeature, true);
 			this.mapper.setFeatures(this.outerDataset.getHeader().toArray(new String[this.outerDataset.getHeader().size()]));
 			
-			dataset.setTrainingLeaves(getOperators(mapper.getFeatures(), this.config.targetFeature, false));
+			dataset.setTrainingLeaves(getIdentities(this.config, mapper.getFeatures(), this.config.targetFeature, false));
 			dataset.setAllLeaves(leaves);
 			int n = 0;
 			
@@ -87,13 +86,13 @@ public class InnerDatasetLoader {
 					
 					String outerFeatureValue = this.outerDataset.getFeatureAtSample(i, j);
 					Integer innerValue = this.mapper.getInnerValue(key, outerFeatureValue);
-					ValueTimeReward vtr = new ValueTimeReward(dataset.getOperatorByClassName(key), innerValue, n, rewardInnerValue);
+					ValueTimeReward vtr = new ValueTimeReward(dataset.getFunctorByClassName(key), innerValue, n, rewardInnerValue);
 					
 					dataset.add(vtr);
 					j++;
 				}
 				
-				ValueTimeReward vtr = new ValueTimeReward(dataset.getOperatorByClassName(this.config.targetFeature), rewardInnerValue, n, rewardInnerValue);
+				ValueTimeReward vtr = new ValueTimeReward(dataset.getFunctorByClassName(this.config.targetFeature), rewardInnerValue, n, rewardInnerValue);
 				dataset.add(vtr);
 				
 				n++;
@@ -106,11 +105,12 @@ public class InnerDatasetLoader {
 		return dataset;
 	}
 	
-	public ArrayList<IOperator> getOperators(Set<String> features, String rewardFeature, boolean includeReward) {
+	public static ArrayList<IOperator> getIdentities(JobConfig config, Set<String> features, String rewardFeature, boolean includeReward) {
 		ArrayList<IOperator> operators = new ArrayList<IOperator>();
 		int n = 0;
 		for (String feature : features) {
-			if (this.config.featureBlacklist != null && Arrays.stream(this.config.featureBlacklist).anyMatch(feature::equals)) {
+			if (config.featureBlacklist != null &&
+				Arrays.stream(config.featureBlacklist).anyMatch(feature::equals)) {
 				continue;
 			}
 			if (feature.equals(rewardFeature)) {

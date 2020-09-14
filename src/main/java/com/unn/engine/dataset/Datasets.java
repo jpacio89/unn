@@ -3,6 +3,7 @@ package com.unn.engine.dataset;
 import com.unn.common.dataset.Dataset;
 import com.unn.common.dataset.Row;
 import com.unn.engine.functions.ValueTimeReward;
+import com.unn.engine.interfaces.IOperator;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.JobConfig;
 
@@ -23,9 +24,17 @@ public class Datasets {
         String timeFeatureName = job.getTimeFeatureName();
         String rewardFeatureName = job.getRewardFeatureName();
         InnerDataset innerDataset = new InnerDataset();
-        // TODO: implement
-        // innerDataset.setTrainingLeaves(getOperators(mapper.getFeatures(), this.config.targetFeature, false));
-        // innerDataset.setAllLeaves(leaves);
+
+        ArrayList<IOperator> allLeaves = InnerDatasetLoader.getIdentities(
+            job, mapper.getFeatures(),
+            job.targetFeature, true);
+        innerDataset.setAllLeaves(allLeaves);
+
+        ArrayList<IOperator> trainLeaves = InnerDatasetLoader.getIdentities(
+                job, mapper.getFeatures(),
+                job.targetFeature, false);
+        innerDataset.setTrainingLeaves(trainLeaves);
+
         for (int sampleIndex = 0; sampleIndex < dataset.sampleCount(); ++sampleIndex) {
             Integer timeFeatureIndex = dataset.getFeatureIndex(timeFeatureName);
             Integer outerTimeValue = Integer.parseInt(dataset.getFeatureAtSample(sampleIndex, timeFeatureIndex));
@@ -34,13 +43,9 @@ public class Datasets {
                 String featureName = dataset.getHeader().get(i);
                 String outerValue = dataset.getFeatureAtSample(sampleIndex, i);
                 Integer innerValue = mapper.getInnerValue(featureName, outerValue);
-                // TODO: add class
+                IOperator identity = innerDataset.getFunctorByClassName(featureName);
                 ValueTimeReward vtr = new ValueTimeReward(
-                null,
-                    innerValue,
-                    outerTimeValue,
-                    reward
-                );
+                        identity, innerValue, outerTimeValue, reward);
                 innerDataset.add(vtr);
             }
 

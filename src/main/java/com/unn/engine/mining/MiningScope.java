@@ -113,7 +113,7 @@ public class MiningScope implements IEnvironment, Serializable {
 		return mapper;
 	}
 	
-	public Double predict(String key, HashMap<IOperator, Integer> inputs) {
+	public Double predict(HashMap<IOperator, Integer> inputs) {
 		if (this.refinedModel == null) {
 			return null;
 		}

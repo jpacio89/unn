@@ -20,6 +20,9 @@ public class JobConfig implements Serializable {
 	public Integer targetInnerValue;
 	public String[] featureBlacklist;
 	public HashMap<String, Integer> groupCount;
+	public String timeFeatureName;
+	public String rewardFeatureName;
+
 	
 	//public static Integer mapReward(Integer val) {
 	//	return val != null && val == 5 ? Config.STIMULI_MAX_VALUE : Config.STIMULI_MIN_VALUE;
@@ -69,6 +72,21 @@ public class JobConfig implements Serializable {
 		
 		return newConf;
 	}
-	
-	
+
+
+	public String getTimeFeatureName() {
+		return timeFeatureName;
+	}
+
+	public void setTimeFeatureName(String timeFeatureName) {
+		this.timeFeatureName = timeFeatureName;
+	}
+
+	public String getRewardFeatureName() {
+		return rewardFeatureName;
+	}
+
+	public void setRewardFeatureName(String rewardFeatureName) {
+		this.rewardFeatureName = rewardFeatureName;
+	}
 }

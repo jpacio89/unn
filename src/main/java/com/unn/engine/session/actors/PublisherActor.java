@@ -7,15 +7,13 @@ import com.unn.common.utils.Utils;
 import com.unn.engine.dataset.Datasets;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.OuterDataset;
+import com.unn.engine.interfaces.IOperator;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.JobConfig;
 import com.unn.engine.mining.MiningScope;
-import com.unn.engine.mining.Model;
 import com.unn.engine.prediction.Prediction;
 import com.unn.engine.session.actions.ActionResult;
 import com.unn.engine.session.actions.PublishAction;
-import com.unn.engine.session.actions.QueryAction;
-import org.apache.commons.csv.CSVParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,8 +68,8 @@ public class PublisherActor extends Actor {
 			ValueMapper mapper = scope.getMapper();
 			InnerDataset innerDataset = Datasets.toInnerDataset(dataset, mapper, job);
 			for (Integer time : innerDataset.getTimes()) {
-				// TODO: replace nulls
-				Double prediction = scope.predict(null, null);
+				HashMap<IOperator, Integer> input = innerDataset.bundleSample(time);
+				Double prediction = scope.predict(input);
 				predictions.add(new Prediction()
 					.withTime(time)
 					.withValue(prediction));

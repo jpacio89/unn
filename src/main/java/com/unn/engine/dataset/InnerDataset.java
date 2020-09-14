@@ -109,12 +109,21 @@ public class InnerDataset implements Serializable {
 		
 	}
 	
-	public IOperator getOperatorByClassName(String className) {
+	public IOperator getFunctorByClassName(String className) {
 		for(IOperator op : this.localArgs) {
 			if (op.getDescriptor().getVtrName().equals(className)) {
 				return op;
 			}
 		}
 		return null;
+	}
+
+	public HashMap<IOperator, Integer> bundleSample(int time) {
+		HashMap<IOperator, Integer> input = new HashMap<>();
+		for (IOperator functor : getAllLeaves()) {
+			Integer value = getValueByTime(functor, time);
+			input.put(functor, value);
+		}
+		return input;
 	}
 }
