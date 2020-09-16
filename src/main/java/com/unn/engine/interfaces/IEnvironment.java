@@ -12,7 +12,7 @@ import com.unn.engine.session.Context;
 public interface IEnvironment {
 	ArrayList<IOperator> getInputs(String spaceId);
 	
-	Double predict(String spaceId, HashMap<IOperator, Integer> values);
+	Double predict(HashMap<IOperator, Integer> values);
 	
 	void init(Context context, JobConfig config);
 	

@@ -1,6 +1,7 @@
 package com.unn.engine.session.actors;
 
 import com.unn.common.dataset.Dataset;
+import com.unn.common.dataset.DatasetDescriptor;
 import com.unn.common.server.services.DatacenterService;
 import com.unn.common.utils.CSVHelper;
 import com.unn.common.utils.Utils;
@@ -14,7 +15,10 @@ import com.unn.engine.mining.MiningScope;
 import com.unn.engine.prediction.Prediction;
 import com.unn.engine.session.actions.ActionResult;
 import com.unn.engine.session.actions.PublishAction;
+import retrofit2.Call;
+import retrofit2.Response;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,47 +45,57 @@ public class PublisherActor extends Actor {
 
 	private void fetchPredictPublish() {
 		for(;;) {
-			OuterDataset dataset = fetchUnpredicted();
-			if (dataset.sampleCount() == 0) {
+			Dataset dataset = fetchUnpredicted();
+			OuterDataset outerDataset = Datasets.toOuterDataset(dataset);
+			if (outerDataset.sampleCount() == 0) {
 				break;
 			}
-			ArrayList<Prediction> predictions = batchPredict(dataset);
-			publishPredictions(predictions);
+			HashMap<String, ArrayList<Prediction>> predictions = batchPredict(outerDataset);
+			publishPredictions(dataset.getDescriptor(), predictions);
 		}
 	}
 
-	private OuterDataset fetchUnpredicted() {
-		// TODO: fetch source rows that are predictable and have no prediction yet
-		DatacenterService service = Utils.getDatacenter(true);
-		String csv = service.fetchUnpredicted("com.example.namespace");
-		Dataset dataset = new CSVHelper().parse(csv);
-		OuterDataset outerDataset = Datasets.toOuterDataset(dataset);
-		return outerDataset;
+	private Dataset fetchUnpredicted() {
+		// NOTE: fetch source rows that are predictable and have no prediction yet
+		try {
+			DatacenterService service = Utils.getDatacenter(true);
+			// TODO: send proper namespace
+			Call<Dataset> csv = service.fetchUnpredicted("com.example.namespace");
+			Response<Dataset> response = csv.execute();
+			Dataset dataset = response.body();
+			return dataset;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
-	private ArrayList<Prediction> batchPredict(OuterDataset dataset) {
+	private HashMap<String, ArrayList<Prediction>> batchPredict(OuterDataset dataset) {
 		// NOTE: receives a OuterDataset, converts to InnerDataset and makes predictions
 		JobConfig job = action.getSession().getMineConfig();
-		ArrayList<Prediction> predictions = new ArrayList<>();
+		HashMap<String, ArrayList<Prediction>> predictions = new HashMap<>();
+		// ArrayList<Prediction> predictions = new ArrayList<>();
         for (Map.Entry<String, MiningScope> entry : action.getSession().getScopes().entrySet()) {
+			ArrayList<Prediction> refPredictions = new ArrayList<>();
 			MiningScope scope = entry.getValue();
 			ValueMapper mapper = scope.getMapper();
 			InnerDataset innerDataset = Datasets.toInnerDataset(dataset, mapper, job);
 			for (Integer time : innerDataset.getTimes()) {
 				HashMap<IOperator, Integer> input = innerDataset.bundleSample(time);
 				Double prediction = scope.predict(input);
-				predictions.add(new Prediction()
+				refPredictions.add(new Prediction()
 					.withTime(time)
 					.withValue(prediction));
 			}
+			predictions.put(scope.getRef(), refPredictions);
 		}
 		return predictions;
 	}
 
-	private void publishPredictions(ArrayList<Prediction> predictions) {
+	private void publishPredictions(DatasetDescriptor upstreamDescriptor, HashMap<String, ArrayList<Prediction>> predictions) {
 		// NOTE: receives an array of predictions, converts it to a Dataset and publishes it
-		Dataset dataset = new Dataset();
-		// TODO: convert predictions to Dataset
+		Dataset dataset = Datasets.toDataset(upstreamDescriptor, predictions);
 		String csv = new CSVHelper().toString(dataset);
 		// TODO: send csv go Datacenter service
 	}

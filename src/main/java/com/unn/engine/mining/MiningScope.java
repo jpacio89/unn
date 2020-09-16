@@ -44,6 +44,10 @@ public class MiningScope implements IEnvironment, Serializable {
 		}
 		return new MiningStatusObservable();
 	}
+
+	public String getRef() {
+		return String.format("%s@%s", config.targetOuterValue, config.targetFeature);
+	}
 	
 	public void init(Context context, JobConfig config) {
 		System.out.println(String.format("|MiningEnvironment| Initializing miner"));

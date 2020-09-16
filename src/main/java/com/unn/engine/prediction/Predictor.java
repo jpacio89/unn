@@ -70,7 +70,7 @@ public class Predictor {
 	    	//	System.err.println("Result was mistakenly fed into the query.");
 	    	//}
 	    	
-	    	Double prediction = env.getValue().predict("", values);
+	    	Double prediction = env.getValue().predict(values);
 	    	this.report.predictions.put(env.getKey(), prediction);
 	    	this.report.confusionMatrixes.put(env.getKey(), env.getValue().getStatsWalker().getHitMatrix());
 		}
