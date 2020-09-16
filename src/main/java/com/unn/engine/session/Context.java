@@ -15,6 +15,7 @@ import com.unn.engine.mining.MiningStatusObservable;
 import com.unn.engine.session.actions.LoadDatasetAction;
 import com.unn.engine.session.actions.MineAction;
 import com.unn.engine.mining.JobConfig;
+import com.unn.engine.session.actions.PublishAction;
 import retrofit2.Call;
 import retrofit2.Response;
 import com.unn.engine.dataset.datacenter.DatacenterLocator;
@@ -62,14 +63,23 @@ public class Context implements Serializable {
 			if (locator != null) {
 				mine(locator);
 			}
+			if (isModelPublishable()) {
+				publish(locator);
+			}
 			self.minerThread = null;
 		});
 		this.minerThread.start();
 	}
 
-
 	private boolean isModelPublishable() {
 		return true;
+	}
+
+	private void publish(DatasetLocator locator) {
+		PublishAction action = new PublishAction();
+		action.setUpstreamLayer(role.getLayer());
+		action.setDatasetLocator(locator);
+		this.session.act(action);
 	}
 
 	private void mine(DatasetLocator locator) {

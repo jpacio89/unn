@@ -7,9 +7,7 @@ import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.JobConfig;
 import com.unn.engine.prediction.Prediction;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 public class Datasets {
 
@@ -67,23 +65,15 @@ public class Datasets {
         return outerDataset;
     }
 
-    public static Dataset toDataset(DatasetDescriptor upstreamDescriptor, HashMap<String, ArrayList<Prediction>> predictions) {
-        String namespace = "com.example.thing";
-        ArrayList<String> refs = new ArrayList<>();
-        refs.add("primary");
-        for (String ref : predictions.keySet()) {
-            refs.add(ref);
-        }
-        String[] names = refs.toArray(new String[refs.size()]);
-        String description = "Mined dataset";
-        // upstreamDescriptor.getNamespace()
-        DatasetDescriptor descriptor = new DatasetDescriptor()
-            .withLayer(upstreamDescriptor.getLayer()+1)
-            .withHeader(new Header().withNames(names))
-            .withNamespace(namespace)
-            .withUpstreamDependencies(upstreamDescriptor.getUpstreamDependencies())
-            .withKey(null)
-            .withDescription(description);
+    public static Dataset toDataset(DatasetDescriptor descriptor, HashMap<String, ArrayList<Prediction>> predictions) {
+        Body body = getBodyFromPredictions(descriptor.getHeader().getNames(), predictions);
+        Dataset dataset = new Dataset()
+            .withDescriptor(descriptor)
+            .withBody(body);
+        return dataset;
+    }
+
+    private static Body getBodyFromPredictions(String[] refs, HashMap<String, ArrayList<Prediction>> predictions) {
         ArrayList<Row> rows = new ArrayList<>();
         for (int i = 0; true; i++) {
             Row row = new Row();
@@ -101,7 +91,7 @@ public class Datasets {
                 rowVals.add(prediction.getValue().toString());
                 j++;
             }
-            if (rowVals.size() == refs.size()+1)  {
+            if (rowVals.size() == refs.length+1)  {
                 row.withValues(rowVals.toArray(new String[rowVals.size()]));
                 rows.add(row);
             } else if (rowVals.size() == 1) {
@@ -110,9 +100,6 @@ public class Datasets {
         }
         Body body = new Body()
             .withRows(rows.toArray(new Row[rows.size()]));
-        Dataset dataset = new Dataset()
-            .withDescriptor(descriptor)
-            .withBody(body);
-        return dataset;
+        return body;
     }
 }

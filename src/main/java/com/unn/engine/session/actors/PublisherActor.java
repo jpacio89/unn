@@ -2,12 +2,17 @@ package com.unn.engine.session.actors;
 
 import com.unn.common.dataset.Dataset;
 import com.unn.common.dataset.DatasetDescriptor;
+import com.unn.common.dataset.Feature;
+import com.unn.common.dataset.Header;
+import com.unn.common.server.NetworkUtils;
 import com.unn.common.server.services.DatacenterService;
 import com.unn.common.utils.CSVHelper;
 import com.unn.common.utils.Utils;
+import com.unn.engine.dataset.DatasetLocator;
 import com.unn.engine.dataset.Datasets;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.OuterDataset;
+import com.unn.engine.dataset.datacenter.DatacenterLocator;
 import com.unn.engine.interfaces.IOperator;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.JobConfig;
@@ -19,9 +24,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class PublisherActor extends Actor {
 	PublishAction action;
@@ -45,22 +48,22 @@ public class PublisherActor extends Actor {
 
 	private void fetchPredictPublish() {
 		for(;;) {
-			Dataset dataset = fetchUnpredicted();
+			DatasetDescriptor descriptor = this.register(this.action);
+			Dataset dataset = fetchUnpredicted(descriptor);
 			OuterDataset outerDataset = Datasets.toOuterDataset(dataset);
 			if (outerDataset.sampleCount() == 0) {
 				break;
 			}
 			HashMap<String, ArrayList<Prediction>> predictions = batchPredict(outerDataset);
-			publishPredictions(dataset.getDescriptor(), predictions);
+			publishPredictions(descriptor, predictions);
 		}
 	}
 
-	private Dataset fetchUnpredicted() {
+	private Dataset fetchUnpredicted(DatasetDescriptor descriptor) {
 		// NOTE: fetch source rows that are predictable and have no prediction yet
 		try {
 			DatacenterService service = Utils.getDatacenter(true);
-			// TODO: send proper namespace
-			Call<Dataset> csv = service.fetchUnpredicted("com.example.namespace");
+			Call<Dataset> csv = service.fetchUnpredicted(descriptor.getNamespace());
 			Response<Dataset> response = csv.execute();
 			Dataset dataset = response.body();
 			return dataset;
@@ -75,7 +78,6 @@ public class PublisherActor extends Actor {
 		// NOTE: receives a OuterDataset, converts to InnerDataset and makes predictions
 		JobConfig job = action.getSession().getMineConfig();
 		HashMap<String, ArrayList<Prediction>> predictions = new HashMap<>();
-		// ArrayList<Prediction> predictions = new ArrayList<>();
         for (Map.Entry<String, MiningScope> entry : action.getSession().getScopes().entrySet()) {
 			ArrayList<Prediction> refPredictions = new ArrayList<>();
 			MiningScope scope = entry.getValue();
@@ -93,12 +95,48 @@ public class PublisherActor extends Actor {
 		return predictions;
 	}
 
-	private void publishPredictions(DatasetDescriptor upstreamDescriptor, HashMap<String, ArrayList<Prediction>> predictions) {
-		// NOTE: receives an array of predictions, converts it to a Dataset and publishes it
-		Dataset dataset = Datasets.toDataset(upstreamDescriptor, predictions);
-		String csv = new CSVHelper().toString(dataset);
-		// TODO: send csv go Datacenter service
+	private String[] bundleDependencies(DatacenterLocator locator) {
+		ArrayList<String> dependencies = new ArrayList<>();
+		HashMap<String, List<String>> options = locator.getOptions();
+		for (Map.Entry<String, List<String>> entry : options.entrySet()) {
+			String namespace = entry.getKey();
+			List<String> features = entry.getValue();
+			for (String feature : features) {
+				Feature f = new Feature()
+					.withNamespace(namespace)
+					.withColumn(feature);
+				dependencies.add(f.toString());
+			}
+		}
+		return dependencies.toArray(new String[dependencies.size()]);
 	}
 
-	
+	private DatasetDescriptor register(PublishAction action) {
+		String id = UUID.randomUUID().toString()
+			.replace("-", "")
+			.substring(5);
+		String namespace = String.format("com.unn.engine.%s", id);
+		DatacenterLocator locator = (DatacenterLocator) action.getDatasetLocator();
+		String[] dependencies = bundleDependencies(locator);
+		ArrayList<String> refs = new ArrayList<>();
+		refs.add("id");
+		for (String scopeId : action.getSession().getScopes().keySet()) {
+			refs.add(scopeId);
+		}
+		String[] names = refs.toArray(new String[refs.size()]);
+		DatasetDescriptor descriptor = new DatasetDescriptor()
+			.withLayer(action.getUpstreamLayer()+1)
+			.withHeader(new Header().withNames(names))
+			.withNamespace(namespace)
+			.withUpstreamDependencies(dependencies)
+			.withDescription("Mined dataset");
+		NetworkUtils.registerAgent(descriptor);
+		return descriptor;
+	}
+
+	private void publishPredictions(DatasetDescriptor descriptor, HashMap<String, ArrayList<Prediction>> predictions) {
+		// NOTE: receives an array of predictions, converts it to a Dataset and publishes it
+		Dataset dataset = Datasets.toDataset(descriptor, predictions);
+		NetworkUtils.uploadDataset(dataset);
+	}
 }
