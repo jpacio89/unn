@@ -63,12 +63,12 @@ public class PublisherActor extends Actor {
 		// NOTE: fetch source rows that are predictable and have no prediction yet
 		try {
 			DatacenterService service = Utils.getDatacenter(true);
-			Call<Dataset> csv = service.fetchUnpredicted(descriptor.getNamespace());
-			Response<Dataset> response = csv.execute();
-			Dataset dataset = response.body();
+			Call<String> csv = service.fetchUnpredicted(descriptor.getNamespace());
+			Response<String> response = csv.execute();
+			Dataset dataset = new CSVHelper().parse(response.body())
+				.withDescriptor(descriptor);
 			return dataset;
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
