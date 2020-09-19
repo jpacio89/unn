@@ -4,6 +4,9 @@ package com.unn.engine;
 import com.unn.common.operations.Agent;
 
 public class Config {
+	public static String PRIMER = "primer";
+	public static String ID = "id";
+
 	public static int STIMULI_MIN_VALUE = -20;
 	public static int STIMULI_MAX_VALUE =  20;
 	public static int STIMULI_NULL_VALUE = 0;

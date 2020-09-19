@@ -1,6 +1,7 @@
 package com.unn.engine.dataset;
 
 import com.unn.common.dataset.*;
+import com.unn.engine.Config;
 import com.unn.engine.functions.ValueTimeReward;
 import com.unn.engine.interfaces.IOperator;
 import com.unn.engine.metadata.ValueMapper;
@@ -20,10 +21,11 @@ public class Datasets {
     }
 
     public static InnerDataset toInnerDataset(OuterDataset dataset, ValueMapper mapper, JobConfig job) {
-        String timeFeatureName = job.getTimeFeatureName();
-        String rewardFeatureName = job.getRewardFeatureName();
+        // TODO: implement
+        String timeFeatureName = "id"; // job.getTimeFeatureName();
+        String rewardFeatureName = "\"class\""; // job.getRewardFeatureName();
         InnerDataset innerDataset = new InnerDataset();
-
+        // TODO: todo recheck target features and targetOutput in the job
         ArrayList<IOperator> allLeaves = InnerDatasetLoader.getIdentities(
             job, mapper.getFeatures(),
             job.targetFeature, true);
@@ -79,7 +81,11 @@ public class Datasets {
             Row row = new Row();
             ArrayList<String> rowVals = new ArrayList<>();
             int j = 0;
+            refs = (String[]) Arrays.stream(refs).filter((ref) -> {
+                return !Config.PRIMER.equals(ref) && !Config.ID.equals(ref);
+            }).toArray(size -> new String[size]);
             for (String ref : refs) {
+                // TODO: predictions have namespace prefix and ref doesnt -> fix
                 ArrayList<Prediction> refPrediction = predictions.get(ref);
                 if (j >= refPrediction.size()) {
                     break;

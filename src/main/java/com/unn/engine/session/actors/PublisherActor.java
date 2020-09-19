@@ -23,6 +23,7 @@ import com.unn.engine.session.actions.PublishAction;
 import retrofit2.Call;
 import retrofit2.Response;
 
+import javax.management.Descriptor;
 import java.io.IOException;
 import java.util.*;
 
@@ -59,14 +60,21 @@ public class PublisherActor extends Actor {
 		}
 	}
 
+	private String[] getHeader(String csv) {
+		return csv.split("\n")[0].split(",");
+	}
+
 	private Dataset fetchUnpredicted(DatasetDescriptor descriptor) {
 		// NOTE: fetch source rows that are predictable and have no prediction yet
 		try {
 			DatacenterService service = Utils.getDatacenter(true);
 			Call<String> csv = service.fetchUnpredicted(descriptor.getNamespace());
 			Response<String> response = csv.execute();
-			Dataset dataset = new CSVHelper().parse(response.body())
-				.withDescriptor(descriptor);
+			String body = response.body();
+			DatasetDescriptor upstreamDescriptor = new DatasetDescriptor()
+				.withHeader(new Header().withNames(getHeader(body)));
+			Dataset dataset = new CSVHelper().parse(body)
+				.withDescriptor(upstreamDescriptor);
 			return dataset;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -76,12 +84,12 @@ public class PublisherActor extends Actor {
 
 	private HashMap<String, ArrayList<Prediction>> batchPredict(OuterDataset dataset) {
 		// NOTE: receives a OuterDataset, converts to InnerDataset and makes predictions
-		JobConfig job = action.getSession().getMineConfig();
 		HashMap<String, ArrayList<Prediction>> predictions = new HashMap<>();
         for (Map.Entry<String, MiningScope> entry : action.getSession().getScopes().entrySet()) {
 			ArrayList<Prediction> refPredictions = new ArrayList<>();
 			MiningScope scope = entry.getValue();
 			ValueMapper mapper = scope.getMapper();
+			JobConfig job = scope.getConfig();
 			InnerDataset innerDataset = Datasets.toInnerDataset(dataset, mapper, job);
 			for (Integer time : innerDataset.getTimes()) {
 				HashMap<IOperator, Integer> input = innerDataset.bundleSample(time);
@@ -114,12 +122,12 @@ public class PublisherActor extends Actor {
 	private DatasetDescriptor register(PublishAction action) {
 		String id = UUID.randomUUID().toString()
 			.replace("-", "")
-			.substring(5);
+			.substring(0, 5);
 		String namespace = String.format("com.unn.engine.%s", id);
 		DatacenterLocator locator = (DatacenterLocator) action.getDatasetLocator();
 		String[] dependencies = bundleDependencies(locator);
 		ArrayList<String> refs = new ArrayList<>();
-		refs.add("id");
+		refs.add("primer");
 		for (String scopeId : action.getSession().getScopes().keySet()) {
 			refs.add(scopeId);
 		}
