@@ -98,7 +98,7 @@ public class PublisherActor extends Actor {
 					.withTime(time)
 					.withValue(prediction));
 			}
-			predictions.put(scope.getRef(), refPredictions);
+			predictions.put(entry.getKey(), refPredictions);
 		}
 		return predictions;
 	}

@@ -23,7 +23,7 @@ public class Datasets {
     public static InnerDataset toInnerDataset(OuterDataset dataset, ValueMapper mapper, JobConfig job) {
         // TODO: implement
         String timeFeatureName = "id"; // job.getTimeFeatureName();
-        String rewardFeatureName = "\"class\""; // job.getRewardFeatureName();
+        String rewardFeatureName = "class"; // job.getRewardFeatureName();
         InnerDataset innerDataset = new InnerDataset();
         // TODO: todo recheck target features and targetOutput in the job
         ArrayList<IOperator> allLeaves = InnerDatasetLoader.getIdentities(
@@ -81,26 +81,29 @@ public class Datasets {
             Row row = new Row();
             ArrayList<String> rowVals = new ArrayList<>();
             int j = 0;
-            refs = (String[]) Arrays.stream(refs).filter((ref) -> {
+            refs = Arrays.stream(refs).filter((ref) -> {
                 return !Config.PRIMER.equals(ref) && !Config.ID.equals(ref);
             }).toArray(size -> new String[size]);
             for (String ref : refs) {
-                // TODO: predictions have namespace prefix and ref doesnt -> fix
                 ArrayList<Prediction> refPrediction = predictions.get(ref);
-                if (j >= refPrediction.size()) {
+                if (i >= refPrediction.size()) {
                     break;
                 }
                 Prediction prediction = refPrediction.get(i);
                 if (j == 0) {
                     rowVals.add(prediction.getTime().toString());
                 }
-                rowVals.add(prediction.getValue().toString());
+                if (prediction.getValue() == null) {
+                    rowVals.add("0");
+                } else {
+                    rowVals.add(prediction.getValue().toString());
+                }
                 j++;
             }
             if (rowVals.size() == refs.length+1)  {
                 row.withValues(rowVals.toArray(new String[rowVals.size()]));
                 rows.add(row);
-            } else if (rowVals.size() == 1) {
+            } else if (rowVals.size() == 0) {
                 break;
             }
         }
