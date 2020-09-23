@@ -8,6 +8,7 @@ import com.unn.common.server.NetworkUtils;
 import com.unn.common.server.services.DatacenterService;
 import com.unn.common.utils.CSVHelper;
 import com.unn.common.utils.Utils;
+import com.unn.engine.Config;
 import com.unn.engine.dataset.DatasetLocator;
 import com.unn.engine.dataset.Datasets;
 import com.unn.engine.dataset.InnerDataset;
@@ -42,15 +43,19 @@ public class PublisherActor extends Actor {
 		this.thrd = new Thread(() -> {
 			fetchPredictPublish();
 			this.thrd = null;
+			System.out.println("|PublisherActor| Fetch -> Predict -> Publish done.");
 		});
 		this.thrd.start();
 		return null;
 	}
 
 	private void fetchPredictPublish() {
+		DatasetDescriptor descriptor = this.register(this.action);
 		for(;;) {
-			DatasetDescriptor descriptor = this.register(this.action);
 			Dataset dataset = fetchUnpredicted(descriptor);
+			if (dataset == null) {
+				break;
+			}
 			OuterDataset outerDataset = Datasets.toOuterDataset(dataset);
 			if (outerDataset.sampleCount() == 0) {
 				break;
@@ -71,6 +76,9 @@ public class PublisherActor extends Actor {
 			Call<String> csv = service.fetchUnpredicted(descriptor.getNamespace());
 			Response<String> response = csv.execute();
 			String body = response.body();
+			if (body == null) {
+				return null;
+			}
 			DatasetDescriptor upstreamDescriptor = new DatasetDescriptor()
 				.withHeader(new Header().withNames(getHeader(body)));
 			Dataset dataset = new CSVHelper().parse(body)
@@ -127,7 +135,7 @@ public class PublisherActor extends Actor {
 		DatacenterLocator locator = (DatacenterLocator) action.getDatasetLocator();
 		String[] dependencies = bundleDependencies(locator);
 		ArrayList<String> refs = new ArrayList<>();
-		refs.add("primer");
+		refs.add(Config.PRIMER);
 		for (String scopeId : action.getSession().getScopes().keySet()) {
 			refs.add(scopeId);
 		}
