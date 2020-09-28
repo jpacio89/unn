@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 import com.unn.engine.interfaces.IOperator;
 
-public class OperatorHit implements Serializable {
+public class ArtifactParcel implements Serializable {
 	private static final long serialVersionUID = 6076337110545632229L;
 	public IOperator operator;
 	public int hit;
 	
-	public OperatorHit(IOperator op, int hit) {
+	public ArtifactParcel(IOperator op, int hit) {
 		this.operator = op;
 		this.hit = hit;
 	}
@@ -36,7 +36,7 @@ public class OperatorHit implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		OperatorHit other = (OperatorHit) obj;
+		ArtifactParcel other = (ArtifactParcel) obj;
 		if (hit != other.hit)
 			return false;
 		if (operator == null) {

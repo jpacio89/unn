@@ -8,16 +8,16 @@ import com.unn.engine.utils.CombinationUtils;
 
 public class Artifact implements Serializable {
 	private static final long serialVersionUID = 5903929353773746851L;
-	public ArrayList<OperatorHit> opHits;
+	public ArrayList<ArtifactParcel> opHits;
 	public ArrayList<Integer> wheatTimes;
 	public int reward;
 	public Long weight;
 	
 	public Artifact() {
-		this.opHits = new ArrayList<OperatorHit>();
+		this.opHits = new ArrayList<>();
 	}
 	
-	public Artifact(ArrayList<OperatorHit> opHits, ArrayList<Integer> wheatTimes, int reward) {
+	public Artifact(ArrayList<ArtifactParcel> opHits, ArrayList<Integer> wheatTimes, int reward) {
 		this.opHits = opHits;
 		this.wheatTimes = wheatTimes;
 		this.reward = reward;
@@ -30,7 +30,7 @@ public class Artifact implements Serializable {
 	public static boolean contains(Artifact pivot, Artifact candidate) {
 		// ArrayList<IOperator> doubleRaws = new ArrayList<IOperator>();
 		boolean contains = true;
-		for (OperatorHit opHitCandidate : candidate.opHits) {
+		for (ArtifactParcel opHitCandidate : candidate.opHits) {
 			if (!pivot.opHits.contains(opHitCandidate)) {
 				contains = false;
 				break;
@@ -57,7 +57,7 @@ public class Artifact implements Serializable {
 		return contains;
 	}
 	
-	public static IOperator hasDoubleRaw(OperatorHit opHit) {
+	public static IOperator hasDoubleRaw(ArtifactParcel opHit) {
 		IOperator[] ops = opHit.operator.children();
 		if (ops[0].equals(ops[1])) {
 			return ops[0];
@@ -67,7 +67,7 @@ public class Artifact implements Serializable {
 	
 	// TODO: make unit test
 	public static Artifact isRepetition(ArrayList<Artifact> artifacts, Artifact artifact) {
-		ArrayList<Artifact> toRemove = new ArrayList<Artifact>();
+		ArrayList<Artifact> toRemove = new ArrayList<>();
 		for (Artifact artifactCandidate : artifacts) {
 			if (artifactCandidate.opHits.size() > artifact.opHits.size()) {
 				boolean contains = contains(artifactCandidate, artifact);

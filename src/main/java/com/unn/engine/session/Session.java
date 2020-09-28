@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import com.unn.engine.interfaces.IEnvironment;
 import com.unn.engine.mining.JobConfig;
 import com.unn.engine.mining.MiningScope;
 import com.unn.engine.mining.MiningReport;
@@ -51,9 +50,6 @@ public class Session implements Serializable {
 		} else if (_action instanceof SaveModelAction) {
 			SaveModelAction action = (SaveModelAction) _action;
 			actor = new PersistenceActor(action);
-		} else if (_action instanceof QueryAction) {
-			QueryAction action = (QueryAction) _action;
-			actor = new QueryActor(action);
 		} else if (_action instanceof MineAction) {
 			MineAction action = (MineAction) _action;
 			action.setConf(this.getMineConfig());

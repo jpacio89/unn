@@ -16,7 +16,6 @@ import com.unn.engine.functions.ValueTimeReward;
 public class InnerDatasetLoader {
 	// TODO: refactor this
 	private ValueMapper mapper;
-	
 	OuterDataset outerDataset;
 	JobConfig config;
 	Context context;

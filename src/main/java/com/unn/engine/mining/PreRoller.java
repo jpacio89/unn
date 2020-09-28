@@ -13,20 +13,20 @@ import com.unn.engine.Config;
 import com.unn.engine.utils.MultiplesHashMap;
 import com.unn.engine.utils.RandomManager;
 
-public class TimeTable {
+public class PreRoller {
 	HashMap<IOperator, Integer> operatorIndex;
 	ArrayList<IOperator> leafs;
-	ArrayList<OperatorHit> opHits;
+	ArrayList<ArtifactParcel> opHits;
 	InnerDataset dataset;
 	
 	int reward;
-	MultiplesHashMap<Integer, OperatorHit> findings;
-	MultiplesHashMap<OperatorHit, Integer> opHitPresences;
+	MultiplesHashMap<Integer, ArtifactParcel> findings;
+	MultiplesHashMap<ArtifactParcel, Integer> opHitPresences;
 	MiningStatusObservable miningStatusObservable;
 	
-	public TimeTable(InnerDataset dataset, int reward, MiningStatusObservable statusObservable) {
+	public PreRoller(InnerDataset dataset, int reward, MiningStatusObservable statusObservable) {
 		this.dataset = dataset;
-		this.opHits = new ArrayList<OperatorHit>();
+		this.opHits = new ArrayList<ArtifactParcel>();
 		this.operatorIndex = new HashMap<>();
 		this.reward = reward;
 		this.miningStatusObservable = statusObservable;
@@ -40,8 +40,8 @@ public class TimeTable {
 		int i = 0;
 		
 		for (IOperator operator : operators) {
-			this.opHits.add(new OperatorHit(operator, Config.STIMULI_MIN_VALUE));
-			this.opHits.add(new OperatorHit(operator, Config.STIMULI_MAX_VALUE));
+			this.opHits.add(new ArtifactParcel(operator, Config.STIMULI_MIN_VALUE));
+			this.opHits.add(new ArtifactParcel(operator, Config.STIMULI_MAX_VALUE));
 			this.operatorIndex.put(operator, i * 2);
 			i++;
 		}
@@ -99,7 +99,7 @@ public class TimeTable {
 		long maxN = badTimes.size() * this.opHits.size();
 		
 		for (Integer time : badTimes) {
-			for (OperatorHit opHit : this.opHits) {
+			for (ArtifactParcel opHit : this.opHits) {
 				boolean isCheck = checkTime(opHit.operator, time, opHit.hit);
 				if (!isCheck) {
 					findings.put(time, opHit);
@@ -116,13 +116,13 @@ public class TimeTable {
 	
 	public Artifact createMatrix(ArrayList<Integer> goodTimes, ArrayList<Integer> badTimes) throws Exception {
 		ArrayList<Integer> missingBadTimes = new ArrayList<Integer>(badTimes);		
-		ArrayList<OperatorHit> availableOpHits = new ArrayList<OperatorHit>(this.opHits);
-		ArrayList<OperatorHit> chosenSet = new ArrayList<OperatorHit>();
+		ArrayList<ArtifactParcel> availableOpHits = new ArrayList<ArtifactParcel>(this.opHits);
+		ArrayList<ArtifactParcel> chosenSet = new ArrayList<ArtifactParcel>();
 		
 		while (missingBadTimes.size() > 0) {
 			assert availableOpHits.size() > 0;
 			
-			OperatorHit opHit = RandomManager.getOne(availableOpHits);
+			ArtifactParcel opHit = RandomManager.getOne(availableOpHits);
 			availableOpHits.remove(opHit);
 			
 			ArrayList<Integer> opHitTimes = opHitPresences.get(opHit);
@@ -171,7 +171,7 @@ public class TimeTable {
 		
 		for (Integer time : goodTimes) {
 			boolean isRemoved = false;
-			for (OperatorHit opHit : chosenSet) {
+			for (ArtifactParcel opHit : chosenSet) {
 				boolean isCheck = checkTime(opHit.operator, time, opHit.hit);
 				if (!isCheck) {
 					isRemoved = true;
@@ -200,7 +200,7 @@ public class TimeTable {
 		long timeCounter = 0;
 		for (Integer time : badTimes) {
 			boolean isValid = false;
-			for (OperatorHit opHit : artifact.opHits) {
+			for (ArtifactParcel opHit : artifact.opHits) {
 				boolean ret = checkTime(opHit.operator, time, -opHit.hit);
 				if (ret) {
 					isValid = true;

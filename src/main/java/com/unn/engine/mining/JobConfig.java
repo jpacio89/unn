@@ -22,10 +22,6 @@ public class JobConfig implements Serializable {
 	public HashMap<String, Integer> groupCount;
 	public String timeFeatureName;
 	public String rewardFeatureName;
-
-	
-	//public static Integer mapReward(Integer val) {
-	//	return val != null && val == 5 ? Config.STIMULI_MAX_VALUE : Config.STIMULI_MIN_VALUE;
 		
 	public JobConfig() {
 		this.groupCount = new HashMap<String, Integer>();

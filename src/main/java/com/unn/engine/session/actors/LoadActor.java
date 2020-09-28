@@ -11,13 +11,7 @@ public class LoadActor extends Actor {
 	}
 
 	public ActionResult write() {
-    	// TODO: fix hardcoded openml dataset id
     	this.action.getSession().loadOuterDataset(this.action.getLocator());
-    	
-    	// TODO: remove this
-		/*IEnvironment env = new MiningEnvironment(this.group.getOuterDataset());
-		this.env = env;
-		env.init(action.getContext(), JobConfig.DEFAULT);*/
 		return null;
 	}
 

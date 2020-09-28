@@ -19,7 +19,7 @@ public class Miner {
 	
 	ArrayList<ArrayList<Integer>> trainTimeSets;
 	ArrayList<ArrayList<Integer>> testTimeSets;
-	ArrayList<TimeTable> timetables;
+	ArrayList<PreRoller> timetables;
 
 	private long miningStartTime;
 	
@@ -27,7 +27,7 @@ public class Miner {
 		this.dataset = dataset;
 		this.trainTimeSets = new ArrayList<ArrayList<Integer>>();
 		this.testTimeSets = new ArrayList<ArrayList<Integer>>();
-		this.timetables = new ArrayList<TimeTable>();
+		this.timetables = new ArrayList<PreRoller>();
 		this.isReady = false;
 		this.statusObservable = statusObservable;
 	}
@@ -70,11 +70,11 @@ public class Miner {
 			assertDisjoint();
 		}
 		
-		ArrayList<IOperator> booleanLayer = TimeTable.getBooleanParameters (dataset.getTrainingLeaves());
+		ArrayList<IOperator> booleanLayer = PreRoller.getBooleanParameters (dataset.getTrainingLeaves());
 		Integer[] rewards = { Config.STIMULI_MAX_VALUE, Config.STIMULI_MIN_VALUE };
 		int i = 0;
 		for (Integer reward : rewards) {
-			TimeTable table = new TimeTable(dataset, reward, this.statusObservable);
+			PreRoller table = new PreRoller(dataset, reward, this.statusObservable);
 			table.init(dataset.getTrainingLeaves(), booleanLayer);
 			table.presetFindings(this.trainTimeSets.get(i));
 			this.timetables.add(table);
@@ -103,7 +103,7 @@ public class Miner {
 		for (int i = 0; alive(); i = (i + 1) % this.timetables.size()) {
 			Artifact newArtifact = null;
 			
-			TimeTable table = this.timetables.get(i);
+			PreRoller table = this.timetables.get(i);
 			
 			assert i < this.timetables.size();
 			

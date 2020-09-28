@@ -172,11 +172,11 @@ public class Model implements Serializable {
 	
 	public Boolean isHit(HashMap<IOperator, Integer> inputs, int artifactIndex) {
 		Artifact artifact = this.artifacts.get(artifactIndex);
-		ArrayList<OperatorHit> parcels = artifact.opHits;
+		ArrayList<ArtifactParcel> parcels = artifact.opHits;
 		
 		boolean hit = true;
 		
-		for (OperatorHit parcel : parcels) {
+		for (ArtifactParcel parcel : parcels) {
 			IOperator thd = parcel.operator;
 			Integer parcelOutcome = parcel.hit;
 			
