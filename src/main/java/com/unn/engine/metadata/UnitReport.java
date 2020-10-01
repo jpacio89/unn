@@ -9,11 +9,11 @@ import com.unn.engine.Config;
 
 public class UnitReport implements Serializable {
 	private static final long serialVersionUID = 7533264487477193079L;
-	public final HashMap<String, OuterValueType> units;
+	public final HashMap<String, ValuesDescriptor> units;
 	public String[] features;
 	
 	public UnitReport() {
-		this.units = new HashMap<String, OuterValueType>();
+		this.units = new HashMap<String, ValuesDescriptor>();
 	}
 	
 	public void addDiscreteSet(String feature, ArrayList<String> values) {
@@ -21,7 +21,7 @@ public class UnitReport implements Serializable {
 		this.units.put(feature, new DiscreteSet(values));
 	}
 	
-	public OuterValueType getValues(String feature) {
+	public ValuesDescriptor getValues(String feature) {
 		return this.units.get(feature);
 	}
 	
@@ -33,7 +33,7 @@ public class UnitReport implements Serializable {
 	}
 	
 	public Integer getInnerValue(String feature, String outerValue) {
-		OuterValueType valueType = this.units.get(feature);
+		ValuesDescriptor valueType = this.units.get(feature);
 		
 		if (valueType instanceof DiscreteSet) {
 			DiscreteSet type = (DiscreteSet) valueType;

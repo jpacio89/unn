@@ -66,7 +66,7 @@ public class ValueMapper {
 		return report.getInnerValue(targetFeature, targetOuterValue);
 	}
 
-	public OuterValueType getValues(String targetFeature) {
+	public ValuesDescriptor getValuesDescriptorByFeature(String targetFeature) {
 		return this.report.getValues(targetFeature);
 	}
 }

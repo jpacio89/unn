@@ -1,9 +1,12 @@
 package com.unn.engine.session.actors;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.unn.engine.dataset.InnerDataset;
+import com.unn.engine.dataset.InnerDatasetLoader;
+import com.unn.engine.interfaces.IOperator;
 import com.unn.engine.metadata.*;
+import com.unn.engine.mining.ScopeConfig;
 import com.unn.engine.session.actions.ActionResult;
 import com.unn.engine.session.actions.MineAction;
 import com.unn.engine.mining.JobConfig;
@@ -26,63 +29,33 @@ public class MineActor extends Actor {
 		Context context = this.session.getContext();
 		
 		// TODO: remove this from Session
-		HashMap<String, MiningScope> envs = this.session.getScopes();
+		HashMap<String, MiningScope> scopes = this.session.getScopes();
 		JobConfig config = buildConfig();
-		
-		MiningScope seedEnv = new MiningScope(dataset);
-		seedEnv.init(context, config);
 
-		ValueMapper units = seedEnv.getMapper();
-		OuterValueType vType = units.getValues(config.targetFeature);
+		// TODO: binarization attempt
+		InnerDatasetLoader loader = new InnerDatasetLoader();
+		loader.init(context, config, dataset);
+		ValueMapper mapper = loader.getValueMapper();
+		InnerDataset innerDataset = loader.load();
+		ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(config.targetFeature);
 
-		if (vType instanceof DiscreteSet) {
-			DiscreteSet set = (DiscreteSet) vType;
+		for (String group : valuesDescriptor.getGroups()) {
+			IOperator op = valuesDescriptor.getClassByValue(group);
+			ScopeConfig scopeConf = new ScopeConfig(op);
+			MiningScope scope = new MiningScope(scopeConf);
+			scopes.put(group, scope);
+		}
 
-			for (String value : set.values) {
-				MiningScope env = new MiningScope(dataset);
-				envs.put(value, env);
+		for (MiningScope scope : scopes.values()) {
+			try {
+				scope.init(context, innerDataset);
+				scope.mine();
 			}
-			
-			for (String value : set.values) {
-				try {
-					MiningScope env = envs.get(value);
-					JobConfig newConfig = (JobConfig) config.clone();
-					newConfig.setTargetOuterValue(value);
-					context.registerJobConfig(newConfig);
-					env.init(context, newConfig);
-					env.mine();
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		} else if (vType instanceof NumericMapper) {
-			NumericMapper numericMapper = (NumericMapper) vType;
-			ArrayList<Integer> innerValues = numericMapper.getAllInnerValues();
-
-			for (Integer innerValue : innerValues) {
-				MiningScope env = new MiningScope(dataset);
-				envs.put(Integer.toString(innerValue), env);
-			}
-			
-			for (Integer innerValue : innerValues) {
-				try {
-					MiningScope env = envs.get(Integer.toString(innerValue));
-					JobConfig newConfig = (JobConfig) config.clone();
-					newConfig.setTargetInnerValue(innerValue);
-					
-					context.registerJobConfig(newConfig);
-					
-					env.init(context, newConfig);
-					env.mine();
-				} 
-				catch (Exception e) {
-					e.printStackTrace();
-				}
+			catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
-		
-		// TODO: fix this
+
 		return null;
 	}
 	

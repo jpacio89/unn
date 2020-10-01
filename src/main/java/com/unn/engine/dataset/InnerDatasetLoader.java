@@ -36,7 +36,7 @@ public class InnerDatasetLoader {
 		return dataset;
 	}
 	
-	public InnerDataset buildDataset() {
+	private InnerDataset buildDataset() {
 		InnerDataset dataset = new InnerDataset();
 		
 		try {
@@ -131,6 +131,9 @@ public class InnerDatasetLoader {
 	}
 	
 	private MiningStatusObservable getStatusObservable() {
+		if (this.context == null) {
+			return null;
+		}
 		return this.context.getStatusObservable(this.config.jobSessionId);
 	}
 	

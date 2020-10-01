@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import com.unn.engine.Config;
 
-public class DiscreteSet extends OuterValueType implements Serializable {
+public class DiscreteSet extends ValuesDescriptor implements Serializable {
 	private static final long serialVersionUID = 2644249077021570502L;
 	public final ArrayList<String> values;
 	

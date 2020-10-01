@@ -9,7 +9,7 @@ import com.unn.engine.dataset.FeatureValueHistogram;
 import com.unn.engine.Config;
 import com.unn.engine.utils.Pair;
 
-public class NumericMapper extends OuterValueType implements Serializable {
+public class NumericMapper extends ValuesDescriptor implements Serializable {
 	private static final long serialVersionUID = 1744475762857207392L;
 	public int groupCount;
 	public ArrayList<Double> possibleValues;
