@@ -14,9 +14,9 @@ public class StatsWalker implements Serializable {
 	
 	public StatsWalker() {
 		this.possibleValues = new ArrayList<Integer>();
-		this.possibleValues.add(Config.STIMULI_MIN_VALUE);
-		this.possibleValues.add(Config.STIMULI_NULL_VALUE);
-		this.possibleValues.add(Config.STIMULI_MAX_VALUE);
+		this.possibleValues.add(Config.STIM_MIN);
+		this.possibleValues.add(Config.STIM_NULL);
+		this.possibleValues.add(Config.STIM_MAX);
 		
 		this.hitMatrix = new int[possibleValues.size()][possibleValues.size()];
 		this.outlier = 0;
@@ -33,19 +33,19 @@ public class StatsWalker implements Serializable {
 	}
 	
 	public void addHit2Matrix(Integer time, Integer expected, Integer guess) {
-		int relaxation = (int) (0.1 * Config.STIMULI_MAX_VALUE);
+		int relaxation = (int) (0.1 * Config.STIM_MAX);
 		
 		if (guess > 0) {
-			guess = guess > Config.STIMULI_MAX_VALUE - relaxation ? Config.STIMULI_MAX_VALUE : guess;
+			guess = guess > Config.STIM_MAX - relaxation ? Config.STIM_MAX : guess;
 		} else {
-			guess = guess < Config.STIMULI_MIN_VALUE + relaxation ? Config.STIMULI_MIN_VALUE : guess;
+			guess = guess < Config.STIM_MIN + relaxation ? Config.STIM_MIN : guess;
 		}
 		
 		int guessIndex = this.possibleValues.indexOf(guess);
 		int expectedIndex = this.possibleValues.indexOf(expected);
 		
 		if (guessIndex < 0) {
-			guessIndex = this.possibleValues.indexOf(Config.STIMULI_NULL_VALUE);
+			guessIndex = this.possibleValues.indexOf(Config.STIM_NULL);
 		}
 		
 		if (guessIndex >= 0 && expectedIndex >= 0) {

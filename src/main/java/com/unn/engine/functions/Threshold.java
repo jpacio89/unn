@@ -46,7 +46,7 @@ public class Threshold extends BaseFunction implements IOperator, Serializable
 			}
 		}
 		
-		int result = Threshold(lbV, vV, Config.STIMULI_MAX_VALUE - 1);
+		int result = Threshold(lbV, vV, Config.STIM_MAX - 1);
 		return result;
 	}
 
@@ -112,8 +112,8 @@ public class Threshold extends BaseFunction implements IOperator, Serializable
 	
 	public static int Threshold (int v, int lb, int ub) {
 		if(v >= lb && v <= ub) {
-			return Config.STIMULI_MAX_VALUE;
+			return Config.STIM_MAX;
 		}
-		return Config.STIMULI_MIN_VALUE;
+		return Config.STIM_MIN;
 	}
 }

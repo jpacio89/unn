@@ -39,19 +39,19 @@ public class NumericMapper extends ValuesDescriptor implements Serializable {
 				break;
 			}
 		}
-		int range = Config.STIMULI_MAX_VALUE - Config.STIMULI_MIN_VALUE + 1;
+		int range = Config.STIM_MAX - Config.STIM_MIN + 1;
 		int step = Math.max(1, range / (this.groupCount + 2));
-		int innerVal = Config.STIMULI_MIN_VALUE + step * index;
+		int innerVal = Config.STIM_MIN + step * index;
 		return innerVal;
 	}
 	
 	public ArrayList<Integer> getAllInnerValues() {
 		ArrayList<Integer> values = new ArrayList<Integer>();
-		int range = Config.STIMULI_MAX_VALUE - Config.STIMULI_MIN_VALUE + 1;
+		int range = Config.STIM_MAX - Config.STIM_MIN + 1;
 		int step = Math.max(1, range / (this.groupCount + 2));
 		
 		for(int i = 0; i < this.mapperBounds.size() + 1; ++i) {
-			int innerVal = Config.STIMULI_MIN_VALUE + step * i;
+			int innerVal = Config.STIM_MIN + step * i;
 			values.add(innerVal);
 		}
 		

@@ -139,11 +139,11 @@ public class RefineryNew {
 			//System.out.println(String.format("%f vs %f", prediction, predictionCheck));
 			
 			if (prediction == null) {
-				errorSum += Config.STIMULI_RANGE;
+				errorSum += Config.STIM_RANGE;
 			} else if (isHigh) {
-				errorSum += Config.STIMULI_MAX_VALUE - prediction;
+				errorSum += Config.STIM_MAX - prediction;
 			} else {
-				errorSum += prediction - Config.STIMULI_MIN_VALUE;
+				errorSum += prediction - Config.STIM_MIN;
 			}
 			
 			if (errorSum >= maxError) {

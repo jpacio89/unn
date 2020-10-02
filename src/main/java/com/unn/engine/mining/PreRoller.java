@@ -40,8 +40,8 @@ public class PreRoller {
 		int i = 0;
 		
 		for (IOperator operator : operators) {
-			this.opHits.add(new ArtifactParcel(operator, Config.STIMULI_MIN_VALUE));
-			this.opHits.add(new ArtifactParcel(operator, Config.STIMULI_MAX_VALUE));
+			this.opHits.add(new ArtifactParcel(operator, Config.STIM_MIN));
+			this.opHits.add(new ArtifactParcel(operator, Config.STIM_MAX));
 			this.operatorIndex.put(operator, i * 2);
 			i++;
 		}
@@ -53,7 +53,7 @@ public class PreRoller {
 		ArrayList<IOperator> paramsWithContants = new ArrayList<IOperator>();
 		paramsWithContants.addAll(args);
 		
-		for (int i = Config.STIMULI_MIN_VALUE; i <= Config.STIMULI_MAX_VALUE; ++i) {
+		for (int i = Config.STIM_MIN; i <= Config.STIM_MAX; ++i) {
 			paramsWithContants.add((IOperator) new Raw(i));
 		}
 		

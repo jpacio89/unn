@@ -32,15 +32,15 @@ public class MineActor extends Actor {
 		HashMap<String, MiningScope> scopes = this.session.getScopes();
 		JobConfig config = buildConfig();
 
-		// TODO: binarization attempt
 		InnerDatasetLoader loader = new InnerDatasetLoader();
 		loader.init(context, config, dataset);
 		ValueMapper mapper = loader.getValueMapper();
 		InnerDataset innerDataset = loader.load();
-		ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(config.targetFeature);
+		ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(
+			config.targetFeature);
 
 		for (String group : valuesDescriptor.getGroups()) {
-			IOperator op = valuesDescriptor.getClassByValue(group);
+			IOperator op = valuesDescriptor.getClassByGroup(group);
 			ScopeConfig scopeConf = new ScopeConfig(op);
 			MiningScope scope = new MiningScope(scopeConf);
 			scopes.put(group, scope);

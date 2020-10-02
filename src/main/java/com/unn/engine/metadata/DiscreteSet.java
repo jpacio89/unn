@@ -29,10 +29,10 @@ public class DiscreteSet extends ValuesDescriptor implements Serializable {
 		ArrayList<Integer> innerValues = new ArrayList<Integer>();
 		
 		if (cardinal() == 1) {
-			innerValues.add(Config.STIMULI_MIN_VALUE);
+			innerValues.add(Config.STIM_MIN);
 		} else {
 			for (int i = 0; i < this.values.size(); ++i) {
-				int innerValue = (int) (Config.STIMULI_MIN_VALUE + i * Math.floor((Config.STIMULI_MAX_VALUE - Config.STIMULI_MIN_VALUE) / (cardinal() - 1)));
+				int innerValue = (int) (Config.STIM_MIN + i * Math.floor((Config.STIM_MAX - Config.STIM_MIN) / (cardinal() - 1)));
 				innerValues.add(innerValue);
 			}	
 		}

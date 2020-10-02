@@ -91,9 +91,9 @@ public class MiningScope implements IEnvironment, Serializable {
 		this.refinedModel = refinery.refine();
 		//this.refinedModel = model;
 		
-		int countMin = this.innerDataset.count(Config.STIMULI_MIN_VALUE);
-		int countNull = this.innerDataset.count(Config.STIMULI_NULL_VALUE);
-		int countMax = this.innerDataset.count(Config.STIMULI_MAX_VALUE);
+		int countMin = this.innerDataset.count(Config.STIM_MIN);
+		int countNull = this.innerDataset.count(Config.STIM_NULL);
+		int countMax = this.innerDataset.count(Config.STIM_MAX);
 		
 		System.out.println("Min Count = " + countMin);
 		System.out.println("Null Count = " + countNull);

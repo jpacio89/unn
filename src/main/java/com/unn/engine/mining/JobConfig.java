@@ -44,7 +44,7 @@ public class JobConfig implements Serializable {
 	}
 	
 	public static Integer mapReward(Integer ref, Integer val) {
-		return val != null && val == ref ? Config.STIMULI_MAX_VALUE : Config.STIMULI_MIN_VALUE;
+		return val != null && val == ref ? Config.STIM_MAX : Config.STIM_MIN;
 	}
 
 	// TODO: call this method in environment group

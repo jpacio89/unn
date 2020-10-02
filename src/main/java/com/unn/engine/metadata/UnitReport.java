@@ -38,7 +38,7 @@ public class UnitReport implements Serializable {
 		if (valueType instanceof DiscreteSet) {
 			DiscreteSet type = (DiscreteSet) valueType;
 			
-			if (type.cardinal() > Config.STIMULI_MAX_VALUE - Config.STIMULI_MIN_VALUE)  {
+			if (type.cardinal() > Config.STIM_MAX - Config.STIM_MIN)  {
 				System.err.println(String.format("Feature: %s value cardinality exceeds Cortex precision.", feature));
 			}
 			
@@ -48,10 +48,10 @@ public class UnitReport implements Serializable {
 				return null;
 			}
 			
-			int innerValue = Config.STIMULI_MIN_VALUE;
+			int innerValue = Config.STIM_MIN;
 			
 			if (type.cardinal() > 1) {
-				innerValue = (int) (Config.STIMULI_MIN_VALUE + index * Math.floor((Config.STIMULI_MAX_VALUE - Config.STIMULI_MIN_VALUE) / (type.cardinal() - 1)));
+				innerValue = (int) (Config.STIM_MIN + index * Math.floor((Config.STIM_MAX - Config.STIM_MIN) / (type.cardinal() - 1)));
 			}
 			
 			return innerValue;

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 
+import com.unn.engine.Config;
+import com.unn.engine.metadata.ValuesDescriptor;
 import com.unn.engine.mining.JobConfig;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.interfaces.IOperator;
@@ -41,59 +43,35 @@ public class InnerDatasetLoader {
 		
 		try {
 			this.mapper = new ValueMapper(this.outerDataset);
-			
+
 			for (String k : mapper.getFeatures()) {
-				System.out.println(String.format("Feature %s", k));
 				mapper.reportUnits(k, this.config.groupCount.get(k));
 			}
-			
+
 			ArrayList<IOperator> leaves = getIdentities(this.config, mapper.getFeatures(), this.config.targetFeature, true);
 			this.mapper.setFeatures(this.outerDataset.getHeader().toArray(new String[this.outerDataset.getHeader().size()]));
-			
 			dataset.setTrainingLeaves(getIdentities(this.config, mapper.getFeatures(), this.config.targetFeature, false));
 			dataset.setAllLeaves(leaves);
+
 			int n = 0;
-			
-			Integer refInnerValue = config.targetInnerValue;
-			
-			if (config.targetOuterValue != null) {
-				refInnerValue = this.mapper.getInnerValue(config.targetFeature, config.targetOuterValue);
-			}
-			
-			int targetFeatureIndex = this.outerDataset.getFeatureIndex(this.config.targetFeature);
-			
-			if (targetFeatureIndex < 0) {
-				return null;
-			}
-			
 			for (int i = 0; i < this.outerDataset.sampleCount(); ++i) {
 				if (getStatusObservable() != null) {
 					getStatusObservable().updateProgress(n, this.outerDataset.sampleCount());
 				}
-				
-				String outerTargetValue = this.outerDataset.getFeatureAtSample(i, targetFeatureIndex);
-				Integer rewardInnerValue = this.mapper.getInnerValue(this.config.targetFeature, outerTargetValue);
-				
-				rewardInnerValue = JobConfig.mapReward(refInnerValue, rewardInnerValue);
-				
 				int j = 0;
 				for (String key : this.outerDataset.getHeader()) {
-					if (this.config.featureBlacklist != null && Arrays.stream(this.config.featureBlacklist).anyMatch(key::equals)) {
-						j++;
-						continue;
-					}
-					
 					String outerFeatureValue = this.outerDataset.getFeatureAtSample(i, j);
-					Integer innerValue = this.mapper.getInnerValue(key, outerFeatureValue);
-					ValueTimeReward vtr = new ValueTimeReward(dataset.getFunctorByClassName(key), innerValue, n, rewardInnerValue);
-					
-					dataset.add(vtr);
+					ValuesDescriptor valuesDescriptor = this.mapper.getValuesDescriptorByFeature(key);
+					String featureGroup = valuesDescriptor.getGroupByOuterValue(outerFeatureValue);
+					for (String group : valuesDescriptor.getGroups()) {
+						Integer v = featureGroup.equals(group) ?
+							Config.STIM_MAX : Config.STIM_MIN;
+						IOperator op = valuesDescriptor.getClassByGroup(group);
+						ValueTimeReward vtr = new ValueTimeReward(op, v, n, null);
+						dataset.add(vtr);
+					}
 					j++;
 				}
-				
-				ValueTimeReward vtr = new ValueTimeReward(dataset.getFunctorByClassName(this.config.targetFeature), rewardInnerValue, n, rewardInnerValue);
-				dataset.add(vtr);
-				
 				n++;
 			}
 		} 
@@ -103,7 +81,8 @@ public class InnerDatasetLoader {
 		
 		return dataset;
 	}
-	
+
+	// TODO: binarization - add Raw elements for each group
 	public static ArrayList<IOperator> getIdentities(JobConfig config, Set<String> features, String rewardFeature, boolean includeReward) {
 		ArrayList<IOperator> operators = new ArrayList<IOperator>();
 		int n = 0;

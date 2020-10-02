@@ -42,8 +42,8 @@ public class Predictor {
 	    		if (possibleValues == null) {
 	    			ArrayList<Integer> rnds = new ArrayList<Integer>();
 	    			// TODO: fix this for more than boolean features
-	    			rnds.add(Config.STIMULI_MIN_VALUE);
-	    			rnds.add(Config.STIMULI_MAX_VALUE);
+	    			rnds.add(Config.STIM_MIN);
+	    			rnds.add(Config.STIM_MAX);
 	    			Integer guess = RandomManager.getOne(rnds);
 	    			values.put(input, guess);
 	    			

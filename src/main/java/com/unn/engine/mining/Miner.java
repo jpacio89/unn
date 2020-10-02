@@ -40,13 +40,13 @@ public class Miner {
 		this.model = new Model(this.dataset);
 		int ratio = 1;
 		
-		ArrayList<Integer> allTimesLow  = dataset.getTimesByReward(Config.STIMULI_MIN_VALUE, dataset.count(Config.STIMULI_MIN_VALUE) / ratio);
-		ArrayList<Integer> allTimesNull  = dataset.getTimesByReward(Config.STIMULI_NULL_VALUE, dataset.count(Config.STIMULI_NULL_VALUE) / ratio);
+		ArrayList<Integer> allTimesLow  = dataset.getTimesByReward(Config.STIM_MIN, dataset.count(Config.STIM_MIN) / ratio);
+		ArrayList<Integer> allTimesNull  = dataset.getTimesByReward(Config.STIM_NULL, dataset.count(Config.STIM_NULL) / ratio);
 		if (allTimesNull != null) {
 			allTimesLow.addAll(allTimesNull);
 		}
 		
-		ArrayList<Integer> allTimesHigh = dataset.getTimesByReward(Config.STIMULI_MAX_VALUE, dataset.count(Config.STIMULI_MAX_VALUE));
+		ArrayList<Integer> allTimesHigh = dataset.getTimesByReward(Config.STIM_MAX, dataset.count(Config.STIM_MAX));
 		
 		if (allTimesLow == null || allTimesHigh == null) {
 			return;
@@ -71,7 +71,7 @@ public class Miner {
 		}
 		
 		ArrayList<IOperator> booleanLayer = PreRoller.getBooleanParameters (dataset.getTrainingLeaves());
-		Integer[] rewards = { Config.STIMULI_MAX_VALUE, Config.STIMULI_MIN_VALUE };
+		Integer[] rewards = { Config.STIM_MAX, Config.STIM_MIN};
 		int i = 0;
 		for (Integer reward : rewards) {
 			PreRoller table = new PreRoller(dataset, reward, this.statusObservable);
