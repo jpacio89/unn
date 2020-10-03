@@ -41,14 +41,13 @@ public class MineActor extends Actor {
 
 		for (String group : valuesDescriptor.getGroups()) {
 			IFunctor op = valuesDescriptor.getFunctorByGroup(group);
-			ScopeConfig scopeConf = new ScopeConfig(op);
+			ScopeConfig scopeConf = new ScopeConfig(loader, innerDataset, op);
 			MiningScope scope = new MiningScope(scopeConf);
 			scopes.put(group, scope);
 		}
 
 		for (MiningScope scope : scopes.values()) {
 			try {
-				scope.init(context, innerDataset);
 				scope.mine();
 			}
 			catch (Exception e) {

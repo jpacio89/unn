@@ -18,7 +18,9 @@ public class MiningScope implements IEnvironment, Serializable {
 	private Model refinedModel;
 	private ScopeConfig config;
 	
-	public MiningScope() { }
+	public MiningScope(ScopeConfig config) {
+		this.config = config;
+	}
 	
 	@Override
 	public ArrayList<IFunctor> getInputs(String market) {
@@ -37,12 +39,6 @@ public class MiningScope implements IEnvironment, Serializable {
 			return obs;
 		}
 		return new MiningStatusObservable();
-	}
-	
-	public void init(ScopeConfig config) {
-		System.out.println(String.format("|MiningEnvironment| Initializing miner"));
-		this.config = config;
-		getStatusObservable().updateStatusLabel("LOADING");
 	}
 
 	private InnerDataset getInnerDataset() {

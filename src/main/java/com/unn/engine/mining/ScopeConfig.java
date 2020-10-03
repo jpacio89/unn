@@ -9,9 +9,10 @@ public class ScopeConfig {
     InnerDatasetLoader loader;
     InnerDataset dataset;
 
-    public ScopeConfig(InnerDatasetLoader loader, IFunctor featureSelector) {
+    public ScopeConfig(InnerDatasetLoader loader, InnerDataset innerDataset, IFunctor featureSelector) {
         this.featureSelector = featureSelector;
         this.loader = loader;
+        this.dataset = innerDataset;
     }
 
     public IFunctor getFeatureSelector() {
