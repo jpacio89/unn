@@ -2,6 +2,7 @@ package com.unn.engine.mining;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.interfaces.IFunctor;
@@ -9,46 +10,49 @@ import com.unn.engine.Config;
 
 public class Miner {
 	public final int MIN_WHEAT_COUNT = 0;
-	public final long MINING_TIME = (long) (1 * 60 * 1000);
+	public final long MINING_TIME = 1 * 60 * 1000;
 	
 	InnerDataset dataset;
 	Model model;
 	boolean isReady;
-	
+	IFunctor rewardSelector;
+
 	MiningStatusObservable statusObservable;
-	
 	ArrayList<ArrayList<Integer>> trainTimeSets;
 	ArrayList<ArrayList<Integer>> testTimeSets;
 	ArrayList<PreRoller> timetables;
 
 	private long miningStartTime;
 	
-	public Miner(InnerDataset dataset, MiningStatusObservable statusObservable) {
+	public Miner(InnerDataset dataset, IFunctor rewardSelector, MiningStatusObservable statusObservable) {
 		this.dataset = dataset;
-		this.trainTimeSets = new ArrayList<ArrayList<Integer>>();
-		this.testTimeSets = new ArrayList<ArrayList<Integer>>();
-		this.timetables = new ArrayList<PreRoller>();
+		this.trainTimeSets = new ArrayList<>();
+		this.testTimeSets = new ArrayList<>();
+		this.timetables = new ArrayList<>();
 		this.isReady = false;
 		this.statusObservable = statusObservable;
+		this.rewardSelector = rewardSelector;
 	}
 	
 	public void init() throws Exception {
 		this.trainTimeSets.clear();
 		this.testTimeSets.clear();
 		this.timetables.clear();
-		
 		this.model = new Model(this.dataset);
-		int ratio = 1;
-		
-		ArrayList<Integer> allTimesLow  = dataset.getTimesByReward(Config.STIM_MIN, dataset.count(Config.STIM_MIN) / ratio);
-		ArrayList<Integer> allTimesNull  = dataset.getTimesByReward(Config.STIM_NULL, dataset.count(Config.STIM_NULL) / ratio);
-		if (allTimesNull != null) {
-			allTimesLow.addAll(allTimesNull);
+
+		ArrayList<Integer> allTimesLow  = dataset.getTimesByFunctor(
+			this.rewardSelector, Config.STIM_MIN);
+		ArrayList<Integer> allTimesNull  = dataset.getTimesByFunctor(
+			this.rewardSelector, Config.STIM_NULL);
+
+		if (allTimesNull.size() > 0) {
+			System.out.println("|Miner| ERROR -> found NULL times");
 		}
 		
-		ArrayList<Integer> allTimesHigh = dataset.getTimesByReward(Config.STIM_MAX, dataset.count(Config.STIM_MAX));
+		ArrayList<Integer> allTimesHigh = dataset.getTimesByFunctor(
+			this.rewardSelector, Config.STIM_MAX);
 		
-		if (allTimesLow == null || allTimesHigh == null) {
+		if (allTimesLow.size() == 0 || allTimesHigh.size() == 0) {
 			return;
 		}
 		
@@ -58,24 +62,35 @@ public class Miner {
 		int midPointLow = allTimesLow.size() / 2;
 		int midPointHigh = allTimesHigh.size() / 2;
 		
-		System.out.println(String.format("|Miner| Training set size: lows=%d, highs=%d", midPointLow, midPointHigh));
-		
-		this.trainTimeSets.add(new ArrayList<Integer> (allTimesLow.subList(0, midPointLow)));
-		this.trainTimeSets.add(new ArrayList<Integer> (allTimesHigh.subList(0, midPointHigh)));
+		System.out.println(String.format("|Miner| Training set size: lows=%d, highs=%d",
+			midPointLow, midPointHigh));
 
-		this.testTimeSets.add(new ArrayList<Integer> (allTimesLow.subList(midPointLow, allTimesLow.size())));
-		this.testTimeSets.add(new ArrayList<Integer> (allTimesHigh.subList(midPointHigh, allTimesHigh.size())));
-		
+		this.trainTimeSets.add(allTimesLow.stream()
+			.limit(midPointLow)
+			.collect(Collectors.toCollection(ArrayList::new)));
+		this.trainTimeSets.add(allTimesLow.stream()
+			.limit(midPointHigh)
+			.collect(Collectors.toCollection(ArrayList::new)));
+		this.testTimeSets.add(allTimesLow.stream()
+				.skip(midPointLow)
+				.collect(Collectors.toCollection(ArrayList::new)));
+		this.testTimeSets.add(allTimesLow.stream()
+				.skip(midPointHigh)
+				.collect(Collectors.toCollection(ArrayList::new)));
+
 		if (Config.ASSERT) {
 			assertDisjoint();
 		}
-		
-		ArrayList<IFunctor> booleanLayer = PreRoller.getBooleanParameters (dataset.getTrainingLeaves());
-		Integer[] rewards = { Config.STIM_MAX, Config.STIM_MIN};
+
+		ArrayList<IFunctor> trainingFunctors = dataset.getFunctors().stream()
+			.filter((functor) -> !functor.equals(this.rewardSelector))
+			.collect(Collectors.toCollection(ArrayList::new));
+		ArrayList<IFunctor> thresholdLayer = PreRoller.getBooleanParameters(trainingFunctors);
+		Integer[] rewards = { Config.STIM_MAX, Config.STIM_MIN };
 		int i = 0;
 		for (Integer reward : rewards) {
 			PreRoller table = new PreRoller(dataset, reward, this.statusObservable);
-			table.init(dataset.getTrainingLeaves(), booleanLayer);
+			table.init(trainingFunctors, thresholdLayer);
 			table.presetFindings(this.trainTimeSets.get(i));
 			this.timetables.add(table);
 			i++;

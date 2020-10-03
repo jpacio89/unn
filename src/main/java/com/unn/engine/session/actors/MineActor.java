@@ -49,8 +49,7 @@ public class MineActor extends Actor {
 		for (MiningScope scope : scopes.values()) {
 			try {
 				scope.mine();
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

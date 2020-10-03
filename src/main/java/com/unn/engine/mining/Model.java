@@ -198,7 +198,7 @@ public class Model implements Serializable {
 	}
 
 	public ArrayList<IFunctor> getInputs() {
-		return this.dataset.getTrainingLeaves();
+		return this.dataset.getFunctors();
 	}
 	
 	public ArrayList<Artifact> getArtifacts() {
@@ -211,7 +211,7 @@ public class Model implements Serializable {
 	
 	private HashMap<IFunctor, Integer> getInputsByTime(int time) {
 		HashMap<IFunctor, Integer> inputs = new HashMap<IFunctor, Integer>();
-		for (IFunctor param : this.dataset.getTrainingLeaves()) {
+		for (IFunctor param : this.dataset.getFunctors()) {
 			int val = this.dataset.getValueByTime(param, time);
 			inputs.put(param, val);
 		}

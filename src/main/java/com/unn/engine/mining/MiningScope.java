@@ -56,8 +56,8 @@ public class MiningScope implements IEnvironment, Serializable {
 		getStatusObservable().updateStatusLabel("BUFFERING");
 
 		// TODO: set rewards by time depending on mining target binarized feature
-
-		Miner miner = new Miner(getInnerDataset(), getStatusObservable());
+		IFunctor rewardSelector = this.config.featureSelector;
+		Miner miner = new Miner(getInnerDataset(), rewardSelector, getStatusObservable());
 		miner.init();
 		
 		if (!miner.ready()) {
@@ -78,14 +78,6 @@ public class MiningScope implements IEnvironment, Serializable {
 		}
 		
 		this.refinedModel = refinery.refine();
-		
-		int countMin = getInnerDataset().count(Config.STIM_MIN);
-		int countNull = getInnerDataset().count(Config.STIM_NULL);
-		int countMax = getInnerDataset().count(Config.STIM_MAX);
-		
-		System.out.println("Min Count = " + countMin);
-		System.out.println("Null Count = " + countNull);
-		System.out.println("Max Count = " + countMax);
 		
 		getStatusObservable().updateStatusLabel("DONE");
 		

@@ -48,13 +48,12 @@ public class PreRoller {
 	}
 	
 	public static ArrayList<IFunctor> getBooleanParameters (ArrayList<IFunctor> args) {
-		ArrayList<IFunctor> booleanParameters = new ArrayList<IFunctor>();
-		
-		ArrayList<IFunctor> paramsWithContants = new ArrayList<IFunctor>();
+		ArrayList<IFunctor> booleanParameters = new ArrayList<>();
+		ArrayList<IFunctor> paramsWithContants = new ArrayList<>();
 		paramsWithContants.addAll(args);
 		
 		for (int i = Config.STIM_MIN; i <= Config.STIM_MAX; ++i) {
-			paramsWithContants.add((IFunctor) new Raw(i));
+			paramsWithContants.add(new Raw(i));
 		}
 		
 		int counter = 0;
@@ -63,14 +62,13 @@ public class PreRoller {
 			for (int j = 0; j < paramsWithContants.size(); ++j) {
 				IFunctor lh = paramsWithContants.get(i);
 				IFunctor rh = paramsWithContants.get(j);
-				
+
 				if (!lh.isParameter() && !rh.isParameter()) {
 					continue;
 				}
-				
+
 				Threshold thd = new Threshold(lh, rh);
 				thd.setDescriptor(new FunctionDescriptor(".", thd.toString(), counter));
-				
 				booleanParameters.add(thd);
 				counter++;
 			}
@@ -232,7 +230,7 @@ public class PreRoller {
 		Integer oldValue = dataset.getValueByTime(operator, time);
 		
 		if (oldValue == null) {
-			dataset.add(new ValueTimeReward(operator, binaryResult, time, this.dataset.getRewardByTime(time)));
+			dataset.add(new ValueTimeReward(operator, binaryResult, time, null));
 		} else if (oldValue != binaryResult) {
 			throw new Exception();
 		}

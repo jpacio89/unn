@@ -29,12 +29,12 @@ public class Datasets {
         ArrayList<IFunctor> allLeaves = InnerDatasetLoader.getFunctorsByFeatures(
             job, mapper.getFeatures(),
             job.targetFeature, true);
-        innerDataset.setAllLeaves(allLeaves);
 
         ArrayList<IFunctor> trainLeaves = InnerDatasetLoader.getFunctorsByFeatures(
-                job, mapper.getFeatures(),
-                job.targetFeature, false);
-        innerDataset.setTrainingLeaves(trainLeaves);
+            job, mapper.getFeatures(),
+            job.targetFeature, false);
+
+        innerDataset.setFunctors(trainLeaves);
 
         for (int sampleIndex = 0; sampleIndex < dataset.sampleCount(); ++sampleIndex) {
             Integer timeFeatureIndex = dataset.getFeatureIndex(timeFeatureName);
