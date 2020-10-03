@@ -7,7 +7,7 @@ import java.util.Set;
 
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.MiningScope;
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.session.Session;
 import com.unn.engine.Config;
 import com.unn.engine.utils.RandomManager;
@@ -27,16 +27,16 @@ public class Predictor {
 		this.report = new PredictionReport();
 		
 		for (Entry<String, MiningScope> env : envs.entrySet()) {
-			ArrayList<IOperator> inputs = env.getValue().getInputs("");
+			ArrayList<IFunctor> inputs = env.getValue().getInputs("");
 			ValueMapper unitReport = env.getValue().getMapper();
 			
 	    	if (inputs == null) {
 	    		continue;
 	    	}
 	    	
-	    	HashMap<IOperator, Integer> values = new HashMap<IOperator, Integer>();
+	    	HashMap<IFunctor, Integer> values = new HashMap<IFunctor, Integer>();
 	    	
-	    	for (IOperator input : inputs) {
+	    	for (IFunctor input : inputs) {
 	    		HashMap<String, Boolean> possibleValues = this.config.seeds.get(input.toString());
 	    		
 	    		if (possibleValues == null) {

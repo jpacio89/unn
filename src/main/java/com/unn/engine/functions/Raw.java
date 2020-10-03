@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 
 public class Raw extends BaseFunction implements Serializable
 {
@@ -25,7 +25,7 @@ public class Raw extends BaseFunction implements Serializable
 	}
 
 	@Override
-	public void getParameters (ArrayList<IOperator> parameters) {
+	public void getParameters (ArrayList<IFunctor> parameters) {
 		if (isParameter()) {
 			parameters.add (this);
 		}
@@ -90,15 +90,15 @@ public class Raw extends BaseFunction implements Serializable
 	}
 	
 	@Override
-	public IOperator[] children () {
+	public IFunctor[] children () {
 		return null;
 	}
 	
 	@Override
-	public void setParameters (IOperator[] params) {}
+	public void setParameters (IFunctor[] params) {}
 
 	@Override
-	public Integer operate(HashMap<IOperator, Integer> values) throws Exception {
+	public Integer operate(HashMap<IFunctor, Integer> values) throws Exception {
 		throw new Exception();
 	}
 	

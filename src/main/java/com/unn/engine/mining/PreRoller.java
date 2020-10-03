@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.unn.engine.dataset.InnerDataset;
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.functions.FunctionDescriptor;
 import com.unn.engine.functions.Raw;
 import com.unn.engine.functions.Threshold;
@@ -14,8 +14,8 @@ import com.unn.engine.utils.MultiplesHashMap;
 import com.unn.engine.utils.RandomManager;
 
 public class PreRoller {
-	HashMap<IOperator, Integer> operatorIndex;
-	ArrayList<IOperator> leafs;
+	HashMap<IFunctor, Integer> operatorIndex;
+	ArrayList<IFunctor> leafs;
 	ArrayList<ArtifactParcel> opHits;
 	InnerDataset dataset;
 	
@@ -32,14 +32,14 @@ public class PreRoller {
 		this.miningStatusObservable = statusObservable;
 	}
 	
-	public void init(ArrayList<IOperator> leafs, ArrayList<IOperator> booleanLayer) {
+	public void init(ArrayList<IFunctor> leafs, ArrayList<IFunctor> booleanLayer) {
 		this.leafs = leafs;
 		this.opHits.clear();
 		
-		ArrayList<IOperator> operators = booleanLayer;
+		ArrayList<IFunctor> operators = booleanLayer;
 		int i = 0;
 		
-		for (IOperator operator : operators) {
+		for (IFunctor operator : operators) {
 			this.opHits.add(new ArtifactParcel(operator, Config.STIM_MIN));
 			this.opHits.add(new ArtifactParcel(operator, Config.STIM_MAX));
 			this.operatorIndex.put(operator, i * 2);
@@ -47,22 +47,22 @@ public class PreRoller {
 		}
 	}
 	
-	public static ArrayList<IOperator> getBooleanParameters (ArrayList<IOperator> args) {
-		ArrayList<IOperator> booleanParameters = new ArrayList<IOperator>();
+	public static ArrayList<IFunctor> getBooleanParameters (ArrayList<IFunctor> args) {
+		ArrayList<IFunctor> booleanParameters = new ArrayList<IFunctor>();
 		
-		ArrayList<IOperator> paramsWithContants = new ArrayList<IOperator>();
+		ArrayList<IFunctor> paramsWithContants = new ArrayList<IFunctor>();
 		paramsWithContants.addAll(args);
 		
 		for (int i = Config.STIM_MIN; i <= Config.STIM_MAX; ++i) {
-			paramsWithContants.add((IOperator) new Raw(i));
+			paramsWithContants.add((IFunctor) new Raw(i));
 		}
 		
 		int counter = 0;
 		
 		for (int i = 0; i < paramsWithContants.size(); ++i) {
 			for (int j = 0; j < paramsWithContants.size(); ++j) {
-				IOperator lh = paramsWithContants.get(i);
-				IOperator rh = paramsWithContants.get(j);
+				IFunctor lh = paramsWithContants.get(i);
+				IFunctor rh = paramsWithContants.get(j);
 				
 				if (!lh.isParameter() && !rh.isParameter()) {
 					continue;
@@ -79,7 +79,7 @@ public class PreRoller {
 		return booleanParameters;
 	}
 	
-	public boolean checkTime(IOperator op, int time, int hitToCheck) throws Exception {
+	public boolean checkTime(IFunctor op, int time, int hitToCheck) throws Exception {
 		Integer val = this.dataset.getValueByTime(op, time);
 		
 		if (val == null) {
@@ -220,11 +220,11 @@ public class PreRoller {
 		return true;
 	}
 	
-	private void calculate(IOperator operator, Integer time) throws Exception {
+	private void calculate(IFunctor operator, Integer time) throws Exception {
 		// operator.recycle();
-		HashMap<IOperator, Integer> values = new HashMap<IOperator, Integer>();
+		HashMap<IFunctor, Integer> values = new HashMap<IFunctor, Integer>();
 		
-		for (IOperator param : this.leafs) {
+		for (IFunctor param : this.leafs) {
 			values.put(param, dataset.getValueByTime(param, time));
 		}
 		

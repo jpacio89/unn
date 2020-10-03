@@ -2,9 +2,9 @@ package com.unn.engine.functions;
 
 import java.io.Serializable;
 
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 
-public abstract class BaseFunction implements IOperator, Serializable
+public abstract class BaseFunction implements IFunctor, Serializable
 {
 	private static final long serialVersionUID = 2944349782766148256L;
 	Cache cache_;

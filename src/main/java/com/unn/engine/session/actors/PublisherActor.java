@@ -9,12 +9,11 @@ import com.unn.common.server.services.DatacenterService;
 import com.unn.common.utils.CSVHelper;
 import com.unn.common.utils.Utils;
 import com.unn.engine.Config;
-import com.unn.engine.dataset.DatasetLocator;
 import com.unn.engine.dataset.Datasets;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.dataset.datacenter.DatacenterLocator;
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.JobConfig;
 import com.unn.engine.mining.MiningScope;
@@ -24,7 +23,6 @@ import com.unn.engine.session.actions.PublishAction;
 import retrofit2.Call;
 import retrofit2.Response;
 
-import javax.management.Descriptor;
 import java.io.IOException;
 import java.util.*;
 
@@ -100,7 +98,7 @@ public class PublisherActor extends Actor {
 			JobConfig job = scope.getConfig();
 			InnerDataset innerDataset = Datasets.toInnerDataset(dataset, mapper, job);
 			for (Integer time : innerDataset.getTimes()) {
-				HashMap<IOperator, Integer> input = innerDataset.bundleSample(time);
+				HashMap<IFunctor, Integer> input = innerDataset.bundleSample(time);
 				Double prediction = scope.predict(input);
 				refPredictions.add(new Prediction()
 					.withTime(time)

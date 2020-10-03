@@ -5,14 +5,14 @@ import java.util.HashMap;
 
 import com.unn.engine.functions.FunctionDescriptor;
 
-public interface IOperator
+public interface IFunctor
 {
 	public interface OpIterator
 	{
-		abstract IOperator next ();
+		abstract IFunctor next ();
 	}
 	
-	abstract Integer operate (HashMap<IOperator, Integer> values) throws Exception;
+	abstract Integer operate (HashMap<IFunctor, Integer> values) throws Exception;
 	
 	abstract int value () throws Exception;
 	
@@ -20,7 +20,7 @@ public interface IOperator
 	
 	abstract void define (int v);
 	
-	abstract void getParameters (ArrayList<IOperator> parameters);
+	abstract void getParameters (ArrayList<IFunctor> parameters);
 		
 	abstract void updateSignature (); 
 	
@@ -30,13 +30,13 @@ public interface IOperator
 
 	abstract boolean isBoolean ();
 	
-	abstract void setParameters(IOperator[] params);
+	abstract void setParameters(IFunctor[] params);
 	
 	abstract OpIterator iterator ();
 	
 	abstract void recycle ();
 	
-	abstract IOperator[] children ();
+	abstract IFunctor[] children ();
 	
 	abstract String hash ();
 	

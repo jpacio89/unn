@@ -1,19 +1,36 @@
 package com.unn.engine.mining;
 
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.dataset.InnerDataset;
+import com.unn.engine.dataset.InnerDatasetLoader;
+import com.unn.engine.interfaces.IFunctor;
 
 public class ScopeConfig {
-    IOperator featureSelector;
+    IFunctor featureSelector;
+    InnerDatasetLoader loader;
+    InnerDataset dataset;
 
-    public ScopeConfig(IOperator featureSelector) {
+    public ScopeConfig(InnerDatasetLoader loader, IFunctor featureSelector) {
         this.featureSelector = featureSelector;
+        this.loader = loader;
     }
 
-    public IOperator getSelector() {
+    public IFunctor getFeatureSelector() {
         return featureSelector;
     }
 
-    public void setSelector(IOperator selector) {
-        this.featureSelector = selector;
+    public void setFeatureSelector(IFunctor featureSelector) {
+        this.featureSelector = featureSelector;
+    }
+
+    public InnerDatasetLoader getLoader() {
+        return loader;
+    }
+
+    public void setLoader(InnerDatasetLoader loader) {
+        this.loader = loader;
+    }
+
+    public InnerDataset getInnerDataset() {
+        return this.dataset;
     }
 }

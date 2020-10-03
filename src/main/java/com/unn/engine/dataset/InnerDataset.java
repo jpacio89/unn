@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.functions.ValueTimeReward;
 import com.unn.engine.utils.MultiplesHashMap;
 import com.unn.engine.utils.RandomManager;
@@ -13,11 +13,11 @@ public class InnerDataset implements Serializable {
 	private static final long serialVersionUID = 4804115730789995484L;
 	ArrayList<Integer> times;
 	HashMap<Integer, Integer> timedRewards;
-	HashMap<IOperator, HashMap<Integer, Integer>> timedValues;
+	HashMap<IFunctor, HashMap<Integer, Integer>> timedValues;
 	MultiplesHashMap<Integer, Integer> rewardedTimes;
 	
-	ArrayList<IOperator> args;
-	IOperator[] localArgs;
+	ArrayList<IFunctor> args;
+	IFunctor[] localArgs;
 	
 	public InnerDataset() {
 		this.times = new ArrayList<>();
@@ -72,7 +72,7 @@ public class InnerDataset implements Serializable {
 		return RandomManager.getMany(times, elementCount);
 	}
 
-	public Integer getValueByTime(IOperator op, int time) {		
+	public Integer getValueByTime(IFunctor op, int time) {
 		if (!this.timedValues.containsKey(op)) {
 			return null;
 		}
@@ -84,20 +84,20 @@ public class InnerDataset implements Serializable {
 		return this.timedRewards.get(time);
 	}
 	
-	public ArrayList<IOperator> getTrainingLeaves() {
+	public ArrayList<IFunctor> getTrainingLeaves() {
 		return this.args;
 	}
 	
-	public IOperator[] getAllLeaves() {
+	public IFunctor[] getAllLeaves() {
 		return this.localArgs;
 	}
 	
-	public void setTrainingLeaves(ArrayList<IOperator> leaves) {
+	public void setTrainingLeaves(ArrayList<IFunctor> leaves) {
 		this.args = leaves;
 	}
 	
-	public void setAllLeaves(ArrayList<IOperator> leaves) {
-		this.localArgs = leaves.toArray(new IOperator[leaves.size()]);
+	public void setAllLeaves(ArrayList<IFunctor> leaves) {
+		this.localArgs = leaves.toArray(new IFunctor[leaves.size()]);
 	}
 
 	public int count(int reward) {
@@ -109,8 +109,8 @@ public class InnerDataset implements Serializable {
 		
 	}
 	
-	public IOperator getFunctorByClassName(String className) {
-		for(IOperator op : this.localArgs) {
+	public IFunctor getFunctorByClassName(String className) {
+		for(IFunctor op : this.localArgs) {
 			if (op.getDescriptor().getVtrName().equals(className)) {
 				return op;
 			}
@@ -118,9 +118,9 @@ public class InnerDataset implements Serializable {
 		return null;
 	}
 
-	public HashMap<IOperator, Integer> bundleSample(int time) {
-		HashMap<IOperator, Integer> input = new HashMap<>();
-		for (IOperator functor : getAllLeaves()) {
+	public HashMap<IFunctor, Integer> bundleSample(int time) {
+		HashMap<IFunctor, Integer> input = new HashMap<>();
+		for (IFunctor functor : getAllLeaves()) {
 			Integer value = getValueByTime(functor, time);
 			input.put(functor, value);
 		}

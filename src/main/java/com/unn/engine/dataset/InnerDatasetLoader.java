@@ -1,22 +1,18 @@
 package com.unn.engine.dataset;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Set;
 
 import com.unn.engine.Config;
 import com.unn.engine.metadata.ValuesDescriptor;
 import com.unn.engine.mining.JobConfig;
 import com.unn.engine.metadata.ValueMapper;
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.mining.MiningStatusObservable;
-import com.unn.engine.functions.FunctionDescriptor;
-import com.unn.engine.functions.Raw;
 import com.unn.engine.session.Context;
 import com.unn.engine.functions.ValueTimeReward;
 
 public class InnerDatasetLoader {
-	// TODO: refactor this
 	private ValueMapper mapper;
 	OuterDataset outerDataset;
 	JobConfig config;
@@ -48,9 +44,9 @@ public class InnerDatasetLoader {
 				mapper.reportUnits(k, this.config.groupCount.get(k));
 			}
 
-			ArrayList<IOperator> leaves = getIdentities(this.config, mapper.getFeatures(), this.config.targetFeature, true);
+			ArrayList<IFunctor> leaves = getFunctorsByFeatures(this.mapper);
 			this.mapper.setFeatures(this.outerDataset.getHeader().toArray(new String[this.outerDataset.getHeader().size()]));
-			dataset.setTrainingLeaves(getIdentities(this.config, mapper.getFeatures(), this.config.targetFeature, false));
+			dataset.setTrainingLeaves(getFunctorsByFeatures(this.mapper);
 			dataset.setAllLeaves(leaves);
 
 			int n = 0;
@@ -66,7 +62,7 @@ public class InnerDatasetLoader {
 					for (String group : valuesDescriptor.getGroups()) {
 						Integer v = featureGroup.equals(group) ?
 							Config.STIM_MAX : Config.STIM_MIN;
-						IOperator op = valuesDescriptor.getClassByGroup(group);
+						IFunctor op = valuesDescriptor.getFunctorByGroup(group);
 						ValueTimeReward vtr = new ValueTimeReward(op, v, n, null);
 						dataset.add(vtr);
 					}
@@ -82,30 +78,16 @@ public class InnerDatasetLoader {
 		return dataset;
 	}
 
-	// TODO: binarization - add Raw elements for each group
-	public static ArrayList<IOperator> getIdentities(JobConfig config, Set<String> features, String rewardFeature, boolean includeReward) {
-		ArrayList<IOperator> operators = new ArrayList<IOperator>();
-		int n = 0;
+	public static ArrayList<IFunctor> getFunctorsByFeatures(ValueMapper mapper) {
+		Set<String> features = mapper.getFeatures();
+		ArrayList<IFunctor> operators = new ArrayList<>();
 		for (String feature : features) {
-			if (config.featureBlacklist != null &&
-				Arrays.stream(config.featureBlacklist).anyMatch(feature::equals)) {
-				continue;
+			ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(feature);
+			for (String group : valuesDescriptor.getGroups()) {
+				IFunctor raw = valuesDescriptor.getFunctorByGroup(group);
+				operators.add(raw);
 			}
-			if (feature.equals(rewardFeature)) {
-				continue;
-			}
-    		Raw bop = new Raw();
-    		bop.setDescriptor(new FunctionDescriptor(".", feature, n));
-    		operators.add(bop);
-    		n++;
     	}
-		
-		if (includeReward) {
-			Raw bop = new Raw();
-			bop.setDescriptor(new FunctionDescriptor(".", rewardFeature, n));
-			operators.add(bop);	
-		}
-		
 		return operators;
 	}
 	

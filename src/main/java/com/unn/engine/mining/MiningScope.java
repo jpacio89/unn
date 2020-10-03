@@ -8,26 +8,20 @@ import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.InnerDatasetLoader;
 import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.interfaces.IEnvironment;
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.Config;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.session.Context;
 
 public class MiningScope implements IEnvironment, Serializable {
 	private static final long serialVersionUID = -8783414205445675354L;
-	private ValueMapper mapper;
 	private Model refinedModel;
-	private Context context;
-	private JobConfig config;
-	private OuterDataset outerDataset;
-	private InnerDataset innerDataset;
+	private ScopeConfig config;
 	
-	public MiningScope(OuterDataset outerDataset) {
-		this.outerDataset = outerDataset;
-	}
+	public MiningScope() { }
 	
 	@Override
-	public ArrayList<IOperator> getInputs(String market) {
+	public ArrayList<IFunctor> getInputs(String market) {
 		if (this.refinedModel == null) {
 			return null;
 		}
@@ -44,22 +38,19 @@ public class MiningScope implements IEnvironment, Serializable {
 		}
 		return new MiningStatusObservable();
 	}
-
-	public String getRef() {
-		return String.format("%s@%s", config.targetOuterValue, config.targetFeature);
-	}
 	
-	public void init(Context context, JobConfig config) {
+	public void init(ScopeConfig config) {
 		System.out.println(String.format("|MiningEnvironment| Initializing miner"));
-		
 		this.config = config;
-		this.context = context;
 		getStatusObservable().updateStatusLabel("LOADING");
-		
-		InnerDatasetLoader loader = new InnerDatasetLoader();
-		loader.init(this.context, this.config, this.outerDataset);
-		this.innerDataset = loader.load();
-		this.mapper = loader.getValueMapper();
+	}
+
+	private InnerDataset getInnerDataset() {
+		return this.config.getInnerDataset();
+	}
+
+	public ValueMapper getMapper() {
+		return this.config.getLoader().getValueMapper();
 	}
 	
 	public StatsWalker mine() throws Exception {
@@ -67,8 +58,10 @@ public class MiningScope implements IEnvironment, Serializable {
 		this.refinedModel = null;
 		
 		getStatusObservable().updateStatusLabel("BUFFERING");
-		
-		Miner miner = new Miner(this.innerDataset, getStatusObservable());
+
+		// TODO: set rewards by time depending on mining target binarized feature
+
+		Miner miner = new Miner(getInnerDataset(), getStatusObservable());
 		miner.init();
 		
 		if (!miner.ready()) {
@@ -89,17 +82,14 @@ public class MiningScope implements IEnvironment, Serializable {
 		}
 		
 		this.refinedModel = refinery.refine();
-		//this.refinedModel = model;
 		
-		int countMin = this.innerDataset.count(Config.STIM_MIN);
-		int countNull = this.innerDataset.count(Config.STIM_NULL);
-		int countMax = this.innerDataset.count(Config.STIM_MAX);
+		int countMin = getInnerDataset().count(Config.STIM_MIN);
+		int countNull = getInnerDataset().count(Config.STIM_NULL);
+		int countMax = getInnerDataset().count(Config.STIM_MAX);
 		
 		System.out.println("Min Count = " + countMin);
 		System.out.println("Null Count = " + countNull);
 		System.out.println("Max Count = " + countMax);
-		
-		this.innerDataset.shrink();
 		
 		getStatusObservable().updateStatusLabel("DONE");
 		
@@ -113,11 +103,7 @@ public class MiningScope implements IEnvironment, Serializable {
 		return null;
 	}
 	
-	public ValueMapper getMapper() {
-		return mapper;
-	}
-	
-	public Double predict(HashMap<IOperator, Integer> inputs) {
+	public Double predict(HashMap<IFunctor, Integer> inputs) {
 		if (this.refinedModel == null) {
 			return null;
 		}
@@ -128,11 +114,11 @@ public class MiningScope implements IEnvironment, Serializable {
 		return this.refinedModel;
 	}
 
-	public JobConfig getConfig() {
+	public ScopeConfig getConfig() {
 		return config;
 	}
 
-	public void setConfig(JobConfig config) {
+	public void setConfig(ScopeConfig config) {
 		this.config = config;
 	}
 }

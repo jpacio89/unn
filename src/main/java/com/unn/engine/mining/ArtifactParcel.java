@@ -2,14 +2,14 @@ package com.unn.engine.mining;
 
 import java.io.Serializable;
 
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 
 public class ArtifactParcel implements Serializable {
 	private static final long serialVersionUID = 6076337110545632229L;
-	public IOperator operator;
+	public IFunctor operator;
 	public int hit;
 	
-	public ArtifactParcel(IOperator op, int hit) {
+	public ArtifactParcel(IFunctor op, int hit) {
 		this.operator = op;
 		this.hit = hit;
 	}

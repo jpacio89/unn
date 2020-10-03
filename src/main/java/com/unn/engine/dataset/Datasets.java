@@ -3,7 +3,7 @@ package com.unn.engine.dataset;
 import com.unn.common.dataset.*;
 import com.unn.engine.Config;
 import com.unn.engine.functions.ValueTimeReward;
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.JobConfig;
 import com.unn.engine.prediction.Prediction;
@@ -26,12 +26,12 @@ public class Datasets {
         String rewardFeatureName = "class"; // job.getRewardFeatureName();
         InnerDataset innerDataset = new InnerDataset();
         // TODO: todo recheck target features and targetOutput in the job
-        ArrayList<IOperator> allLeaves = InnerDatasetLoader.getIdentities(
+        ArrayList<IFunctor> allLeaves = InnerDatasetLoader.getFunctorsByFeatures(
             job, mapper.getFeatures(),
             job.targetFeature, true);
         innerDataset.setAllLeaves(allLeaves);
 
-        ArrayList<IOperator> trainLeaves = InnerDatasetLoader.getIdentities(
+        ArrayList<IFunctor> trainLeaves = InnerDatasetLoader.getFunctorsByFeatures(
                 job, mapper.getFeatures(),
                 job.targetFeature, false);
         innerDataset.setTrainingLeaves(trainLeaves);
@@ -44,7 +44,7 @@ public class Datasets {
                 String featureName = dataset.getHeader().get(i);
                 String outerValue = dataset.getFeatureAtSample(sampleIndex, i);
                 Integer innerValue = mapper.getInnerValue(featureName, outerValue);
-                IOperator identity = innerDataset.getFunctorByClassName(featureName);
+                IFunctor identity = innerDataset.getFunctorByClassName(featureName);
                 ValueTimeReward vtr = new ValueTimeReward(
                         identity, innerValue, outerTimeValue, reward);
                 innerDataset.add(vtr);

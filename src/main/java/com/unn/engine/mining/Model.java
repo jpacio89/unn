@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import com.unn.engine.dataset.InnerDataset;
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.utils.Pair;
 
 public class Model implements Serializable {
@@ -56,18 +56,18 @@ public class Model implements Serializable {
 
 	// NOTE: used to bulk predict inputs
 	private Double predict (int time) {
-		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
+		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
 		// TODO: simulation endpoint does not account for weights???
 		Double prediction = this.predict(inputs, null, null);
 		return prediction;
 	}
 
 	private void predict (int time, StatsWalker walker) {
-		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
+		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
 		// TODO: simulation endpoint does not account for weights???
 		Double prediction = this.predict(inputs, null, null);
 		
-		IOperator[] allArguments = this.dataset.getAllLeaves();
+		IFunctor[] allArguments = this.dataset.getAllLeaves();
 		int historicAction = this.dataset.getValueByTime(allArguments[allArguments.length - 1], time);
 		
 		if (prediction != null) {
@@ -79,11 +79,11 @@ public class Model implements Serializable {
 	}
 	
 	public Double predict(int time, Long[] weights, ArrayList<Long> _hitWeights) {
-		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
+		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
 		return this.predict(inputs, weights, _hitWeights);
 	}
 	
-	public Double predict(HashMap<IOperator, Integer> inputs, Long[] weights, ArrayList<Long> _hitWeights) {
+	public Double predict(HashMap<IFunctor, Integer> inputs, Long[] weights, ArrayList<Long> _hitWeights) {
 		ArrayList<Long> hitWeights = _hitWeights;
 
 		if (hitWeights == null) {
@@ -115,11 +115,11 @@ public class Model implements Serializable {
 	}
 	
 	public Pair<ArrayList<Long>, Pair<Double, Long>> predictionHits (int time, Long[] weights) {
-		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
+		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
 		return predictionHits(inputs, weights);
 	}
 	
-	public Pair<ArrayList<Long>, Pair<Double, Long>> predictionHits(HashMap<IOperator, Integer> inputs, Long[] weights) {
+	public Pair<ArrayList<Long>, Pair<Double, Long>> predictionHits(HashMap<IFunctor, Integer> inputs, Long[] weights) {
 		ArrayList<Long> hitWeights = new ArrayList<Long>();
 		Double accumulator = 0.0;
 		long hitCount = 0;
@@ -157,12 +157,12 @@ public class Model implements Serializable {
 	}
 	
 	public Boolean isHit (int time, int artifactIndex) {
-		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
+		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
 		return isHit(inputs, artifactIndex);
 	}
 	
 	public Long artifactHits(Integer time, int artifactIndex, Long[] weights) {
-		HashMap<IOperator, Integer> inputs = this.getInputsByTime(time);
+		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
 		boolean isHit = isHit(inputs, artifactIndex);
 		if (isHit) {
 			return weights[artifactIndex];
@@ -170,14 +170,14 @@ public class Model implements Serializable {
 		return 0L;
 	}
 	
-	public Boolean isHit(HashMap<IOperator, Integer> inputs, int artifactIndex) {
+	public Boolean isHit(HashMap<IFunctor, Integer> inputs, int artifactIndex) {
 		Artifact artifact = this.artifacts.get(artifactIndex);
 		ArrayList<ArtifactParcel> parcels = artifact.opHits;
 		
 		boolean hit = true;
 		
 		for (ArtifactParcel parcel : parcels) {
-			IOperator thd = parcel.operator;
+			IFunctor thd = parcel.operator;
 			Integer parcelOutcome = parcel.hit;
 			
 			try {
@@ -197,7 +197,7 @@ public class Model implements Serializable {
 		return hit;
 	}
 
-	public ArrayList<IOperator> getInputs() {
+	public ArrayList<IFunctor> getInputs() {
 		return this.dataset.getTrainingLeaves();
 	}
 	
@@ -209,9 +209,9 @@ public class Model implements Serializable {
 		return this.dataset;
 	}
 	
-	private HashMap<IOperator, Integer> getInputsByTime(int time) {
-		HashMap<IOperator, Integer> inputs = new HashMap<IOperator, Integer>();
-		for (IOperator param : this.dataset.getTrainingLeaves()) {
+	private HashMap<IFunctor, Integer> getInputsByTime(int time) {
+		HashMap<IFunctor, Integer> inputs = new HashMap<IFunctor, Integer>();
+		for (IFunctor param : this.dataset.getTrainingLeaves()) {
 			int val = this.dataset.getValueByTime(param, time);
 			inputs.put(param, val);
 		}

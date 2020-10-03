@@ -4,15 +4,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.Config;
 
-public class Threshold extends BaseFunction implements IOperator, Serializable
+public class Threshold extends BaseFunction implements IFunctor, Serializable
 {
 	private static final long serialVersionUID = -312207879886911131L;
-	IOperator v, lb;
+	IFunctor v, lb;
 
-	public Threshold(IOperator v, IOperator lb) {
+	public Threshold(IFunctor v, IFunctor lb) {
 		super();
 		
 		this.v = v;
@@ -26,7 +26,7 @@ public class Threshold extends BaseFunction implements IOperator, Serializable
 	}
 	
 	@Override
-	public Integer operate(HashMap<IOperator, Integer> values) throws Exception {
+	public Integer operate(HashMap<IFunctor, Integer> values) throws Exception {
 		Integer lbV = values.get(lb);
 		Integer vV  = values.get(v);
 		
@@ -52,7 +52,7 @@ public class Threshold extends BaseFunction implements IOperator, Serializable
 
 
 	@Override
-	public void getParameters (ArrayList<IOperator> parameters) {
+	public void getParameters (ArrayList<IFunctor> parameters) {
 		this.v.getParameters(parameters);
 		this.lb.getParameters(parameters);
 	}
@@ -63,7 +63,7 @@ public class Threshold extends BaseFunction implements IOperator, Serializable
 	}
 	
 	@Override
-	public void setParameters (IOperator[] params) {
+	public void setParameters (IFunctor[] params) {
 		this.v  = params[0];
 		this.lb = params[1];
 
@@ -97,8 +97,8 @@ public class Threshold extends BaseFunction implements IOperator, Serializable
 	}
 	
 	@Override
-	public IOperator[] children () {
-		IOperator[] children = new IOperator[2];
+	public IFunctor[] children () {
+		IFunctor[] children = new IFunctor[2];
 		children[0] = v;
 		children[1] = lb;
 		

@@ -1,21 +1,21 @@
 package com.unn.engine.functions;
 
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 
 public class ValueTimeReward {
 	Integer v;
 	Integer t;
 	Integer r;
-	IOperator cls;
+	IFunctor cls;
 	
-	public ValueTimeReward(IOperator _cls, Integer _v, Integer _t, Integer _r) {
+	public ValueTimeReward(IFunctor _cls, Integer _v, Integer _t, Integer _r) {
 		this.v = _v;
 		this.t = _t;
 		this.r = _r;
 		this.cls = _cls;
 	}
 	
-	public IOperator getVTRClass() {
+	public IFunctor getVTRClass() {
 		return this.cls;
 	}
 	

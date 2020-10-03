@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.InnerDatasetLoader;
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.metadata.*;
 import com.unn.engine.mining.ScopeConfig;
 import com.unn.engine.session.actions.ActionResult;
@@ -40,7 +40,7 @@ public class MineActor extends Actor {
 			config.targetFeature);
 
 		for (String group : valuesDescriptor.getGroups()) {
-			IOperator op = valuesDescriptor.getClassByGroup(group);
+			IFunctor op = valuesDescriptor.getFunctorByGroup(group);
 			ScopeConfig scopeConf = new ScopeConfig(op);
 			MiningScope scope = new MiningScope(scopeConf);
 			scopes.put(group, scope);

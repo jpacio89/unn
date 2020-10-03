@@ -5,14 +5,13 @@ import java.util.HashMap;
 
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.JobConfig;
-import com.unn.engine.metadata.UnitReport;
 import com.unn.engine.mining.StatsWalker;
 import com.unn.engine.session.Context;
 
 public interface IEnvironment {
-	ArrayList<IOperator> getInputs(String spaceId);
+	ArrayList<IFunctor> getInputs(String spaceId);
 	
-	Double predict(HashMap<IOperator, Integer> values);
+	Double predict(HashMap<IFunctor, Integer> values);
 	
 	void init(Context context, JobConfig config);
 	

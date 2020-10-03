@@ -3,7 +3,7 @@ package com.unn.engine.mining;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.utils.CombinationUtils;
 
 public class Artifact implements Serializable {
@@ -57,8 +57,8 @@ public class Artifact implements Serializable {
 		return contains;
 	}
 	
-	public static IOperator hasDoubleRaw(ArtifactParcel opHit) {
-		IOperator[] ops = opHit.operator.children();
+	public static IFunctor hasDoubleRaw(ArtifactParcel opHit) {
+		IFunctor[] ops = opHit.operator.children();
 		if (ops[0].equals(ops[1])) {
 			return ops[0];
 		}

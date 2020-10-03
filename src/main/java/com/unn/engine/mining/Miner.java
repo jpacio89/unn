@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import com.unn.engine.dataset.InnerDataset;
-import com.unn.engine.interfaces.IOperator;
+import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.Config;
 
 public class Miner {
@@ -70,7 +70,7 @@ public class Miner {
 			assertDisjoint();
 		}
 		
-		ArrayList<IOperator> booleanLayer = PreRoller.getBooleanParameters (dataset.getTrainingLeaves());
+		ArrayList<IFunctor> booleanLayer = PreRoller.getBooleanParameters (dataset.getTrainingLeaves());
 		Integer[] rewards = { Config.STIM_MAX, Config.STIM_MIN};
 		int i = 0;
 		for (Integer reward : rewards) {
