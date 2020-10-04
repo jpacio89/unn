@@ -10,4 +10,5 @@ public abstract class ValuesDescriptor implements Serializable {
 	public abstract ArrayList<Integer> getAllInnerValues();
 	public abstract ArrayList<String> getGroups();
 	public abstract IFunctor getFunctorByGroup(String group);
+	public abstract String getGroupByOuterValue(String outerFeatureValue);
 }

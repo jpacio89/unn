@@ -17,6 +17,7 @@ import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.JobConfig;
 import com.unn.engine.mining.MiningScope;
+import com.unn.engine.mining.ScopeConfig;
 import com.unn.engine.prediction.Prediction;
 import com.unn.engine.session.actions.ActionResult;
 import com.unn.engine.session.actions.PublishAction;
@@ -95,7 +96,7 @@ public class PublisherActor extends Actor {
 			ArrayList<Prediction> refPredictions = new ArrayList<>();
 			MiningScope scope = entry.getValue();
 			ValueMapper mapper = scope.getMapper();
-			JobConfig job = scope.getConfig();
+			ScopeConfig job = scope.getConfig();
 			InnerDataset innerDataset = Datasets.toInnerDataset(dataset, mapper, job);
 			for (Integer time : innerDataset.getTimes()) {
 				HashMap<IFunctor, Integer> input = innerDataset.bundleSample(time);

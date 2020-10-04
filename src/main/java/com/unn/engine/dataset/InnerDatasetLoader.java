@@ -46,7 +46,7 @@ public class InnerDatasetLoader {
 
 			ArrayList<IFunctor> leaves = getFunctorsByFeatures(this.mapper);
 			this.mapper.setFeatures(this.outerDataset.getHeader().toArray(new String[this.outerDataset.getHeader().size()]));
-			dataset.setFunctors(getFunctorsByFeatures(this.mapper);
+			dataset.setFunctors(getFunctorsByFeatures(this.mapper));
 
 			int n = 0;
 			for (int i = 0; i < this.outerDataset.sampleCount(); ++i) {

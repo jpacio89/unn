@@ -7,6 +7,9 @@ import java.util.HashSet;
 
 import com.unn.engine.dataset.FeatureValueHistogram;
 import com.unn.engine.Config;
+import com.unn.engine.functions.FunctionDescriptor;
+import com.unn.engine.functions.Raw;
+import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.utils.Pair;
 
 public class NumericMapper extends ValuesDescriptor implements Serializable {
@@ -99,4 +102,28 @@ public class NumericMapper extends ValuesDescriptor implements Serializable {
 			lowerBound = upperBound;
 		}
 	}
+
+	@Override
+	public ArrayList<String> getGroups() {
+		ArrayList<String> groups = new ArrayList<>();
+		for (int i = 0; i < this.mapperBounds.size(); ++i) {
+			Pair<Double, Double> bound = mapperBounds.get(i);
+			groups.add(String.format("numeric_%d", i));
+		}
+		return groups;
+	}
+
+	@Override
+	public IFunctor getFunctorByGroup(String group) {
+		Raw raw = new Raw();
+		raw.setDescriptor(new FunctionDescriptor(".", group,-1));
+		return raw;
+	}
+
+	@Override
+	public String getGroupByOuterValue(String outerFeatureValue) {
+		Integer innerValue = getInnerValue(Double.parseDouble(outerFeatureValue));
+		return String.format("numeric_%d", innerValue);
+	}
+
 }

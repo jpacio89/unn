@@ -5,36 +5,32 @@ import com.unn.engine.Config;
 import com.unn.engine.functions.ValueTimeReward;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.metadata.ValueMapper;
+import com.unn.engine.metadata.ValuesDescriptor;
 import com.unn.engine.mining.JobConfig;
+import com.unn.engine.mining.ScopeConfig;
 import com.unn.engine.prediction.Prediction;
 
 import java.util.*;
 
 public class Datasets {
 
-    private static Integer getRewardValue(OuterDataset dataset, ValueMapper mapper, String featureName, int sampleIndex, JobConfig config) {
+    private static Integer getRewardValue(OuterDataset dataset, ValueMapper mapper, String featureName, int sampleIndex, ScopeConfig config) {
         Integer featureIndex = dataset.getFeatureIndex(featureName);
         String outerValue = dataset.getFeatureAtSample(sampleIndex, featureIndex);
-        Integer innerValue = mapper.getInnerValue(featureName, outerValue);
-        Integer refInnerValue = mapper.getInnerValue(config.targetFeature, config.targetOuterValue);
-        return JobConfig.mapReward(refInnerValue, innerValue);
+        ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(featureName);
+        String featureGroup = valuesDescriptor.getGroupByOuterValue(outerValue);
+        IFunctor func = valuesDescriptor.getFunctorByGroup(featureGroup);
+        return func.equals(config.getFeatureSelector()) ?
+            Config.STIM_MAX : Config.STIM_MIN;
     }
 
-    public static InnerDataset toInnerDataset(OuterDataset dataset, ValueMapper mapper, JobConfig job) {
+    public static InnerDataset toInnerDataset(OuterDataset dataset, ValueMapper mapper, ScopeConfig job) {
         // TODO: implement
         String timeFeatureName = "id"; // job.getTimeFeatureName();
         String rewardFeatureName = "class"; // job.getRewardFeatureName();
         InnerDataset innerDataset = new InnerDataset();
-        // TODO: todo recheck target features and targetOutput in the job
-        ArrayList<IFunctor> allLeaves = InnerDatasetLoader.getFunctorsByFeatures(
-            job, mapper.getFeatures(),
-            job.targetFeature, true);
-
-        ArrayList<IFunctor> trainLeaves = InnerDatasetLoader.getFunctorsByFeatures(
-            job, mapper.getFeatures(),
-            job.targetFeature, false);
-
-        innerDataset.setFunctors(trainLeaves);
+        ArrayList<IFunctor> rawFunctors = InnerDatasetLoader.getFunctorsByFeatures(mapper);
+        innerDataset.setFunctors(rawFunctors);
 
         for (int sampleIndex = 0; sampleIndex < dataset.sampleCount(); ++sampleIndex) {
             Integer timeFeatureIndex = dataset.getFeatureIndex(timeFeatureName);

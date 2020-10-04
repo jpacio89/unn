@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.unn.engine.dataset.InnerDataset;
-import com.unn.engine.dataset.InnerDatasetLoader;
-import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.interfaces.IEnvironment;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.Config;
 import com.unn.engine.metadata.ValueMapper;
-import com.unn.engine.session.Context;
 
 public class MiningScope implements IEnvironment, Serializable {
 	private static final long serialVersionUID = -8783414205445675354L;
@@ -31,13 +28,13 @@ public class MiningScope implements IEnvironment, Serializable {
 	}
 	
 	private MiningStatusObservable getStatusObservable() {
-		if (this.context == null) {
+		/*if (this.context == null) {
 			return new MiningStatusObservable();
 		}
 		MiningStatusObservable obs = this.context.getStatusObservable(this.config.jobSessionId);
 		if (obs != null) {
 			return obs;
-		}
+		}*/
 		return new MiningStatusObservable();
 	}
 

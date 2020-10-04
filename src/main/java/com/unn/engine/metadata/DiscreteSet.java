@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import com.unn.engine.Config;
+import com.unn.engine.functions.FunctionDescriptor;
+import com.unn.engine.functions.Raw;
+import com.unn.engine.interfaces.IFunctor;
 
 public class DiscreteSet extends ValuesDescriptor implements Serializable {
 	private static final long serialVersionUID = 2644249077021570502L;
@@ -26,8 +29,7 @@ public class DiscreteSet extends ValuesDescriptor implements Serializable {
 	}
 	
 	public ArrayList<Integer> getAllInnerValues() {
-		ArrayList<Integer> innerValues = new ArrayList<Integer>();
-		
+		ArrayList<Integer> innerValues = new ArrayList<>();
 		if (cardinal() == 1) {
 			innerValues.add(Config.STIM_MIN);
 		} else {
@@ -36,7 +38,23 @@ public class DiscreteSet extends ValuesDescriptor implements Serializable {
 				innerValues.add(innerValue);
 			}	
 		}
-		
 		return innerValues;
+	}
+
+	@Override
+	public ArrayList<String> getGroups() {
+		return this.values;
+	}
+
+	@Override
+	public IFunctor getFunctorByGroup(String group) {
+		Raw raw = new Raw();
+		raw.setDescriptor(new FunctionDescriptor(".", group,-1));
+		return raw;
+	}
+
+	@Override
+	public String getGroupByOuterValue(String outerFeatureValue) {
+		return outerFeatureValue;
 	}
 }
