@@ -80,7 +80,7 @@ public class RefineryNew {
 			newArtifacts.add(artifacts.get(index));
 		}
 		
-		Model refined = new Model(this.model.getDataset(), newArtifacts);
+		Model refined = new Model(this.model.getDataset(), newArtifacts, this.model.rewardSelector);
 		miner.gatherStats(refined);
 		
 		return refined;

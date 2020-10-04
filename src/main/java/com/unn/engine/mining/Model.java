@@ -17,16 +17,19 @@ public class Model implements Serializable {
 	StatsWalker walker;
 	InnerDataset dataset;
 	ArrayList<Artifact> artifacts;
-	
-	public Model(InnerDataset dataset) {
+	IFunctor rewardSelector;
+
+	public Model(InnerDataset dataset, IFunctor rewardSelector) {
 		this.dataset = dataset;
 		this.artifacts = new ArrayList<Artifact>();
 		this.walker = new StatsWalker();
+		this.rewardSelector = rewardSelector;
 	}
 	
-	public Model(InnerDataset dataset, ArrayList<Artifact> sublist) {
+	public Model(InnerDataset dataset, ArrayList<Artifact> sublist, IFunctor rewardSelector) {
 		this.dataset = dataset;
 		this.artifacts = sublist;
+		this.rewardSelector = rewardSelector;
 	}
 	
 	public void add(Artifact artifact) {
@@ -66,16 +69,14 @@ public class Model implements Serializable {
 		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
 		// TODO: simulation endpoint does not account for weights???
 		Double prediction = this.predict(inputs, null, null);
-		
-		IFunctor[] allArguments = this.dataset.getAllLeaves();
-		int historicAction = this.dataset.getValueByTime(allArguments[allArguments.length - 1], time);
-		
+		int historicAction = this.dataset.getValueByTime(this.rewardSelector, time);
+
 		if (prediction != null) {
 			walker.addHit2Matrix(time, historicAction, (int) Math.round(prediction.doubleValue()));
+			return;
 		}
-		else {
-			walker.incUnknown();
-		}
+
+		walker.incUnknown();
 	}
 	
 	public Double predict(int time, Long[] weights, ArrayList<Long> _hitWeights) {

@@ -38,7 +38,7 @@ public class Miner {
 		this.trainTimeSets.clear();
 		this.testTimeSets.clear();
 		this.timetables.clear();
-		this.model = new Model(this.dataset);
+		this.model = new Model(this.dataset, this.rewardSelector);
 
 		ArrayList<Integer> allTimesLow  = dataset.getTimesByFunctor(
 			this.rewardSelector, Config.STIM_MIN);
