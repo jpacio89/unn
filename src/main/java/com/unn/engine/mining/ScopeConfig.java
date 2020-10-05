@@ -4,15 +4,19 @@ import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.InnerDatasetLoader;
 import com.unn.engine.interfaces.IFunctor;
 
+import java.util.ArrayList;
+
 public class ScopeConfig {
     IFunctor featureSelector;
     InnerDatasetLoader loader;
     InnerDataset dataset;
+    ArrayList<IFunctor> rewardGroups;
 
-    public ScopeConfig(InnerDatasetLoader loader, InnerDataset innerDataset, IFunctor featureSelector) {
+    public ScopeConfig(InnerDatasetLoader loader, InnerDataset innerDataset, IFunctor featureSelector, ArrayList<IFunctor> rewardGroups) {
         this.featureSelector = featureSelector;
         this.loader = loader;
         this.dataset = innerDataset;
+        this.rewardGroups = rewardGroups;
     }
 
     public IFunctor getFeatureSelector() {
@@ -33,5 +37,9 @@ public class ScopeConfig {
 
     public InnerDataset getInnerDataset() {
         return this.dataset;
+    }
+
+    public ArrayList<IFunctor> getRewardGroups() {
+        return rewardGroups;
     }
 }

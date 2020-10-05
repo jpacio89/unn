@@ -15,7 +15,8 @@ public class Miner {
 	InnerDataset dataset;
 	Model model;
 	boolean isReady;
-	IFunctor rewardSelector;
+	ArrayList<IFunctor> functorBlacklist;
+	IFunctor miningTarget;
 
 	MiningStatusObservable statusObservable;
 	ArrayList<ArrayList<Integer>> trainTimeSets;
@@ -24,33 +25,34 @@ public class Miner {
 
 	private long miningStartTime;
 	
-	public Miner(InnerDataset dataset, IFunctor rewardSelector, MiningStatusObservable statusObservable) {
+	public Miner(InnerDataset dataset, IFunctor miningTarget, ArrayList<IFunctor> functorBlacklist, MiningStatusObservable statusObservable) {
 		this.dataset = dataset;
 		this.trainTimeSets = new ArrayList<>();
 		this.testTimeSets = new ArrayList<>();
 		this.timetables = new ArrayList<>();
 		this.isReady = false;
 		this.statusObservable = statusObservable;
-		this.rewardSelector = rewardSelector;
+		this.functorBlacklist = functorBlacklist;
+		this.miningTarget = miningTarget;
 	}
 	
 	public void init() throws Exception {
 		this.trainTimeSets.clear();
 		this.testTimeSets.clear();
 		this.timetables.clear();
-		this.model = new Model(this.dataset, this.rewardSelector);
+		this.model = new Model(this.dataset, this.miningTarget);
 
 		ArrayList<Integer> allTimesLow  = dataset.getTimesByFunctor(
-			this.rewardSelector, Config.STIM_MIN);
+			this.miningTarget, Config.STIM_MIN);
 		ArrayList<Integer> allTimesNull  = dataset.getTimesByFunctor(
-			this.rewardSelector, Config.STIM_NULL);
+			this.miningTarget, Config.STIM_NULL);
 
 		if (allTimesNull.size() > 0) {
 			System.out.println("|Miner| ERROR -> found NULL times");
 		}
 		
 		ArrayList<Integer> allTimesHigh = dataset.getTimesByFunctor(
-			this.rewardSelector, Config.STIM_MAX);
+			this.miningTarget, Config.STIM_MAX);
 		
 		if (allTimesLow.size() == 0 || allTimesHigh.size() == 0) {
 			return;
@@ -83,7 +85,7 @@ public class Miner {
 		}
 
 		ArrayList<IFunctor> trainingFunctors = dataset.getFunctors().stream()
-			.filter((functor) -> !functor.equals(this.rewardSelector))
+			.filter((functor) -> !functorBlacklist.contains(functor))
 			.collect(Collectors.toCollection(ArrayList::new));
 		ArrayList<IFunctor> thresholdLayer = PreRoller.getBooleanParameters(trainingFunctors);
 		Integer[] rewards = { Config.STIM_MAX, Config.STIM_MIN };

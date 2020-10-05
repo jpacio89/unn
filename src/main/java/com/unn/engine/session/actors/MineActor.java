@@ -1,5 +1,6 @@
 package com.unn.engine.session.actors;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.unn.engine.dataset.InnerDataset;
@@ -38,14 +39,16 @@ public class MineActor extends Actor {
 		InnerDataset innerDataset = loader.load();
 		ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(
 			config.targetFeature);
-
+		ArrayList<IFunctor> rewardGroups = new ArrayList<>();
 		for (String group : valuesDescriptor.getGroups()) {
 			IFunctor op = valuesDescriptor.getFunctorByGroup(group);
-			ScopeConfig scopeConf = new ScopeConfig(loader, innerDataset, op);
-			MiningScope scope = new MiningScope(scopeConf);
-			scopes.put(group, scope);
+			rewardGroups.add(op);
 		}
-
+		for (IFunctor func : rewardGroups) {
+			ScopeConfig scopeConf = new ScopeConfig(loader, innerDataset, func, rewardGroups);
+			MiningScope scope = new MiningScope(scopeConf);
+			scopes.put(func.getDescriptor().getClassId(), scope);
+		}
 		for (MiningScope scope : scopes.values()) {
 			try {
 				scope.mine();

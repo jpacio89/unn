@@ -52,9 +52,12 @@ public class MiningScope implements IEnvironment, Serializable {
 		
 		getStatusObservable().updateStatusLabel("BUFFERING");
 
-		// TODO: set rewards by time depending on mining target binarized feature
-		IFunctor rewardSelector = this.config.featureSelector;
-		Miner miner = new Miner(getInnerDataset(), rewardSelector, getStatusObservable());
+		Miner miner = new Miner (
+			getInnerDataset(),
+			this.config.getFeatureSelector(),
+			this.config.getRewardGroups(),
+			getStatusObservable()
+		);
 		miner.init();
 		
 		if (!miner.ready()) {
