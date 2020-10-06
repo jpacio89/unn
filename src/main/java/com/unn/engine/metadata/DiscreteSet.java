@@ -2,6 +2,7 @@ package com.unn.engine.metadata;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import com.unn.engine.Config;
 import com.unn.engine.functions.FunctionDescriptor;
@@ -42,19 +43,23 @@ public class DiscreteSet extends ValuesDescriptor implements Serializable {
 	}
 
 	@Override
-	public ArrayList<String> getGroups() {
-		return this.values;
+	public ArrayList<String> getGroups(String suffix) {
+		return this.values.stream()
+			.map(value -> String.format("discrete_%s_%s", value, suffix))
+			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
 	public IFunctor getFunctorByGroup(String group) {
 		Raw raw = new Raw();
-		raw.setDescriptor(new FunctionDescriptor(".", group,-1));
+		String name = String.format("%s", group);
+		raw.setDescriptor(new FunctionDescriptor(".", name,-1));
 		return raw;
 	}
 
 	@Override
-	public String getGroupByOuterValue(String outerFeatureValue) {
-		return outerFeatureValue;
+	public String getGroupByOuterValue(String outerFeatureValue, String suffix) {
+		String name = String.format("discrete_%s_%s", outerFeatureValue, suffix);
+		return name;
 	}
 }

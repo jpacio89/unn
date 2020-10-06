@@ -104,11 +104,10 @@ public class NumericMapper extends ValuesDescriptor implements Serializable {
 	}
 
 	@Override
-	public ArrayList<String> getGroups() {
+	public ArrayList<String> getGroups(String suffix) {
 		ArrayList<String> groups = new ArrayList<>();
 		for (int i = 0; i < this.mapperBounds.size(); ++i) {
-			Pair<Double, Double> bound = mapperBounds.get(i);
-			groups.add(String.format("numeric_%d", i));
+			groups.add(String.format("numeric_%d_%s", i, suffix));
 		}
 		return groups;
 	}
@@ -121,9 +120,9 @@ public class NumericMapper extends ValuesDescriptor implements Serializable {
 	}
 
 	@Override
-	public String getGroupByOuterValue(String outerFeatureValue) {
+	public String getGroupByOuterValue(String outerFeatureValue, String suffix) {
 		Integer innerValue = getInnerValue(Double.parseDouble(outerFeatureValue));
-		return String.format("numeric_%d", innerValue);
+		return String.format("numeric_%d_%s", innerValue, suffix);
 	}
 
 }

@@ -35,20 +35,23 @@ public class MineActor extends Actor {
 
 		InnerDatasetLoader loader = new InnerDatasetLoader();
 		loader.init(context, config, dataset);
-		ValueMapper mapper = loader.getValueMapper();
 		InnerDataset innerDataset = loader.load();
+		ValueMapper mapper = loader.getValueMapper();
 		ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(
 			config.targetFeature);
 		ArrayList<IFunctor> rewardGroups = new ArrayList<>();
-		for (String group : valuesDescriptor.getGroups()) {
+
+		for (String group : valuesDescriptor.getGroups(config.targetFeature)) {
 			IFunctor op = valuesDescriptor.getFunctorByGroup(group);
 			rewardGroups.add(op);
 		}
+
 		for (IFunctor func : rewardGroups) {
 			ScopeConfig scopeConf = new ScopeConfig(loader, innerDataset, func, rewardGroups);
 			MiningScope scope = new MiningScope(scopeConf);
-			scopes.put(func.getDescriptor().getClassId(), scope);
+			scopes.put(func.getDescriptor().getVtrName(), scope);
 		}
+
 		for (MiningScope scope : scopes.values()) {
 			try {
 				scope.mine();
@@ -57,6 +60,7 @@ public class MineActor extends Actor {
 			}
 		}
 
+		System.out.println("|MineActor| All scopes have been processed");
 		return null;
 	}
 	

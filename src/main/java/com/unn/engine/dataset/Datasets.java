@@ -18,7 +18,7 @@ public class Datasets {
         Integer featureIndex = dataset.getFeatureIndex(featureName);
         String outerValue = dataset.getFeatureAtSample(sampleIndex, featureIndex);
         ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(featureName);
-        String featureGroup = valuesDescriptor.getGroupByOuterValue(outerValue);
+        String featureGroup = valuesDescriptor.getGroupByOuterValue(outerValue, featureName);
         IFunctor func = valuesDescriptor.getFunctorByGroup(featureGroup);
         return func.equals(config.getFeatureSelector()) ?
             Config.STIM_MAX : Config.STIM_MIN;

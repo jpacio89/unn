@@ -63,9 +63,9 @@ public class Context implements Serializable {
 			if (locator != null) {
 				mine(locator);
 			}
-			if (isModelPublishable()) {
-				publish(locator);
-			}
+			//if (isModelPublishable()) {
+			//	publish(locator);
+			//}
 			self.minerThread = null;
 		});
 		this.minerThread.start();

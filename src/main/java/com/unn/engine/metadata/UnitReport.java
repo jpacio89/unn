@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import com.unn.engine.Config;
 
@@ -11,12 +13,23 @@ public class UnitReport implements Serializable {
 	private static final long serialVersionUID = 7533264487477193079L;
 	public final HashMap<String, ValuesDescriptor> units;
 	public String[] features;
+
+	int maxCardinality = 20;
 	
 	public UnitReport() {
 		this.units = new HashMap<String, ValuesDescriptor>();
 	}
 	
 	public void addDiscreteSet(String feature, ArrayList<String> values) {
+		// TODO: check this cardinality hack
+		if (values.size() > maxCardinality) {
+			Collections.shuffle(values);
+			values = values.stream().limit(maxCardinality)
+				.collect(Collectors.toCollection(ArrayList::new));
+		}
+		if ("id".equals(feature)) {
+			return;
+		}
 		Collections.sort(values);
 		this.units.put(feature, new DiscreteSet(values));
 	}
@@ -26,9 +39,12 @@ public class UnitReport implements Serializable {
 	}
 	
 	public void addNumeric(String feature, ArrayList<Double> values, Integer numericGroupCount) {
+		if ("id".equals(feature)) {
+			return;
+		}
 		NumericMapper mapper = new NumericMapper();
 		// TODO: fix group count
-		mapper.init(numericGroupCount != null ? numericGroupCount : 35, values);
+		mapper.init(numericGroupCount != null ? numericGroupCount : Config.DEFAULT_GROUP_COUNT, values);
 		this.units.put(feature, mapper);
 	}
 	

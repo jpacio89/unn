@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.unn.engine.dataset.OuterDataset;
 
@@ -46,7 +47,7 @@ public class ValueMapper {
 			this.report.addNumeric(feature, numericValues, numericGroupCount);
 		} else {
 			System.out.println(String.format("%d discrete values", vals.size()));
-			this.report.addDiscreteSet(feature, new ArrayList<String>(vals.keySet()));
+			this.report.addDiscreteSet(feature, new ArrayList<>(vals.keySet()));
 		}
 	}
 	
@@ -55,7 +56,9 @@ public class ValueMapper {
 	}
 	
 	public Set<String> getFeatures() {
-		return new HashSet<String>(this.dataset.getHeader());
+		return new HashSet<>(this.dataset.getHeader().stream()
+			.filter(feature -> !"id".equals(feature))
+			.collect(Collectors.toCollection(ArrayList::new)));
 	}
 
 	public void setFeatures(String[] toArray) {

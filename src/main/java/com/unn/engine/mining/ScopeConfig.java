@@ -10,13 +10,14 @@ public class ScopeConfig {
     IFunctor featureSelector;
     InnerDatasetLoader loader;
     InnerDataset dataset;
-    ArrayList<IFunctor> rewardGroups;
+    ArrayList<IFunctor> noMiningGroups;
 
-    public ScopeConfig(InnerDatasetLoader loader, InnerDataset innerDataset, IFunctor featureSelector, ArrayList<IFunctor> rewardGroups) {
+    public ScopeConfig(InnerDatasetLoader loader, InnerDataset innerDataset,
+        IFunctor featureSelector, ArrayList<IFunctor> rewardGroups) {
         this.featureSelector = featureSelector;
         this.loader = loader;
         this.dataset = innerDataset;
-        this.rewardGroups = rewardGroups;
+        this.noMiningGroups = rewardGroups;
     }
 
     public IFunctor getFeatureSelector() {
@@ -39,7 +40,7 @@ public class ScopeConfig {
         return this.dataset;
     }
 
-    public ArrayList<IFunctor> getRewardGroups() {
-        return rewardGroups;
+    public ArrayList<IFunctor> getNoMiningGroups() {
+        return noMiningGroups;
     }
 }

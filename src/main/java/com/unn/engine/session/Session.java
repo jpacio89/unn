@@ -33,7 +33,7 @@ public class Session implements Serializable {
 		try {
 			OuterDatasetLoader loader = new OuterDatasetLoader();
 			this.outerDataset = loader.load(locator);
-		} 
+		}
 		catch (Exception e1) {
 			e1.printStackTrace();
 		}

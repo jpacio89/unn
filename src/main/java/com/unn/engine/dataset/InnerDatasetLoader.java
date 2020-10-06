@@ -44,7 +44,6 @@ public class InnerDatasetLoader {
 				mapper.reportUnits(k, this.config.groupCount.get(k));
 			}
 
-			ArrayList<IFunctor> leaves = getFunctorsByFeatures(this.mapper);
 			this.mapper.setFeatures(this.outerDataset.getHeader().toArray(new String[this.outerDataset.getHeader().size()]));
 			dataset.setFunctors(getFunctorsByFeatures(this.mapper));
 
@@ -55,10 +54,14 @@ public class InnerDatasetLoader {
 				}
 				int j = 0;
 				for (String key : this.outerDataset.getHeader()) {
+					if ("id".equals(key)) {
+						j++;
+						continue;
+					}
 					String outerFeatureValue = this.outerDataset.getFeatureAtSample(i, j);
 					ValuesDescriptor valuesDescriptor = this.mapper.getValuesDescriptorByFeature(key);
-					String featureGroup = valuesDescriptor.getGroupByOuterValue(outerFeatureValue);
-					for (String group : valuesDescriptor.getGroups()) {
+					String featureGroup = valuesDescriptor.getGroupByOuterValue(outerFeatureValue, key);
+					for (String group : valuesDescriptor.getGroups(key)) {
 						Integer v = featureGroup.equals(group) ?
 							Config.STIM_MAX : Config.STIM_MIN;
 						IFunctor op = valuesDescriptor.getFunctorByGroup(group);
@@ -82,7 +85,7 @@ public class InnerDatasetLoader {
 		ArrayList<IFunctor> operators = new ArrayList<>();
 		for (String feature : features) {
 			ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(feature);
-			for (String group : valuesDescriptor.getGroups()) {
+			for (String group : valuesDescriptor.getGroups(feature)) {
 				IFunctor raw = valuesDescriptor.getFunctorByGroup(group);
 				operators.add(raw);
 			}

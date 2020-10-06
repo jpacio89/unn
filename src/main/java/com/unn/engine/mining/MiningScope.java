@@ -55,7 +55,7 @@ public class MiningScope implements IEnvironment, Serializable {
 		Miner miner = new Miner (
 			getInnerDataset(),
 			this.config.getFeatureSelector(),
-			this.config.getRewardGroups(),
+			this.config.getNoMiningGroups(),
 			getStatusObservable()
 		);
 		miner.init();
