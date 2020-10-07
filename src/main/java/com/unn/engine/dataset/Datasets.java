@@ -27,7 +27,7 @@ public class Datasets {
     public static InnerDataset toInnerDataset(OuterDataset dataset, ValueMapper mapper, ScopeConfig job) {
         // TODO: implement
         String timeFeatureName = "id"; // job.getTimeFeatureName();
-        String rewardFeatureName = "class"; // job.getRewardFeatureName();
+        String rewardFeatureName = "Class"; // job.getRewardFeatureName();
         InnerDataset innerDataset = new InnerDataset();
         ArrayList<IFunctor> rawFunctors = InnerDatasetLoader.getFunctorsByFeatures(mapper);
         innerDataset.setFunctors(rawFunctors);

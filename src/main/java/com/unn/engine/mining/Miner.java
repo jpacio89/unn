@@ -10,7 +10,7 @@ import com.unn.engine.Config;
 
 public class Miner {
 	public final int MIN_WHEAT_COUNT = 0;
-	public final long MINING_TIME = 5 * 60 * 1000;
+	public final long MINING_TIME = 1 * 60 * 1000;
 	
 	InnerDataset dataset;
 	Model model;
@@ -70,13 +70,13 @@ public class Miner {
 		this.trainTimeSets.add(allTimesLow.stream()
 			.limit(midPointLow)
 			.collect(Collectors.toCollection(ArrayList::new)));
-		this.trainTimeSets.add(allTimesLow.stream()
+		this.trainTimeSets.add(allTimesHigh.stream()
 			.limit(midPointHigh)
 			.collect(Collectors.toCollection(ArrayList::new)));
 		this.testTimeSets.add(allTimesLow.stream()
 				.skip(midPointLow)
 				.collect(Collectors.toCollection(ArrayList::new)));
-		this.testTimeSets.add(allTimesLow.stream()
+		this.testTimeSets.add(allTimesHigh.stream()
 				.skip(midPointHigh)
 				.collect(Collectors.toCollection(ArrayList::new)));
 
