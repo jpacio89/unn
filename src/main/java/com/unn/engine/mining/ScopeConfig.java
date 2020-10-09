@@ -7,25 +7,27 @@ import com.unn.engine.interfaces.IFunctor;
 import java.util.ArrayList;
 
 public class ScopeConfig {
-    IFunctor featureSelector;
+    String outerFeature;
+    IFunctor innerFeature;
     InnerDatasetLoader loader;
     InnerDataset dataset;
     ArrayList<IFunctor> noMiningGroups;
 
     public ScopeConfig(InnerDatasetLoader loader, InnerDataset innerDataset,
-        IFunctor featureSelector, ArrayList<IFunctor> rewardGroups) {
-        this.featureSelector = featureSelector;
+        String outerFeature, IFunctor featureSelector, ArrayList<IFunctor> rewardGroups) {
+        this.innerFeature = featureSelector;
         this.loader = loader;
         this.dataset = innerDataset;
         this.noMiningGroups = rewardGroups;
+        this.outerFeature = outerFeature;
     }
 
-    public IFunctor getFeatureSelector() {
-        return featureSelector;
+    public IFunctor getInnerFeature() {
+        return innerFeature;
     }
 
-    public void setFeatureSelector(IFunctor featureSelector) {
-        this.featureSelector = featureSelector;
+    public void setInnerFeature(IFunctor innerFeature) {
+        this.innerFeature = innerFeature;
     }
 
     public InnerDatasetLoader getLoader() {
@@ -42,5 +44,13 @@ public class ScopeConfig {
 
     public ArrayList<IFunctor> getNoMiningGroups() {
         return noMiningGroups;
+    }
+
+    public String getOuterFeature() {
+        return outerFeature;
+    }
+
+    public void setOuterFeature(String outerFeature) {
+        this.outerFeature = outerFeature;
     }
 }

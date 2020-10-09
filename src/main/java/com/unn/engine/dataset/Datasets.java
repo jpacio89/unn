@@ -6,7 +6,6 @@ import com.unn.engine.functions.ValueTimeReward;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.metadata.ValuesDescriptor;
-import com.unn.engine.mining.JobConfig;
 import com.unn.engine.mining.ScopeConfig;
 import com.unn.engine.prediction.Prediction;
 
@@ -20,14 +19,15 @@ public class Datasets {
         ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(featureName);
         String featureGroup = valuesDescriptor.getGroupByOuterValue(outerValue, featureName);
         IFunctor func = valuesDescriptor.getFunctorByGroup(featureGroup);
-        return func.equals(config.getFeatureSelector()) ?
+        return func.equals(config.getInnerFeature()) ?
             Config.STIM_MAX : Config.STIM_MIN;
     }
 
     public static InnerDataset toInnerDataset(OuterDataset dataset, ValueMapper mapper, ScopeConfig job) {
+        Feature f = new Feature(job.getOuterFeature());
         // TODO: implement
         String timeFeatureName = "id"; // job.getTimeFeatureName();
-        String rewardFeatureName = "Class"; // job.getRewardFeatureName();
+        String rewardFeatureName = f.getColumn();
         InnerDataset innerDataset = new InnerDataset();
         ArrayList<IFunctor> rawFunctors = InnerDatasetLoader.getFunctorsByFeatures(mapper);
         innerDataset.setFunctors(rawFunctors);

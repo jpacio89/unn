@@ -47,7 +47,8 @@ public class MineActor extends Actor {
 		}
 
 		for (IFunctor func : rewardGroups) {
-			ScopeConfig scopeConf = new ScopeConfig(loader, innerDataset, func, rewardGroups);
+			ScopeConfig scopeConf = new ScopeConfig(loader, innerDataset,
+				config.targetFeature, func, rewardGroups);
 			MiningScope scope = new MiningScope(scopeConf);
 			scopes.put(func.getDescriptor().getVtrName(), scope);
 		}
