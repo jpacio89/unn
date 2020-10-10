@@ -26,7 +26,7 @@ public class PreRoller {
 	
 	public PreRoller(InnerDataset dataset, int reward, MiningStatusObservable statusObservable) {
 		this.dataset = dataset;
-		this.opHits = new ArrayList<ArtifactParcel>();
+		this.opHits = new ArrayList<>();
 		this.operatorIndex = new HashMap<>();
 		this.reward = reward;
 		this.miningStatusObservable = statusObservable;

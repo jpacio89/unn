@@ -41,10 +41,11 @@ public class InnerDatasetLoader {
 			this.mapper = new ValueMapper(this.outerDataset);
 
 			for (String k : mapper.getFeatures()) {
-				mapper.reportUnits(k, this.config.groupCount.get(k));
+				this.mapper.reportUnits(k, this.config.groupCount.get(k));
 			}
 
-			this.mapper.setFeatures(this.outerDataset.getHeader().toArray(new String[this.outerDataset.getHeader().size()]));
+			ArrayList<String> header = this.outerDataset.getHeader();
+			this.mapper.setFeatures(header.toArray(new String[header.size()]));
 			dataset.setFunctors(getFunctorsByFeatures(this.mapper));
 
 			int n = 0;
@@ -54,13 +55,15 @@ public class InnerDatasetLoader {
 				}
 				int j = 0;
 				for (String key : this.outerDataset.getHeader()) {
-					if ("id".equals(key)) {
+					if (Config.ID.equals(key)) {
 						j++;
 						continue;
 					}
+
 					String outerFeatureValue = this.outerDataset.getFeatureAtSample(i, j);
 					ValuesDescriptor valuesDescriptor = this.mapper.getValuesDescriptorByFeature(key);
 					String featureGroup = valuesDescriptor.getGroupByOuterValue(outerFeatureValue, key);
+
 					for (String group : valuesDescriptor.getGroups(key)) {
 						Integer v = featureGroup.equals(group) ?
 							Config.STIM_MAX : Config.STIM_MIN;

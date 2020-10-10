@@ -54,9 +54,6 @@ public class Session implements Serializable {
 			MineAction action = (MineAction) _action;
 			action.setConf(this.getMineConfig());
 			actor = new MineActor(this, action);
-		} else if (_action instanceof PredictAction) {
-			PredictAction action = (PredictAction) _action;
-			actor = new PredictActor(action);
 		} else if (_action instanceof PublishAction) {
 			PublishAction action = (PublishAction) _action;
 			action.setSession(this);

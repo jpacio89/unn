@@ -24,7 +24,6 @@ public class Datasets {
     }
 
     public static InnerDataset toInnerDataset(OuterDataset dataset, ValueMapper mapper, ScopeConfig job) {
-        //Feature f = new Feature(job.getOuterFeature());
         // TODO: implement
         String timeFeatureName = "id"; // job.getTimeFeatureName();
         String rewardFeatureName = job.getOuterFeature();
@@ -43,7 +42,6 @@ public class Datasets {
                 if (descriptor == null) {
                     continue;
                 }
-                // TODO: what if descriptor is NULL?
                 String targetGroup = descriptor.getGroupByOuterValue(outerValue, featureName);
                 for (String group : descriptor.getGroups(featureName)) {
                     Integer value = targetGroup.equals(group) ? Config.STIM_MAX : Config.STIM_MIN;
