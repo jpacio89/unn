@@ -8,7 +8,7 @@ import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.functions.FunctionDescriptor;
 import com.unn.engine.functions.Raw;
 import com.unn.engine.functions.Threshold;
-import com.unn.engine.functions.ValueTimeReward;
+import com.unn.engine.functions.ValueTime;
 import com.unn.engine.Config;
 import com.unn.engine.utils.MultiplesHashMap;
 import com.unn.engine.utils.RandomManager;
@@ -230,7 +230,7 @@ public class PreRoller {
 		Integer oldValue = dataset.getValueByTime(operator, time);
 		
 		if (oldValue == null) {
-			dataset.add(new ValueTimeReward(operator, binaryResult, time, null));
+			dataset.add(new ValueTime(operator, binaryResult, time));
 		} else if (oldValue != binaryResult) {
 			throw new Exception();
 		}

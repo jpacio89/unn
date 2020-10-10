@@ -2,7 +2,7 @@ package com.unn.engine.dataset;
 
 import com.unn.common.dataset.*;
 import com.unn.engine.Config;
-import com.unn.engine.functions.ValueTimeReward;
+import com.unn.engine.functions.ValueTime;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.metadata.ValuesDescriptor;
@@ -13,20 +13,9 @@ import java.util.*;
 
 public class Datasets {
 
-    private static Integer getRewardValue(OuterDataset dataset, ValueMapper mapper, String featureName, int sampleIndex, ScopeConfig config) {
-        Integer featureIndex = dataset.getFeatureIndex(featureName);
-        String outerValue = dataset.getFeatureAtSample(sampleIndex, featureIndex);
-        ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(featureName);
-        String featureGroup = valuesDescriptor.getGroupByOuterValue(outerValue, featureName);
-        IFunctor func = valuesDescriptor.getFunctorByGroup(featureGroup);
-        return func.equals(config.getInnerFeature()) ?
-            Config.STIM_MAX : Config.STIM_MIN;
-    }
-
     public static InnerDataset toInnerDataset(OuterDataset dataset, ValueMapper mapper, ScopeConfig job) {
         // TODO: implement
         String timeFeatureName = "id"; // job.getTimeFeatureName();
-        String rewardFeatureName = job.getOuterFeature();
         InnerDataset innerDataset = new InnerDataset();
         ArrayList<IFunctor> rawFunctors = InnerDatasetLoader.getFunctorsByFeatures(mapper);
         innerDataset.setFunctors(rawFunctors);
@@ -34,7 +23,7 @@ public class Datasets {
         for (int sampleIndex = 0; sampleIndex < dataset.sampleCount(); ++sampleIndex) {
             Integer timeFeatureIndex = dataset.getFeatureIndex(timeFeatureName);
             Integer outerTimeValue = Integer.parseInt(dataset.getFeatureAtSample(sampleIndex, timeFeatureIndex));
-            Integer reward = getRewardValue(dataset, mapper, rewardFeatureName, sampleIndex, job);
+
             for (int i = 0; i < dataset.featureCount(); ++i) {
                 String featureName = dataset.getHeader().get(i);
                 String outerValue = dataset.getFeatureAtSample(sampleIndex, i);
@@ -44,14 +33,15 @@ public class Datasets {
                 }
                 String targetGroup = descriptor.getGroupByOuterValue(outerValue, featureName);
                 for (String group : descriptor.getGroups(featureName)) {
-                    Integer value = targetGroup.equals(group) ? Config.STIM_MAX : Config.STIM_MIN;
+                    Integer value = targetGroup.equals(group) ?
+                        Config.STIM_MAX : Config.STIM_MIN;
                     IFunctor func = descriptor.getFunctorByGroup(group);
-                    ValueTimeReward vtr = new ValueTimeReward(
-                        func, value, outerTimeValue, reward);
+                    ValueTime vtr = new ValueTime(func, value, outerTimeValue);
                     innerDataset.add(vtr);
                 }
             }
         }
+
         return innerDataset;
     }
 

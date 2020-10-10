@@ -1,17 +1,13 @@
 package com.unn.engine.dataset;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import com.unn.engine.interfaces.IFunctor;
-import com.unn.engine.functions.ValueTimeReward;
-import com.unn.engine.utils.MultiplesHashMap;
-import com.unn.engine.utils.RandomManager;
+import com.unn.engine.functions.ValueTime;
 
 public class InnerDataset implements Serializable {
 	private static final long serialVersionUID = 4804115730789995484L;
@@ -30,7 +26,7 @@ public class InnerDataset implements Serializable {
 		this.timedValues.clear();
 	}
 	
-	public void add(ValueTimeReward vtr) {
+	public void add(ValueTime vtr) {
 		assert vtr.getClass() != null &&
 			vtr.getValue() != null &&
 			vtr.getTime() != null;

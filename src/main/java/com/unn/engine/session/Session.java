@@ -95,7 +95,7 @@ public class Session implements Serializable {
 			Model model = env.getModel();
 			report.confusionMatrixes.put(value, stats);
 			
-			ArrayList<String> artifactSigs = new ArrayList<String>();
+			ArrayList<String> artifactSigs = new ArrayList<>();
 			
 			if (model != null && model.getArtifacts() != null) {
 				for (Artifact fact : model.getArtifacts()) {

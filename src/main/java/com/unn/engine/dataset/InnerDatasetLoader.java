@@ -10,7 +10,7 @@ import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.mining.MiningStatusObservable;
 import com.unn.engine.session.Context;
-import com.unn.engine.functions.ValueTimeReward;
+import com.unn.engine.functions.ValueTime;
 
 public class InnerDatasetLoader {
 	private ValueMapper mapper;
@@ -68,7 +68,7 @@ public class InnerDatasetLoader {
 						Integer v = featureGroup.equals(group) ?
 							Config.STIM_MAX : Config.STIM_MIN;
 						IFunctor op = valuesDescriptor.getFunctorByGroup(group);
-						ValueTimeReward vtr = new ValueTimeReward(op, v, n, null);
+						ValueTime vtr = new ValueTime(op, v, n);
 						dataset.add(vtr);
 					}
 					j++;

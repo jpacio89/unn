@@ -28,8 +28,6 @@ public class MineActor extends Actor {
 	public ActionResult write() {
 		OuterDataset dataset = this.session.getOuterDataset();
 		Context context = this.session.getContext();
-		
-		// TODO: remove this from Session
 		HashMap<String, MiningScope> scopes = this.session.getScopes();
 		JobConfig config = buildConfig();
 
@@ -39,18 +37,20 @@ public class MineActor extends Actor {
 		ValueMapper mapper = loader.getValueMapper();
 		ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(
 			config.targetFeature);
-		ArrayList<IFunctor> rewardGroups = new ArrayList<>();
+
+		ArrayList<IFunctor> targetGroups = new ArrayList<>();
 
 		for (String group : valuesDescriptor.getGroups(config.targetFeature)) {
 			IFunctor op = valuesDescriptor.getFunctorByGroup(group);
-			rewardGroups.add(op);
+			targetGroups.add(op);
 		}
 
-		for (IFunctor func : rewardGroups) {
+		for (IFunctor func : targetGroups) {
 			ScopeConfig scopeConf = new ScopeConfig(loader, innerDataset,
-				config.targetFeature, func, rewardGroups);
+				config.targetFeature, func, targetGroups);
 			MiningScope scope = new MiningScope(scopeConf);
-			scopes.put(func.getDescriptor().getVtrName(), scope);
+			String scopeName = func.getDescriptor().getVtrName();
+			scopes.put(scopeName, scope);
 		}
 
 		for (MiningScope scope : scopes.values()) {
