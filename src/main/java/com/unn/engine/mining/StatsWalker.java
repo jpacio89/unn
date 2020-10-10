@@ -32,16 +32,16 @@ public class StatsWalker implements Serializable {
 		return this.hitMatrix;
 	}
 	
-	public void addHit2Matrix(Integer time, Integer expected, Integer guess) {
-		int relaxation = (int) (0.1 * Config.STIM_MAX);
-		
+	public void addHit2Matrix(Integer time, Integer expected, double guess) {
+		int relaxation = (int) (1.0 * Config.STIM_MAX);
+
 		if (guess > 0) {
-			guess = guess > Config.STIM_MAX - relaxation ? Config.STIM_MAX : guess;
+			guess = guess >= Config.STIM_MAX - relaxation ? Config.STIM_MAX : guess;
 		} else {
-			guess = guess < Config.STIM_MIN + relaxation ? Config.STIM_MIN : guess;
+			guess = guess <= Config.STIM_MIN + relaxation ? Config.STIM_MIN : guess;
 		}
 		
-		int guessIndex = this.possibleValues.indexOf(guess);
+		int guessIndex = this.possibleValues.indexOf((int) Math.round(guess));
 		int expectedIndex = this.possibleValues.indexOf(expected);
 		
 		if (guessIndex < 0) {

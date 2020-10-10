@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import com.unn.engine.Config;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.utils.Pair;
@@ -69,14 +70,12 @@ public class Model implements Serializable {
 		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
 		// TODO: simulation endpoint does not account for weights???
 		Double prediction = this.predict(inputs, null, null);
+		double adjustedPrediction = prediction == null ? Config.STIM_NULL: prediction.doubleValue();
 		int historicAction = this.dataset.getValueByTime(this.rewardSelector, time);
-
-		if (prediction != null) {
-			walker.addHit2Matrix(time, historicAction, (int) Math.round(prediction.doubleValue()));
-			return;
+		walker.addHit2Matrix(time, historicAction, adjustedPrediction);
+		if (prediction == null) {
+			walker.incUnknown();
 		}
-
-		walker.incUnknown();
 	}
 	
 	public Double predict(int time, Long[] weights, ArrayList<Long> _hitWeights) {
