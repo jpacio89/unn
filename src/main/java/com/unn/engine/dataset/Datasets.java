@@ -24,10 +24,10 @@ public class Datasets {
     }
 
     public static InnerDataset toInnerDataset(OuterDataset dataset, ValueMapper mapper, ScopeConfig job) {
-        Feature f = new Feature(job.getOuterFeature());
+        //Feature f = new Feature(job.getOuterFeature());
         // TODO: implement
         String timeFeatureName = "id"; // job.getTimeFeatureName();
-        String rewardFeatureName = f.getColumn();
+        String rewardFeatureName = job.getOuterFeature();
         InnerDataset innerDataset = new InnerDataset();
         ArrayList<IFunctor> rawFunctors = InnerDatasetLoader.getFunctorsByFeatures(mapper);
         innerDataset.setFunctors(rawFunctors);
@@ -39,13 +39,20 @@ public class Datasets {
             for (int i = 0; i < dataset.featureCount(); ++i) {
                 String featureName = dataset.getHeader().get(i);
                 String outerValue = dataset.getFeatureAtSample(sampleIndex, i);
-                Integer innerValue = mapper.getInnerValue(featureName, outerValue);
-                IFunctor identity = innerDataset.getFunctorByClassName(featureName);
-                ValueTimeReward vtr = new ValueTimeReward(
-                        identity, innerValue, outerTimeValue, reward);
-                innerDataset.add(vtr);
+                ValuesDescriptor descriptor = mapper.getValuesDescriptorByFeature(featureName);
+                if (descriptor == null) {
+                    continue;
+                }
+                // TODO: what if descriptor is NULL?
+                String targetGroup = descriptor.getGroupByOuterValue(outerValue, featureName);
+                for (String group : descriptor.getGroups(featureName)) {
+                    Integer value = targetGroup.equals(group) ? Config.STIM_MAX : Config.STIM_MIN;
+                    IFunctor func = descriptor.getFunctorByGroup(group);
+                    ValueTimeReward vtr = new ValueTimeReward(
+                        func, value, outerTimeValue, reward);
+                    innerDataset.add(vtr);
+                }
             }
-
         }
         return innerDataset;
     }
