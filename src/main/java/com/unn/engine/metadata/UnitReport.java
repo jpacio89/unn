@@ -27,7 +27,7 @@ public class UnitReport implements Serializable {
 			values = values.stream().limit(maxCardinality)
 				.collect(Collectors.toCollection(ArrayList::new));
 		}
-		if ("id".equals(feature)) {
+		if (Config.ID.equals(feature)) {
 			return;
 		}
 		Collections.sort(values);

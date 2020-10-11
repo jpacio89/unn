@@ -36,6 +36,8 @@ public class LoadDatasetAction extends Action {
 	public void setSession(Session session) {
 		this.session = session;
 	}
-	
-	
+
+	public void act() {
+		getSession().loadOuterDataset(getLocator());
+	}
 }

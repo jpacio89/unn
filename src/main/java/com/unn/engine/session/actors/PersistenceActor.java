@@ -6,20 +6,19 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import com.unn.engine.session.actions.ActionResult;
 import com.unn.engine.session.actions.SaveModelAction;
 import com.unn.engine.session.Session;
 
-public class PersistenceActor extends Actor {
+public class PersistenceActor {
 	SaveModelAction action;
 	
 	public PersistenceActor(SaveModelAction action) {
 		this.action = action;
 	}
 
-	public ActionResult write() {
+	public void write() {
 		WriteObjectToFile(this.action.getSession(), this.action.getPathTemplate());
-		return null;
+		return;
 	}
 	
 	public Session read() {		

@@ -1,8 +1,8 @@
 package com.unn.engine.session.actions;
 
-public class Action {
+public abstract class Action {
 
-	public Action() {
-		
-	}
+	public Action() { }
+
+	public abstract void act();
 }

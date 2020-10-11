@@ -10,6 +10,11 @@ public class SaveModelAction extends Action {
 		
 	}
 
+	@Override
+	public void act() {
+
+	}
+
 	public String getPathTemplate() {
 		return pathTemplate;
 	}

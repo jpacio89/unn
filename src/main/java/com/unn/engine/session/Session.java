@@ -15,7 +15,6 @@ import com.unn.engine.mining.Artifact;
 import com.unn.engine.mining.Model;
 import com.unn.engine.mining.StatsWalker;
 import com.unn.engine.session.actions.*;
-import com.unn.engine.session.actors.*;
 
 public class Session implements Serializable {
 	private static final long serialVersionUID = -4066182105363905590L;
@@ -39,29 +38,25 @@ public class Session implements Serializable {
 		}
 	}
 	
-	public ActionResult act(Action _action) {
-		Actor actor = null;
+	public void act(Action _action) {
+		Action action = null;
 		
 		if (_action instanceof LoadDatasetAction) {
-			LoadDatasetAction action = (LoadDatasetAction) _action;
-			action.setContext(this.context);
-			action.setSession(this);
-			actor = new LoadActor(action);
+			LoadDatasetAction __action = (LoadDatasetAction) _action;
+			__action.setContext(this.context);
+			__action.setSession(this);
 		} else if (_action instanceof SaveModelAction) {
-			SaveModelAction action = (SaveModelAction) _action;
-			actor = new PersistenceActor(action);
+			// Nothing to set
 		} else if (_action instanceof MineAction) {
-			MineAction action = (MineAction) _action;
-			action.setConf(this.getMineConfig());
-			actor = new MineActor(this, action);
+			MineAction __action = (MineAction) _action;
+			__action.setConf(this.getMineConfig());
+			__action.setSession(this);
 		} else if (_action instanceof PublishAction) {
-			PublishAction action = (PublishAction) _action;
-			action.setSession(this);
-			actor = new PublisherActor(action);
+			PublishAction __action = (PublishAction) _action;
+			__action.setSession(this);
 		}
 		
-		ActionResult result = actor.write();
-		return result;
+		action.act();
 	}
 	
 	public OuterDataset getOuterDataset() {
