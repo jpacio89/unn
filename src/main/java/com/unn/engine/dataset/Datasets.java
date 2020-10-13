@@ -13,7 +13,7 @@ import java.util.*;
 
 public class Datasets {
 
-    public static InnerDataset toInnerDataset(OuterDataset dataset, ValueMapper mapper, ScopeConfig job) {
+    public static InnerDataset toInnerDataset(OuterDataset dataset, ValueMapper mapper) {
         // TODO: implement
         String timeFeatureName = "id"; // job.getTimeFeatureName();
         InnerDataset innerDataset = new InnerDataset();

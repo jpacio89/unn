@@ -35,52 +35,12 @@ public class InnerDatasetLoader {
 	}
 	
 	private InnerDataset buildDataset() {
-		InnerDataset dataset = new InnerDataset();
-		
-		try {
-			this.mapper = new ValueMapper(this.outerDataset);
-
-			for (String k : mapper.getFeatures()) {
-				this.mapper.reportUnits(k, this.config.groupCount.get(k));
-			}
-
-			ArrayList<String> header = this.outerDataset.getHeader();
-			this.mapper.setFeatures(header.toArray(new String[header.size()]));
-			dataset.setFunctors(getFunctorsByFeatures(this.mapper));
-
-			int n = 0;
-			for (int i = 0; i < this.outerDataset.sampleCount(); ++i) {
-				if (getStatusObservable() != null) {
-					getStatusObservable().updateProgress(n, this.outerDataset.sampleCount());
-				}
-				int j = 0;
-				for (String key : this.outerDataset.getHeader()) {
-					if (Config.ID.equals(key)) {
-						j++;
-						continue;
-					}
-
-					String outerFeatureValue = this.outerDataset.getFeatureAtSample(i, j);
-					ValuesDescriptor valuesDescriptor = this.mapper.getValuesDescriptorByFeature(key);
-					String featureGroup = valuesDescriptor.getGroupByOuterValue(outerFeatureValue, key);
-
-					for (String group : valuesDescriptor.getGroups(key)) {
-						Integer v = featureGroup.equals(group) ?
-							Config.STIM_MAX : Config.STIM_MIN;
-						IFunctor op = valuesDescriptor.getFunctorByGroup(group);
-						ValueTime vtr = new ValueTime(op, v, n);
-						dataset.add(vtr);
-					}
-					j++;
-				}
-				n++;
-			}
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return dataset;
+		this.mapper = new ValueMapper(this.outerDataset);
+		this.mapper.getFeatures().stream().forEach((feature) ->
+			this.mapper.reportUnits(feature, this.config.groupCount.get(feature)));
+		this.mapper.setFeatures(this.outerDataset.getHeader()
+			.stream().toArray(String[]::new));
+		return Datasets.toInnerDataset(this.outerDataset, this.mapper);
 	}
 
 	public static ArrayList<IFunctor> getFunctorsByFeatures(ValueMapper mapper) {
