@@ -126,8 +126,7 @@ public class PublishAction extends Action {
             ArrayList<Prediction> refPredictions = new ArrayList<>();
             MiningScope scope = entry.getValue();
             ValueMapper mapper = scope.getMapper();
-            ScopeConfig job = scope.getConfig();
-            InnerDataset innerDataset = Datasets.toInnerDataset(dataset, mapper, job);
+            InnerDataset innerDataset = Datasets.toInnerDataset(dataset, mapper);
             for (Integer time : innerDataset.getTimes()) {
                 HashMap<IFunctor, Integer> input = innerDataset.bundleSample(time);
                 Double prediction = scope.predict(input);

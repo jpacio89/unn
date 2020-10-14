@@ -26,7 +26,7 @@ public class NumericMapper extends ValuesDescriptor implements Serializable {
 	public void init(int groupCount, ArrayList<Double> possibleValues) {
 		this.histogram = new FeatureValueHistogram();
 		this.groupCount = groupCount;
-		this.possibleValues = new ArrayList<Double>(possibleValues);
+		this.possibleValues = new ArrayList<>(possibleValues);
 		this.findDomain();
 		this.buildHistogram();
 	}
@@ -46,19 +46,6 @@ public class NumericMapper extends ValuesDescriptor implements Serializable {
 		int step = Math.max(1, range / (this.groupCount + 2));
 		int innerVal = Config.STIM_MIN + step * index;
 		return innerVal;
-	}
-	
-	public ArrayList<Integer> getAllInnerValues() {
-		ArrayList<Integer> values = new ArrayList<Integer>();
-		int range = Config.STIM_MAX - Config.STIM_MIN + 1;
-		int step = Math.max(1, range / (this.groupCount + 2));
-		
-		for(int i = 0; i < this.mapperBounds.size() + 1; ++i) {
-			int innerVal = Config.STIM_MIN + step * i;
-			values.add(innerVal);
-		}
-		
-		return values;
 	}
 	
 	private void buildHistogram() {
@@ -86,18 +73,18 @@ public class NumericMapper extends ValuesDescriptor implements Serializable {
 		double lowest = Collections.min(distinctValues);
 		double lowerBound = lowest;
 
-		this.mapperBounds = new ArrayList<Pair<Double, Double>>();
+		this.mapperBounds = new ArrayList<>();
 		
 		for (int i = 0; i < this.groupCount; ++i) {
 			int nextIndex = (i+1) * avgCardinality;
 			double upperBound;
 			if (nextIndex >= distinctValues.size()) {
 				upperBound = distinctValues.get(distinctValues.size() - 1);
-				mapperBounds.add(new Pair<Double, Double>(lowerBound, upperBound));	
+				mapperBounds.add(new Pair<>(lowerBound, upperBound));
 				break;
 			} else {
 				upperBound = distinctValues.get(nextIndex);
-				mapperBounds.add(new Pair<Double, Double>(lowerBound, upperBound));	
+				mapperBounds.add(new Pair<>(lowerBound, upperBound));
 			}
 			lowerBound = upperBound;
 		}

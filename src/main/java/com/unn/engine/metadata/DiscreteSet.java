@@ -28,19 +28,6 @@ public class DiscreteSet extends ValuesDescriptor implements Serializable {
 	public int cardinal() {
 		return this.values.size();
 	}
-	
-	public ArrayList<Integer> getAllInnerValues() {
-		ArrayList<Integer> innerValues = new ArrayList<>();
-		if (cardinal() == 1) {
-			innerValues.add(Config.STIM_MIN);
-		} else {
-			for (int i = 0; i < this.values.size(); ++i) {
-				int innerValue = (int) (Config.STIM_MIN + i * Math.floor((Config.STIM_MAX - Config.STIM_MIN) / (cardinal() - 1)));
-				innerValues.add(innerValue);
-			}	
-		}
-		return innerValues;
-	}
 
 	@Override
 	public ArrayList<String> getGroups(String suffix) {

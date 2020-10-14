@@ -10,6 +10,6 @@ public class FeatureValueHistogram implements Serializable {
 	public HashMap<Integer, Integer> occurences;
 	
 	public FeatureValueHistogram() {
-		this.occurences = new HashMap<Integer, Integer>();
+		this.occurences = new HashMap<>();
 	}
 }

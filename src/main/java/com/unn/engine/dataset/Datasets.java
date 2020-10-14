@@ -6,7 +6,6 @@ import com.unn.engine.functions.ValueTime;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.metadata.ValuesDescriptor;
-import com.unn.engine.mining.ScopeConfig;
 import com.unn.engine.prediction.Prediction;
 
 import java.util.*;

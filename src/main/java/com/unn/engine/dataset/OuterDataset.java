@@ -11,8 +11,8 @@ public class OuterDataset implements Serializable {
 	ArrayList<ArrayList<String>> body;
 	
 	public OuterDataset() {
-		this.header = new ArrayList<String>();
-		this.body = new ArrayList<ArrayList<String>>();
+		this.header = new ArrayList<>();
+		this.body = new ArrayList<>();
 	}
 	
 	public void setHeader(String[] features) {
@@ -46,7 +46,7 @@ public class OuterDataset implements Serializable {
 
 	public HashMap<String, String> getSampleAsMap(int index) {
 		ArrayList<String> sample = this.body.get(index);
-		HashMap<String, String> sampleMap = new HashMap<String, String>();
+		HashMap<String, String> sampleMap = new HashMap<>();
 		
 		for (int i = 0; i < sample.size(); ++i) {
 			String featureValue = sample.get(i);
@@ -58,7 +58,7 @@ public class OuterDataset implements Serializable {
 	}
 	
 	public void addSample(String[] sample) {
-		ArrayList<String> sampleCollection = new ArrayList<String>();
+		ArrayList<String> sampleCollection = new ArrayList<>();
 		Collections.addAll(sampleCollection, sample);
 		this.body.add(sampleCollection);
 	}

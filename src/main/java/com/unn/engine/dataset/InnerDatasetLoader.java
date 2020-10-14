@@ -38,8 +38,6 @@ public class InnerDatasetLoader {
 		this.mapper = new ValueMapper(this.outerDataset);
 		this.mapper.getFeatures().stream().forEach((feature) ->
 			this.mapper.reportUnits(feature, this.config.groupCount.get(feature)));
-		this.mapper.setFeatures(this.outerDataset.getHeader()
-			.stream().toArray(String[]::new));
 		return Datasets.toInnerDataset(this.outerDataset, this.mapper);
 	}
 
