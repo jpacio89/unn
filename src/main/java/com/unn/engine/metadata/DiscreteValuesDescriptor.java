@@ -9,24 +9,12 @@ import com.unn.engine.functions.FunctionDescriptor;
 import com.unn.engine.functions.Raw;
 import com.unn.engine.interfaces.IFunctor;
 
-public class DiscreteSet extends ValuesDescriptor implements Serializable {
+public class DiscreteValuesDescriptor extends ValuesDescriptor implements Serializable {
 	private static final long serialVersionUID = 2644249077021570502L;
 	public final ArrayList<String> values;
 	
-	public DiscreteSet(ArrayList<String> _values) {
+	public DiscreteValuesDescriptor(ArrayList<String> _values) {
 		this.values = _values;
-	}
-	
-	public Integer getIndex(String _value) {
-		int index = this.values.indexOf(_value);
-		if (index < 0) {
-			return null;
-		}
-		return index;
-	}
-	
-	public int cardinal() {
-		return this.values.size();
 	}
 
 	@Override
@@ -45,8 +33,9 @@ public class DiscreteSet extends ValuesDescriptor implements Serializable {
 	}
 
 	@Override
-	public String getGroupByOuterValue(String outerFeatureValue, String suffix) {
-		String name = String.format("discrete_%s_%s", outerFeatureValue, suffix);
-		return name;
+	public ArrayList<String> getGroupByOuterValue(String outerFeatureValue, String suffix) {
+		ArrayList response = new ArrayList<>();
+		response.add(String.format("discrete_%s_%s", outerFeatureValue, suffix));
+		return response;
 	}
 }

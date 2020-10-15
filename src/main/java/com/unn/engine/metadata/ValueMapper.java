@@ -67,14 +67,14 @@ public class ValueMapper {
 			return;
 		}
 		Collections.sort(values);
-		this.units.put(feature, new DiscreteSet(values));
+		this.units.put(feature, new DiscreteValuesDescriptor(values));
 	}
 
 	public void addNumeric(String feature, ArrayList<Double> values, Integer numericGroupCount) {
 		if (Config.ID.equals(feature)) {
 			return;
 		}
-		NumericMapper mapper = new NumericMapper();
+		NumericValuesDescriptor mapper = new NumericValuesDescriptor();
 		// TODO: fix group count
 		mapper.init(numericGroupCount != null ? numericGroupCount : Config.DEFAULT_GROUP_COUNT, values);
 		this.units.put(feature, mapper);

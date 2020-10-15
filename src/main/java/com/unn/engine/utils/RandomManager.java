@@ -19,6 +19,11 @@ public class RandomManager
 		int dif = ub - lb + 1;
 		return lb + randomizer_.nextInt (dif);
 	}
+
+	public static boolean getBoolean() {
+		int guess = rand(0, 1);
+		return guess == 0;
+	}
 	
 	
 	public static <T> T getOne (ArrayList<T> vals) {

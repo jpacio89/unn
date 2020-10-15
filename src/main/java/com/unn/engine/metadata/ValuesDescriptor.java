@@ -6,8 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public abstract class ValuesDescriptor implements Serializable {
-	private static final long serialVersionUID = 3612068706645305751L;
 	public abstract ArrayList<String> getGroups(String suffix);
 	public abstract IFunctor getFunctorByGroup(String group);
-	public abstract String getGroupByOuterValue(String outerFeatureValue, String suffix);
+	public abstract ArrayList<String> getGroupByOuterValue(String outerFeatureValue, String suffix);
 }

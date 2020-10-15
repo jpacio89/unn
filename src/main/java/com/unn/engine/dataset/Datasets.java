@@ -30,9 +30,9 @@ public class Datasets {
                 if (descriptor == null) {
                     continue;
                 }
-                String targetGroup = descriptor.getGroupByOuterValue(outerValue, featureName);
+                ArrayList<String> targetGroups = descriptor.getGroupByOuterValue(outerValue, featureName);
                 for (String group : descriptor.getGroups(featureName)) {
-                    Integer value = targetGroup.equals(group) ?
+                    Integer value = targetGroups.contains(group) ?
                         Config.STIM_MAX : Config.STIM_MIN;
                     IFunctor func = descriptor.getFunctorByGroup(group);
                     ValueTime vtr = new ValueTime(func, value, outerTimeValue);
