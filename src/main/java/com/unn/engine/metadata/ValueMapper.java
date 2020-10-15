@@ -15,36 +15,37 @@ public class ValueMapper {
 	}
 	
 	public void reportUnits(String feature, Integer numericGroupCount) {
-		boolean isNumeric = true;
-		HashMap<String, String> vals = new HashMap<>();
-		ArrayList<Double> numericValues = new ArrayList<>();
+		ArrayList<Double> numerics = new ArrayList<>();
+		ArrayList<String> labels = new ArrayList<>();
 		int featureIndex = this.dataset.getFeatureIndex(feature);
 
 		for (int i = 0; i < this.dataset.sampleCount(); ++i) {
 			String v = this.dataset.getFeatureAtSample(i, featureIndex);
 			try {
 				double vDouble = Double.parseDouble(v);
-				numericValues.add(vDouble);
+				numerics.add(vDouble);
 			} catch (NumberFormatException e) {
 				try {
 					int vDouble = Integer.parseInt(v);
-					numericValues.add((double)vDouble);
+					numerics.add((double)vDouble);
 				} catch (NumberFormatException e2) {
-					isNumeric = false;
+					labels.add(v);
 				}
 			}
-			vals.put(v, v);
 		}
 		
-		if (isNumeric) {
-			System.out.println(String.format("Numeric: %s", feature));
-			this.addNumeric(feature, numericValues, numericGroupCount);
+		if (numerics.size() > 0 && labels.size() == 0) {
+			System.out.println(String.format("Numeric descriptor", feature));
+			this.addNumeric(feature, numerics, numericGroupCount);
+		} else if (labels.size() > 0 && numerics.size() == 0) {
+			System.out.println(String.format("Discrete descriptor", labels.size()));
+			this.addDiscrete(feature, labels);
 		} else {
-			System.out.println(String.format("%d discrete values", vals.size()));
-			this.addDiscreteSet(feature, new ArrayList<>(vals.keySet()));
+			System.out.println(String.format("Mixed descriptor", feature));
+			this.addMixed(feature, labels, numerics, numericGroupCount);
 		}
 	}
-	
+
 	public Set<String> getFeatures() {
 		return new HashSet<>(this.dataset.getHeader().stream()
 			.filter(feature -> !Config.ID.equals(feature))
@@ -55,7 +56,10 @@ public class ValueMapper {
 		return this.units.get(targetFeature);
 	}
 
-	public void addDiscreteSet(String feature, ArrayList<String> values) {
+	void addDiscrete(String feature, ArrayList<String> values) {
+		if (Config.ID.equals(feature)) {
+			return;
+		}
 		// TODO: check this cardinality hack
 		final int maxCardinality = 20;
 		if (values.size() > maxCardinality) {
@@ -63,20 +67,33 @@ public class ValueMapper {
 			values = values.stream().limit(maxCardinality)
 					.collect(Collectors.toCollection(ArrayList::new));
 		}
-		if (Config.ID.equals(feature)) {
-			return;
-		}
 		Collections.sort(values);
-		this.units.put(feature, new DiscreteValuesDescriptor(values));
+		DiscreteValuesDescriptor descriptor = new DiscreteValuesDescriptor();
+		descriptor.init(values);
+		this.units.put(feature, descriptor);
 	}
 
-	public void addNumeric(String feature, ArrayList<Double> values, Integer numericGroupCount) {
+	void addNumeric(String feature, ArrayList<Double> values, Integer numericGroupCount) {
 		if (Config.ID.equals(feature)) {
 			return;
 		}
 		NumericValuesDescriptor mapper = new NumericValuesDescriptor();
 		// TODO: fix group count
-		mapper.init(numericGroupCount != null ? numericGroupCount : Config.DEFAULT_GROUP_COUNT, values);
+		int groupCount = numericGroupCount != null ?
+			numericGroupCount : Config.DEFAULT_GROUP_COUNT;
+		mapper.init(groupCount, values);
+		this.units.put(feature, mapper);
+	}
+
+	void addMixed(String feature, ArrayList<String> labels, ArrayList<Double> numerics, Integer numericGroupCount) {
+		if (Config.ID.equals(feature)) {
+			return;
+		}
+		MixedValuesDescriptor mapper = new MixedValuesDescriptor();
+		// TODO: fix group count
+		int groupCount = numericGroupCount != null ?
+			numericGroupCount : Config.DEFAULT_GROUP_COUNT;
+		mapper.init(groupCount, numerics, labels);
 		this.units.put(feature, mapper);
 	}
 }

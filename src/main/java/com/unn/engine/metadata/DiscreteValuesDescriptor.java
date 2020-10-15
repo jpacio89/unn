@@ -11,9 +11,11 @@ import com.unn.engine.interfaces.IFunctor;
 
 public class DiscreteValuesDescriptor extends ValuesDescriptor implements Serializable {
 	private static final long serialVersionUID = 2644249077021570502L;
-	public final ArrayList<String> values;
+	private ArrayList<String> values;
 	
-	public DiscreteValuesDescriptor(ArrayList<String> _values) {
+	public DiscreteValuesDescriptor() { }
+
+	public void init(ArrayList<String> _values) {
 		this.values = _values;
 	}
 
