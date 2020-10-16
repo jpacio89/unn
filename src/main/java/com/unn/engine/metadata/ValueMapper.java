@@ -12,6 +12,7 @@ public class ValueMapper {
 
 	public ValueMapper(OuterDataset dataset) {
 		this.dataset = dataset;
+		this.units = new HashMap<>();
 	}
 	
 	public void reportUnits(String feature, Integer numericGroupCount) {
@@ -29,7 +30,9 @@ public class ValueMapper {
 					int vDouble = Integer.parseInt(v);
 					numerics.add((double)vDouble);
 				} catch (NumberFormatException e2) {
-					labels.add(v);
+					if (!labels.contains(v)) {
+						labels.add(v);
+					}
 				}
 			}
 		}
@@ -39,9 +42,11 @@ public class ValueMapper {
 			this.addNumeric(feature, numerics, numericGroupCount);
 		} else if (labels.size() > 0 && numerics.size() == 0) {
 			System.out.println(String.format("Discrete descriptor", labels.size()));
+			System.out.println("\t" + labels.toString());
 			this.addDiscrete(feature, labels);
 		} else {
 			System.out.println(String.format("Mixed descriptor", feature));
+			System.out.println("\t" + labels.toString());
 			this.addMixed(feature, labels, numerics, numericGroupCount);
 		}
 	}
@@ -61,7 +66,7 @@ public class ValueMapper {
 			return;
 		}
 		// TODO: check this cardinality hack
-		final int maxCardinality = 20;
+		final int maxCardinality = 10;
 		if (values.size() > maxCardinality) {
 			Collections.shuffle(values);
 			values = values.stream().limit(maxCardinality)
@@ -88,6 +93,12 @@ public class ValueMapper {
 	void addMixed(String feature, ArrayList<String> labels, ArrayList<Double> numerics, Integer numericGroupCount) {
 		if (Config.ID.equals(feature)) {
 			return;
+		}
+		final int maxCardinality = 10;
+		if (labels.size() > maxCardinality) {
+			Collections.shuffle(labels);
+			labels = labels.stream().limit(maxCardinality)
+					.collect(Collectors.toCollection(ArrayList::new));
 		}
 		MixedValuesDescriptor mapper = new MixedValuesDescriptor();
 		// TODO: fix group count

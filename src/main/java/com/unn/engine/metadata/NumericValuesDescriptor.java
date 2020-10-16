@@ -38,7 +38,7 @@ public class NumericValuesDescriptor extends ValuesDescriptor implements Seriali
 		for (int i = 0; i < this.groupCount; ++i) {
 			double midPoint = RandomManager.getOne(this.possibleValues);
 			boolean isInverted = RandomManager.getBoolean();
-			String name = String.format("numeric_%f_%d", midPoint, isInverted);
+			String name = String.format("numeric_%f_%b", midPoint, isInverted);
 			this.groups.put(name, new Pair<>(midPoint, isInverted));
 		}
 	}

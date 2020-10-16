@@ -38,24 +38,21 @@ public class Session implements Serializable {
 		}
 	}
 	
-	public void act(Action _action) {
-		Action action = null;
-		
-		if (_action instanceof LoadDatasetAction) {
-			LoadDatasetAction __action = (LoadDatasetAction) _action;
+	public void act(Action action) {
+		if (action instanceof LoadDatasetAction) {
+			LoadDatasetAction __action = (LoadDatasetAction) action;
 			__action.setContext(this.context);
 			__action.setSession(this);
-		} else if (_action instanceof SaveModelAction) {
+		} else if (action instanceof SaveModelAction) {
 			// Nothing to set
-		} else if (_action instanceof MineAction) {
-			MineAction __action = (MineAction) _action;
+		} else if (action instanceof MineAction) {
+			MineAction __action = (MineAction) action;
 			__action.setConf(this.getMineConfig());
 			__action.setSession(this);
-		} else if (_action instanceof PublishAction) {
-			PublishAction __action = (PublishAction) _action;
+		} else if (action instanceof PublishAction) {
+			PublishAction __action = (PublishAction) action;
 			__action.setSession(this);
 		}
-		
 		action.act();
 	}
 	
