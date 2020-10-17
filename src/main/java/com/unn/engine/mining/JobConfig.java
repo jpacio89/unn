@@ -19,17 +19,14 @@ public class JobConfig implements Serializable {
 	public String targetOuterValue;
 	public Integer targetInnerValue;
 	public String[] featureBlacklist;
-	public HashMap<String, Integer> groupCount;
 	public String timeFeatureName;
 	public String rewardFeatureName;
 		
 	public JobConfig() {
-		this.groupCount = new HashMap<String, Integer>();
 		this.generateId();
 	}
 	
 	public JobConfig(String targetFeature, List<String> featureBlacklist) {
-		this.groupCount = new HashMap<String, Integer>();
 		this.targetFeature = targetFeature;
 		this.featureBlacklist = featureBlacklist.toArray(new String[featureBlacklist.size()]);
 		this.generateId();
@@ -62,9 +59,6 @@ public class JobConfig implements Serializable {
 		if (this.featureBlacklist != null) {
 			newConf.featureBlacklist = Arrays.copyOf(this.featureBlacklist, this.featureBlacklist.length);
 		}
-		
-		newConf.groupCount = new HashMap<String, Integer>();
-		newConf.groupCount.putAll(this.groupCount);
 		
 		return newConf;
 	}
