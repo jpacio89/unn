@@ -37,10 +37,12 @@ class Cache implements Serializable
 		signature_ = v;
 		sigdefined_ = true;
 		md5_signature_ = null;
-	}		
+	}
 	
 	int getResult () throws Exception {
-		if (!defined_) throw new Exception("Result not defined.");
+		if (!defined_) {
+			throw new Exception(String.format("Result not defined: %s", this.signature_));
+		}
 		
 		return value_;
 	}
