@@ -44,6 +44,9 @@ public class InnerDatasetLoader {
 		ArrayList<IFunctor> operators = new ArrayList<>();
 		for (String feature : features) {
 			ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(feature);
+			if (valuesDescriptor == null) {
+				continue;
+			}
 			for (String group : valuesDescriptor.getGroups(feature)) {
 				IFunctor raw = valuesDescriptor.getFunctorByGroup(group);
 				operators.add(raw);

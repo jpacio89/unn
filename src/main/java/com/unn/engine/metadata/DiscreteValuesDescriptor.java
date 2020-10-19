@@ -37,6 +37,10 @@ public class DiscreteValuesDescriptor extends ValuesDescriptor implements Serial
 	@Override
 	public ArrayList<String> getGroupByOuterValue(String outerFeatureValue, String suffix) {
 		ArrayList response = new ArrayList<>();
+		if (!this.values.contains(outerFeatureValue)) {
+			response.add(String.format("discrete_labelized_int_%s_%s", outerFeatureValue, suffix));
+			return response;
+		}
 		response.add(String.format("discrete_%s_%s", outerFeatureValue, suffix));
 		return response;
 	}

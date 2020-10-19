@@ -13,7 +13,7 @@ public class StatsWalker implements Serializable {
 	ArrayList<Integer> times;
 	
 	public StatsWalker() {
-		this.possibleValues = new ArrayList<Integer>();
+		this.possibleValues = new ArrayList<>();
 		this.possibleValues.add(Config.STIM_MIN);
 		this.possibleValues.add(Config.STIM_NULL);
 		this.possibleValues.add(Config.STIM_MAX);
@@ -21,7 +21,7 @@ public class StatsWalker implements Serializable {
 		this.hitMatrix = new int[possibleValues.size()][possibleValues.size()];
 		this.outlier = 0;
 		
-		this.times = new ArrayList<Integer>();
+		this.times = new ArrayList<>();
 	}
 	
 	public int getUnknownCount() {
@@ -33,7 +33,7 @@ public class StatsWalker implements Serializable {
 	}
 	
 	public void addHit2Matrix(Integer time, Integer expected, double guess) {
-		int relaxation = (int) (0.1 * Config.STIM_MAX);
+		int relaxation = (int) (0.9 * Config.STIM_MAX);
 
 		if (guess > 0) {
 			guess = guess >= Config.STIM_MAX - relaxation ? Config.STIM_MAX : guess;
