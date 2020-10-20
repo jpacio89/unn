@@ -55,13 +55,6 @@ public class InnerDatasetLoader {
 		return operators;
 	}
 	
-	private MiningStatusObservable getStatusObservable() {
-		if (this.context == null) {
-			return null;
-		}
-		return this.context.getStatusObservable(this.config.jobSessionId);
-	}
-	
 	public ValueMapper getValueMapper() {
 		return this.mapper;
 	}

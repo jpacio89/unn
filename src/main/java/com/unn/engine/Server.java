@@ -32,7 +32,7 @@ public class Server extends Thread {
 	}
 
 	Session session() {
-		return this.unnContext.getSession();
+		return this.unnContext.getActiveSession();
 	}
 	
 	public void run() {
@@ -89,7 +89,7 @@ public class Server extends Thread {
 	void registerMyself() {
 		new Thread(() -> {
 			for (;;) {
-				if (unnContext.getRole() != null) {
+				if (this.session() != null) {
 					this.startHearbeats();
 					break;
 				}
