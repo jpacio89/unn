@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import com.unn.engine.metadata.ValuesDescriptor;
-import com.unn.engine.mining.JobConfig;
+import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.interfaces.IFunctor;
-import com.unn.engine.mining.MiningStatusObservable;
+import com.unn.engine.mining.models.MiningStatusObservable;
 import com.unn.engine.session.Context;
 
 public class InnerDatasetLoader {

@@ -1,4 +1,4 @@
-package com.unn.engine.mining;
+package com.unn.engine.mining.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,6 +9,9 @@ import com.unn.engine.interfaces.IEnvironment;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.Config;
 import com.unn.engine.metadata.ValueMapper;
+import com.unn.engine.mining.Miner;
+import com.unn.engine.mining.StatisticsAnalyzer;
+import com.unn.engine.mining.RefineryNew;
 
 public class MiningScope implements IEnvironment, Serializable {
 	private static final long serialVersionUID = -8783414205445675354L;
@@ -46,7 +49,7 @@ public class MiningScope implements IEnvironment, Serializable {
 		return this.config.getLoader().getValueMapper();
 	}
 	
-	public StatsWalker mine() throws Exception {
+	public StatisticsAnalyzer mine() throws Exception {
 		System.out.println(String.format("|MiningEnvironment| Mining"));
 		this.refinedModel = null;
 		
@@ -84,7 +87,7 @@ public class MiningScope implements IEnvironment, Serializable {
 		return this.refinedModel.getStatsWalker();
 	}
 	
-	public StatsWalker getStatsWalker() {
+	public StatisticsAnalyzer getStatsWalker() {
 		if (this.refinedModel != null) {
 			return this.refinedModel.getStatsWalker();
 		}

@@ -3,7 +3,7 @@ package com.unn.engine;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.InnerDatasetLoader;
 import com.unn.engine.dataset.OuterDataset;
-import com.unn.engine.mining.JobConfig;
+import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.session.Context;
 import org.junit.Test;
 

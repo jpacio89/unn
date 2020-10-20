@@ -5,6 +5,10 @@ import java.util.Arrays;
 import java.util.Map.Entry;
 
 import com.unn.engine.Config;
+import com.unn.engine.mining.models.Artifact;
+import com.unn.engine.mining.Miner;
+import com.unn.engine.mining.models.JobConfig;
+import com.unn.engine.mining.models.Model;
 import com.unn.engine.utils.Pair;
 import com.unn.engine.utils.Triplet;
 
@@ -24,12 +28,12 @@ public class Refinery {
 		double[] errors = new double[weights.length];
 		double lastError = 1000000000.0;
 		
-		PreviousState prevState = null;
+		JobConfig.PreviousState prevState = null;
 		
 		for (int j = 0; j < 500; ++j) {
-			PreviousState[] state = new PreviousState[weights.length];
+			JobConfig.PreviousState[] state = new JobConfig.PreviousState[weights.length];
 			Double minError = 1000000000.0;
-			PreviousState bestState = null;
+			JobConfig.PreviousState bestState = null;
 			int minErrorIndex = -1;
 			for (int i = 0; i < weights.length; ++i) {
 				Long[] tmpWeights = Arrays.copyOf(weights, weights.length);
@@ -91,7 +95,7 @@ public class Refinery {
 		// return refinedModel;
 	}
 	
-	private void syncHitWeights(PreviousState previousState, PreviousState state, Integer artifactIndex) {
+	private void syncHitWeights(JobConfig.PreviousState previousState, JobConfig.PreviousState state, Integer artifactIndex) {
 		for (Entry<Integer, Triplet<Long, Double, Long>> entry : state.summaries.entrySet()) {
 			Integer time = entry.getKey();
 			Triplet<Long, Double, Long> summary = entry.getValue();
@@ -108,13 +112,13 @@ public class Refinery {
 		
 	}
 	
-	public PreviousState calculateError (double maxError, PreviousState prevState, Long[] weights, int artifactIndex) {
+	public JobConfig.PreviousState calculateError (double maxError, JobConfig.PreviousState prevState, Long[] weights, int artifactIndex) {
 		ArrayList<Integer> highs = this.miner.getHighs();
 		ArrayList<Integer> lows = this.miner.getLows();
 		
 		double errorSum = 0.0;
 		
-		PreviousState state = new PreviousState();
+		JobConfig.PreviousState state = new JobConfig.PreviousState();
 		
 		//errorSum += calculateErrorPartial (prevState, state, weights, artifactIndex, highs, true);
 		//errorSum += calculateErrorPartial (prevState, state, weights, artifactIndex, lows, false);
@@ -142,8 +146,8 @@ public class Refinery {
 	
 	private Double calculateErrorPartial (
 			double maxError,
-			PreviousState prevState,
-			PreviousState state,
+			JobConfig.PreviousState prevState,
+			JobConfig.PreviousState state,
 			Long[] weights, 
 			int artifactIndex,
 			ArrayList<Integer> times,

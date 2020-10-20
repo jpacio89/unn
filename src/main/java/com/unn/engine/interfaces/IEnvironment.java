@@ -4,21 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.unn.engine.metadata.ValueMapper;
-import com.unn.engine.mining.JobConfig;
-import com.unn.engine.mining.ScopeConfig;
-import com.unn.engine.mining.StatsWalker;
-import com.unn.engine.session.Context;
+import com.unn.engine.mining.models.ScopeConfig;
+import com.unn.engine.mining.StatisticsAnalyzer;
 
 public interface IEnvironment {
 	ArrayList<IFunctor> getInputs(String spaceId);
 	
 	Double predict(HashMap<IFunctor, Integer> values);
 	
-	StatsWalker mine() throws Exception;
+	StatisticsAnalyzer mine() throws Exception;
 
 	ValueMapper getMapper();
 
-	StatsWalker getStatsWalker();
+	StatisticsAnalyzer getStatsWalker();
 
 	ScopeConfig getConfig();
 }

@@ -12,7 +12,7 @@ import com.unn.common.server.StatusResponse;
 import com.unn.common.server.services.MaestroService;
 import com.unn.common.utils.SparkUtils;
 import com.unn.common.utils.Utils;
-import com.unn.engine.mining.MiningReport;
+import com.unn.engine.mining.models.MiningReport;
 import com.unn.engine.session.Context;
 import com.unn.engine.session.Session;
 import retrofit2.Call;

@@ -1,4 +1,4 @@
-package com.unn.engine.mining;
+package com.unn.engine.mining.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import com.unn.engine.utils.CombinationUtils;
 
 public class Artifact implements Serializable {
 	private static final long serialVersionUID = 5903929353773746851L;
-	public ArrayList<ArtifactParcel> opHits;
+	public ArrayList<Portion> opHits;
 	public ArrayList<Integer> wheatTimes;
 	public int reward;
 	public Long weight;
@@ -17,7 +17,7 @@ public class Artifact implements Serializable {
 		this.opHits = new ArrayList<>();
 	}
 	
-	public Artifact(ArrayList<ArtifactParcel> opHits, ArrayList<Integer> wheatTimes, int reward) {
+	public Artifact(ArrayList<Portion> opHits, ArrayList<Integer> wheatTimes, int reward) {
 		this.opHits = opHits;
 		this.wheatTimes = wheatTimes;
 		this.reward = reward;
@@ -28,41 +28,14 @@ public class Artifact implements Serializable {
 	}
 	
 	public static boolean contains(Artifact pivot, Artifact candidate) {
-		// ArrayList<IOperator> doubleRaws = new ArrayList<IOperator>();
 		boolean contains = true;
-		for (ArtifactParcel opHitCandidate : candidate.opHits) {
+		for (Portion opHitCandidate : candidate.opHits) {
 			if (!pivot.opHits.contains(opHitCandidate)) {
 				contains = false;
 				break;
 			}
-			/*IOperator doubleRaw = hasDoubleRaw(opHitCandidate);
-			if (doubleRaw != null) {
-				doubleRaws.add(doubleRaw);
-			}*/
 		}
-		/*if (!contains) {
-			boolean containsDouble = false;
-			outerloop:
-			for (OperatorHit hit : pivot.opHits) {
-				for (IOperator doubleRaw : doubleRaws) {
-					if (hit.operator.toString().split(doubleRaw.toString()).length > 1) {
-						System.out.println(String.format("Found raw=%s in %s", doubleRaw.toString(), hit.operator.toString()));
-						containsDouble = true;
-						break outerloop;
-					}
-				}
-			}
-			return containsDouble;
-		}*/
 		return contains;
-	}
-	
-	public static IFunctor hasDoubleRaw(ArtifactParcel opHit) {
-		IFunctor[] ops = opHit.operator.children();
-		if (ops[0].equals(ops[1])) {
-			return ops[0];
-		}
-		return null;
 	}
 	
 	// TODO: make unit test
@@ -117,5 +90,51 @@ public class Artifact implements Serializable {
 	@Override
 	public String toString() {
 		return "Artifact [opHits=" + opHits + ", reward=" + reward + "]";
+	}
+
+	public static class Portion implements Serializable {
+		private static final long serialVersionUID = 6076337110545632229L;
+		public IFunctor operator;
+		public int hit;
+
+		public Portion(IFunctor op, int hit) {
+			this.operator = op;
+			this.hit = hit;
+		}
+
+		@Override
+		public String toString() {
+			return "OperatorHit [" + operator + " = " + hit + "]";
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + hit;
+			result = prime * result + ((operator == null) ? 0 : operator.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Portion other = (Portion) obj;
+			if (hit != other.hit)
+				return false;
+			if (operator == null) {
+				if (other.operator != null)
+					return false;
+			} else if (!operator.equals(other.operator))
+				return false;
+			return true;
+		}
+
+
 	}
 }

@@ -1,4 +1,4 @@
-package com.unn.engine.mining;
+package com.unn.engine.mining.models;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;

@@ -6,9 +6,9 @@ import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.metadata.ValuesDescriptor;
-import com.unn.engine.mining.JobConfig;
-import com.unn.engine.mining.MiningScope;
-import com.unn.engine.mining.ScopeConfig;
+import com.unn.engine.mining.models.JobConfig;
+import com.unn.engine.mining.models.MiningScope;
+import com.unn.engine.mining.models.ScopeConfig;
 import com.unn.engine.session.Context;
 import com.unn.engine.session.Session;
 

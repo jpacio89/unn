@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.unn.engine.Config;
+import com.unn.engine.mining.models.Artifact;
+import com.unn.engine.mining.models.JobConfig;
+import com.unn.engine.mining.models.Model;
 import com.unn.engine.utils.Pair;
 import com.unn.engine.utils.RandomManager;
 
@@ -43,7 +46,7 @@ public class RefineryNew {
 						weights[_index] = 1L;
 					}
 					
-					PreviousState state = calculateError(lastError, weights);
+					JobConfig.PreviousState state = calculateError(lastError, weights);
 					
 					if (state != null) {
 						double error = state.getError();
@@ -80,19 +83,19 @@ public class RefineryNew {
 			newArtifacts.add(artifacts.get(index));
 		}
 		
-		Model refined = new Model(this.model.getDataset(), newArtifacts, this.model.rewardSelector);
+		Model refined = new Model(this.model.getDataset(), newArtifacts, this.model.getRewardSelector());
 		miner.gatherStats(refined);
 		
 		return refined;
 	}
 	
-	public PreviousState calculateError (double maxError, Long[] weights) {
+	public JobConfig.PreviousState calculateError (double maxError, Long[] weights) {
 		ArrayList<Integer> highs = this.miner.getHighs();
 		ArrayList<Integer> lows = this.miner.getLows();
 		
 		double errorSum = 0.0;
 		
-		PreviousState state = new PreviousState();
+		JobConfig.PreviousState state = new JobConfig.PreviousState();
 		Double err = null;
 		
 		

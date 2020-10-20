@@ -30,7 +30,7 @@ public class DiscreteValuesDescriptor extends ValuesDescriptor implements Serial
 	public IFunctor getFunctorByGroup(String group) {
 		Raw raw = new Raw();
 		String name = String.format("%s", group);
-		raw.setDescriptor(new FunctionDescriptor(".", name,-1));
+		raw.setDescriptor(new FunctionDescriptor(name));
 		return raw;
 	}
 

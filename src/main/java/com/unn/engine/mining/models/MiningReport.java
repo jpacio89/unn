@@ -1,17 +1,17 @@
-package com.unn.engine.mining;
+package com.unn.engine.mining.models;
+
+import com.unn.engine.mining.StatisticsAnalyzer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.unn.engine.mining.StatsWalker;
-
 public class MiningReport {
 	public boolean isFinished;
-	public HashMap<String, StatsWalker> confusionMatrixes;
+	public HashMap<String, StatisticsAnalyzer> confusionMatrixes;
 	public HashMap<String, ArrayList<String>> artifactSignatures;
 
 	public MiningReport() {
-		this.confusionMatrixes = new HashMap<String, StatsWalker>();
+		this.confusionMatrixes = new HashMap<String, StatisticsAnalyzer>();
 		this.artifactSignatures = new HashMap<String, ArrayList<String>>();
 	}
 
@@ -23,11 +23,11 @@ public class MiningReport {
 		isFinished = finished;
 	}
 
-	public HashMap<String, StatsWalker> getConfusionMatrixes() {
+	public HashMap<String, StatisticsAnalyzer> getConfusionMatrixes() {
 		return confusionMatrixes;
 	}
 
-	public void setConfusionMatrixes(HashMap<String, StatsWalker> confusionMatrixes) {
+	public void setConfusionMatrixes(HashMap<String, StatisticsAnalyzer> confusionMatrixes) {
 		this.confusionMatrixes = confusionMatrixes;
 	}
 

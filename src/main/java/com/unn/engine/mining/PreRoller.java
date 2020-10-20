@@ -10,18 +10,20 @@ import com.unn.engine.functions.Raw;
 import com.unn.engine.functions.Threshold;
 import com.unn.engine.functions.ValueTime;
 import com.unn.engine.Config;
+import com.unn.engine.mining.models.Artifact;
+import com.unn.engine.mining.models.MiningStatusObservable;
 import com.unn.engine.utils.MultiplesHashMap;
 import com.unn.engine.utils.RandomManager;
 
 public class PreRoller {
 	HashMap<IFunctor, Integer> operatorIndex;
 	ArrayList<IFunctor> leafs;
-	ArrayList<ArtifactParcel> opHits;
+	ArrayList<Artifact.Portion> opHits;
 	InnerDataset dataset;
 	
 	int reward;
-	MultiplesHashMap<Integer, ArtifactParcel> findings;
-	MultiplesHashMap<ArtifactParcel, Integer> opHitPresences;
+	MultiplesHashMap<Integer, Artifact.Portion> findings;
+	MultiplesHashMap<Artifact.Portion, Integer> opHitPresences;
 	MiningStatusObservable miningStatusObservable;
 	
 	public PreRoller(InnerDataset dataset, int reward, MiningStatusObservable statusObservable) {
@@ -40,8 +42,8 @@ public class PreRoller {
 		int i = 0;
 		
 		for (IFunctor operator : operators) {
-			this.opHits.add(new ArtifactParcel(operator, Config.STIM_MIN));
-			this.opHits.add(new ArtifactParcel(operator, Config.STIM_MAX));
+			this.opHits.add(new Artifact.Portion(operator, Config.STIM_MIN));
+			this.opHits.add(new Artifact.Portion(operator, Config.STIM_MAX));
 			this.operatorIndex.put(operator, i * 2);
 			i++;
 		}
@@ -55,22 +57,17 @@ public class PreRoller {
 		for (int i = Config.STIM_MIN; i <= Config.STIM_MAX; ++i) {
 			paramsWithContants.add(new Raw(i));
 		}
-		
-		int counter = 0;
-		
+
 		for (int i = 0; i < paramsWithContants.size(); ++i) {
 			for (int j = 0; j < paramsWithContants.size(); ++j) {
 				IFunctor lh = paramsWithContants.get(i);
 				IFunctor rh = paramsWithContants.get(j);
-
 				if (!lh.isParameter() && !rh.isParameter()) {
 					continue;
 				}
-
 				Threshold thd = new Threshold(lh, rh);
-				thd.setDescriptor(new FunctionDescriptor(".", thd.toString(), counter));
+				thd.setDescriptor(new FunctionDescriptor(thd.toString()));
 				booleanParameters.add(thd);
-				counter++;
 			}
 		}
 		
@@ -97,7 +94,7 @@ public class PreRoller {
 		long maxN = badTimes.size() * this.opHits.size();
 		
 		for (Integer time : badTimes) {
-			for (ArtifactParcel opHit : this.opHits) {
+			for (Artifact.Portion opHit : this.opHits) {
 				boolean isCheck = checkTime(opHit.operator, time, opHit.hit);
 				if (!isCheck) {
 					findings.put(time, opHit);
@@ -114,13 +111,13 @@ public class PreRoller {
 	
 	public Artifact createMatrix(ArrayList<Integer> goodTimes, ArrayList<Integer> badTimes) throws Exception {
 		ArrayList<Integer> missingBadTimes = new ArrayList<Integer>(badTimes);		
-		ArrayList<ArtifactParcel> availableOpHits = new ArrayList<ArtifactParcel>(this.opHits);
-		ArrayList<ArtifactParcel> chosenSet = new ArrayList<ArtifactParcel>();
+		ArrayList<Artifact.Portion> availableOpHits = new ArrayList<Artifact.Portion>(this.opHits);
+		ArrayList<Artifact.Portion> chosenSet = new ArrayList<Artifact.Portion>();
 		
 		while (missingBadTimes.size() > 0) {
 			assert availableOpHits.size() > 0;
 			
-			ArtifactParcel opHit = RandomManager.getOne(availableOpHits);
+			Artifact.Portion opHit = RandomManager.getOne(availableOpHits);
 			availableOpHits.remove(opHit);
 			
 			ArrayList<Integer> opHitTimes = opHitPresences.get(opHit);
@@ -169,7 +166,7 @@ public class PreRoller {
 		
 		for (Integer time : goodTimes) {
 			boolean isRemoved = false;
-			for (ArtifactParcel opHit : chosenSet) {
+			for (Artifact.Portion opHit : chosenSet) {
 				boolean isCheck = checkTime(opHit.operator, time, opHit.hit);
 				if (!isCheck) {
 					isRemoved = true;
@@ -198,7 +195,7 @@ public class PreRoller {
 		long timeCounter = 0;
 		for (Integer time : badTimes) {
 			boolean isValid = false;
-			for (ArtifactParcel opHit : artifact.opHits) {
+			for (Artifact.Portion opHit : artifact.opHits) {
 				boolean ret = checkTime(opHit.operator, time, -opHit.hit);
 				if (ret) {
 					isValid = true;

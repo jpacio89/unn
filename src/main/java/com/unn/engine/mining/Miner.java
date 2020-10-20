@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.Config;
+import com.unn.engine.mining.models.Artifact;
+import com.unn.engine.mining.models.MiningStatusObservable;
+import com.unn.engine.mining.models.Model;
 
 public class Miner {
 	public final int MIN_WHEAT_COUNT = 0;

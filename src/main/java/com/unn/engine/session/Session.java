@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import com.unn.engine.mining.JobConfig;
-import com.unn.engine.mining.MiningScope;
-import com.unn.engine.mining.MiningReport;
+import com.unn.engine.mining.models.JobConfig;
+import com.unn.engine.mining.models.MiningScope;
+import com.unn.engine.mining.models.MiningReport;
 import com.unn.engine.dataset.DatasetLocator;
 import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.dataset.OuterDatasetLoader;
-import com.unn.engine.mining.Artifact;
-import com.unn.engine.mining.Model;
-import com.unn.engine.mining.StatsWalker;
+import com.unn.engine.mining.models.Artifact;
+import com.unn.engine.mining.models.Model;
+import com.unn.engine.mining.StatisticsAnalyzer;
 import com.unn.engine.session.actions.*;
 
 public class Session implements Serializable {
@@ -83,7 +83,7 @@ public class Session implements Serializable {
 
 		for (String value : scopes.keySet()) {
 			MiningScope env = scopes.get(value);
-			StatsWalker stats = env.getStatsWalker();
+			StatisticsAnalyzer stats = env.getStatsWalker();
 			Model model = env.getModel();
 			report.confusionMatrixes.put(value, stats);
 			

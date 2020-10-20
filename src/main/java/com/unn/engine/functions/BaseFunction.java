@@ -6,44 +6,37 @@ import com.unn.engine.interfaces.IFunctor;
 
 public abstract class BaseFunction implements IFunctor, Serializable
 {
-	private static final long serialVersionUID = 2944349782766148256L;
-	Cache cache_;
-	FunctionDescriptor functionDescriptor_;
+	Cache cache;
+	FunctionDescriptor functionDescriptor;
 	
 	public BaseFunction() {
-		init ();
-	}
-	
-	public BaseFunction(boolean is_time_reward) {
-		init ();
+		this.init ();
 	}
 	
 	private void init () {
-		cache_ = new Cache();
-
-		updateSignature ();
+		cache = new Cache();
+		this.updateSignature();
 	}
 
 	public void define (int v) {	
-		if (isDefined()) {
+		if (this.isDefined()) {
 			return;
 		}
-		cache_.setResult (v);
-		updateSignature ();
+		this.cache.setResult(v);
+		this.updateSignature();
 	}
 	
 	public boolean isDefined () {
-//		return false;
-		return cache_.isDefined (); 
+		return this.cache.isDefined ();
 	}
 	
 	public int value () throws Exception {
-		return cache_.getResult (); 
+		return this.cache.getResult ();
 	}
 	
 	public String toString () {
 		try {
-			return cache_.getSignature ();
+			return this.cache.getSignature ();
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
@@ -51,52 +44,21 @@ public abstract class BaseFunction implements IFunctor, Serializable
 		return "-";
 	}
 	
-	public void setCachedResult (Cache cache) {
-		this.cache_ = cache;
-	}
-	
-	public BaseFunction base () {
-		return (BaseFunction) this;
-	}
-	
-	protected Cache cloneCachedResult () {
-		try {
-			return (Cache) this.cache_.clone();
-		}
-		catch (CloneNotSupportedException e) {
-			System.err.println("CachedResult - Clone method not supported.");
-			return new Cache();
-		}
-	}
-	
 	protected void setSignature (String sig) {
-		cache_.setSignature (sig);
+		this.cache.setSignature (sig);
 	}
 	
 	public FunctionDescriptor getDescriptor () {
-		return functionDescriptor_;
+		return this.functionDescriptor;
 	}
 
 	public void setDescriptor (FunctionDescriptor descriptor) {
-		this.functionDescriptor_ = descriptor;
-	}
-	
-	public String hash () {
-		return this.cache_.getMD5 ();
-	}
-
-	public OpIterator iterator () {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void recycle () {
-		cache_.clear ();
+		this.functionDescriptor = descriptor;
 	}
 
 	public int hashCode () {
 		try {
-			return cache_.getSignature ().hashCode ();
+			return this.cache.getSignature().hashCode();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -109,8 +71,7 @@ public abstract class BaseFunction implements IFunctor, Serializable
 		if (obj instanceof BaseFunction) {
 			BaseFunction obj_base = (BaseFunction) obj;
 			try {
-				return obj_base.toString ().equals (cache_.getSignature ());
-				//return obj_base == this;
+				return obj_base.toString ().equals (cache.getSignature ());
 			}
 			catch (Exception e) {
 				e.printStackTrace();

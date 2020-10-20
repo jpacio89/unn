@@ -1,7 +1,6 @@
 package com.unn.engine.functions;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.unn.engine.interfaces.IFunctor;
@@ -12,35 +11,17 @@ public class Raw extends BaseFunction implements Serializable
 
 	public Raw(int v) {
 		super();
-		
 		define(v);
 	}
 	
 	public Raw() {
 		super();
 	}
-
-	public Raw(boolean is_time_reward) {
-		super (is_time_reward);
-	}
-
-	@Override
-	public void getParameters (ArrayList<IFunctor> parameters) {
-		if (isParameter()) {
-			parameters.add (this);
-		}
-	}
 	
 	public boolean isParameter () {
 		if (!isDefined () && getDescriptor () != null) {
 			return true;
 		}
-		
-		return false;
-	}
-	
-	@Override
-	public boolean isBoolean () {
 		return false;
 	}
 	
@@ -48,54 +29,26 @@ public class Raw extends BaseFunction implements Serializable
 		super.setDescriptor (descriptor);
 		updateSignature ();
 	}
-
-	@Override
-	public void recycle () {
-		if (this.getDescriptor () != null) {
-			super.recycle ();
-		
-			updateSignature ();
-		}
-	}
-	
-	@Override
-	public String hash () {
-		return toString ();
-	}
 	
 	@Override
 	public void updateSignature () {
 		try {
 			String sig = "?";
-			
-			if (functionDescriptor_ == null) {
+			if (functionDescriptor == null) {
 				if (isDefined ()) {
 					sig = Integer.toString (value ());
 				}
 			}
 			else {
-				sig = functionDescriptor_.getVtrName ();
+				sig = functionDescriptor.getVtrName ();
 			}
 			
-			cache_.setSignature (sig);
+			cache.setSignature (sig);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	@Override
-	public OpIterator iterator () {
-		return null;
-	}
-	
-	@Override
-	public IFunctor[] children () {
-		return null;
-	}
-	
-	@Override
-	public void setParameters (IFunctor[] params) {}
 
 	@Override
 	public Integer operate(HashMap<IFunctor, Integer> values) throws Exception {

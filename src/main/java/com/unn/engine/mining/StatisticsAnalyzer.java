@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import com.unn.engine.Config;
 
-public class StatsWalker implements Serializable {
+public class StatisticsAnalyzer implements Serializable {
 	private static final long serialVersionUID = -5115126641533695064L;
 	ArrayList<Integer> possibleValues;
 	int[][] hitMatrix;
@@ -12,7 +12,7 @@ public class StatsWalker implements Serializable {
 	
 	ArrayList<Integer> times;
 	
-	public StatsWalker() {
+	public StatisticsAnalyzer() {
 		this.possibleValues = new ArrayList<>();
 		this.possibleValues.add(Config.STIM_MIN);
 		this.possibleValues.add(Config.STIM_NULL);

@@ -6,73 +6,56 @@ import com.unn.engine.utils.Misc;
 
 class Cache implements Serializable
 {
-	private static final long serialVersionUID = -1399346447352915112L;
-	
-	boolean defined_;
-	boolean sigdefined_;
-	
-	int value_;
-
-	String signature_;
-	String md5_signature_;
+	boolean defined;
+	boolean sigDefined;
+	int value;
+	String signature;
 	
 	Cache() {
 		clear ();
 	}
 	
 	void clear () {
-		signature_ = "";
-		value_ = 0;
-		defined_ = false;
-		sigdefined_ = false;
-		md5_signature_ = null;
+		signature = "";
+		value = 0;
+		defined = false;
+		sigDefined = false;
 	}
 	
 	void setResult (int v) {
-		value_ = v;
-		defined_ = true;
+		value = v;
+		defined = true;
 	}
 	
 	void setSignature (String v) {
-		signature_ = v;
-		sigdefined_ = true;
-		md5_signature_ = null;
+		signature = v;
+		sigDefined = true;
 	}
 	
 	int getResult () throws Exception {
-		if (!defined_) {
-			throw new Exception(String.format("Result not defined: %s", this.signature_));
+		if (!defined) {
+			throw new Exception(String.format("Result not defined: %s", this.signature));
 		}
-		
-		return value_;
+		return value;
 	}
 	
 	String getSignature () throws Exception {
-		if(!sigdefined_) throw new Exception("Signature not defined.");
-		
-		return signature_;
-	}
-	
-	String getMD5 () {
-		if(!sigdefined_) return null;
-		
-		if (md5_signature_ == null) {
-			md5_signature_ = ":" + Misc.md5 (signature_);
+		if(!sigDefined) {
+			throw new Exception("Signature not defined.");
 		}
-		
-		return md5_signature_;
+		return signature;
 	}
 	
 	boolean isDefined () {
-		return defined_; 
+		return defined;
 	}
 	
 	boolean isSigDefined () {
-		return sigdefined_; 
+		return sigDefined;
 	}
 
 	@Override
-	protected Object clone () throws CloneNotSupportedException {
+	protected Object clone () {
 		Cache res = new Cache();
 		try {
 			if (this.isDefined ()) {
@@ -83,8 +66,7 @@ class Cache implements Serializable
 				res.setSignature (new String (this.getSignature ()));
 			}
 		}
-		catch (Exception e) {}
-		
+		catch (Exception e) { }
 		return res;
 	}
 }

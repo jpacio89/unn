@@ -53,7 +53,7 @@ public class NumericValuesDescriptor extends ValuesDescriptor implements Seriali
 	@Override
 	public IFunctor getFunctorByGroup(String group) {
 		Raw raw = new Raw();
-		raw.setDescriptor(new FunctionDescriptor(".", group,-1));
+		raw.setDescriptor(new FunctionDescriptor(group));
 		return raw;
 	}
 

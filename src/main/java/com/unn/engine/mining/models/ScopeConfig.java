@@ -1,4 +1,4 @@
-package com.unn.engine.mining;
+package com.unn.engine.mining.models;
 
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.InnerDatasetLoader;

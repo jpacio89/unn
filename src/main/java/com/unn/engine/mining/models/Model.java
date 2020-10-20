@@ -1,4 +1,4 @@
-package com.unn.engine.mining;
+package com.unn.engine.mining.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,6 +8,7 @@ import java.util.HashMap;
 import com.unn.engine.Config;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.mining.StatisticsAnalyzer;
 import com.unn.engine.utils.Pair;
 
 public class Model implements Serializable {
@@ -15,7 +16,7 @@ public class Model implements Serializable {
 
 	final int TEST_SAMPLE_COUNT = 1000;
 	
-	StatsWalker walker;
+	StatisticsAnalyzer walker;
 	InnerDataset dataset;
 	ArrayList<Artifact> artifacts;
 	IFunctor rewardSelector;
@@ -23,7 +24,7 @@ public class Model implements Serializable {
 	public Model(InnerDataset dataset, IFunctor rewardSelector) {
 		this.dataset = dataset;
 		this.artifacts = new ArrayList<Artifact>();
-		this.walker = new StatsWalker();
+		this.walker = new StatisticsAnalyzer();
 		this.rewardSelector = rewardSelector;
 	}
 	
@@ -37,12 +38,12 @@ public class Model implements Serializable {
 		this.artifacts.add(artifact);
 	}
 	
-	public StatsWalker getStatsWalker() {
+	public StatisticsAnalyzer getStatsWalker() {
 		return this.walker;
 	}
 	
 	public void gatherStats (ArrayList<Integer> testTimesLow, ArrayList<Integer> testTimesHigh) {
-		this.walker = new StatsWalker();
+		this.walker = new StatisticsAnalyzer();
 		
 		ArrayList<Integer> testTimes = new ArrayList<Integer>();
 		
@@ -51,7 +52,7 @@ public class Model implements Serializable {
 		
 		Collections.shuffle(testTimes);
 		
-		testTimes = new ArrayList<Integer> (testTimes.subList(0, Math.min(TEST_SAMPLE_COUNT, testTimes.size())));
+		testTimes = new ArrayList<> (testTimes.subList(0, Math.min(TEST_SAMPLE_COUNT, testTimes.size())));
 		
 		for (Integer time : testTimes) {
 			predict(time, walker);
@@ -66,7 +67,7 @@ public class Model implements Serializable {
 		return prediction;
 	}
 
-	private void predict (int time, StatsWalker walker) {
+	private void predict (int time, StatisticsAnalyzer walker) {
 		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
 		// TODO: simulation endpoint does not account for weights???
 		Double prediction = this.predict(inputs, null, null);
@@ -172,11 +173,11 @@ public class Model implements Serializable {
 	
 	public Boolean isHit(HashMap<IFunctor, Integer> inputs, int artifactIndex) {
 		Artifact artifact = this.artifacts.get(artifactIndex);
-		ArrayList<ArtifactParcel> parcels = artifact.opHits;
+		ArrayList<Artifact.Portion> parcels = artifact.opHits;
 		
 		boolean hit = true;
 		
-		for (ArtifactParcel parcel : parcels) {
+		for (Artifact.Portion parcel : parcels) {
 			IFunctor thd = parcel.operator;
 			Integer parcelOutcome = parcel.hit;
 			
@@ -195,6 +196,10 @@ public class Model implements Serializable {
 		}
 		
 		return hit;
+	}
+
+	public IFunctor getRewardSelector() {
+		return rewardSelector;
 	}
 
 	public ArrayList<IFunctor> getInputs() {
