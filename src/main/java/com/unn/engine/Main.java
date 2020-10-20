@@ -3,7 +3,7 @@ package com.unn.engine;
 public class Main {
 	// private static Logger logger = Logger.getLogger(Shell.class.toString());
 	
-	public static void main(String[] args) throws Exception {		
+	public static void main(String[] args) {
 		startServer(args);
 	}
 	
