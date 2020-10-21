@@ -81,6 +81,10 @@ public class Session implements Serializable {
 		return report;
 	}
 
+	public boolean isAlive() {
+		return this.minerThread != null;
+	}
+
 	void processRole() {
 		final Session self = this;
 		this.minerThread = new Thread(() -> {

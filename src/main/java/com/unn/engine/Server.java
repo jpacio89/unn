@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.google.gson.Gson;
 
 import com.unn.common.globals.NetworkConfig;
+import com.unn.common.operations.Agent;
 import com.unn.common.operations.AgentRole;
 import com.unn.common.operations.DatacenterOrigin;
 import com.unn.common.server.StandardResponse;
@@ -32,7 +33,7 @@ public class Server extends Thread {
 	}
 
 	Session session() {
-		return this.unnContext.getActiveSession();
+		return this.unnContext.getLiveSession();
 	}
 	
 	public void run() {
@@ -74,6 +75,11 @@ public class Server extends Thread {
 	void startHearbeats() {
 		this.heartbeats = new Thread(() -> {
 			for(;;) {
+				if (this.session() == null) {
+					this.heartbeats = null;
+					this.me = Config.MYSELF.build();
+					break;
+				}
 				MaestroService service = Utils.getMaestro();
 				service.heartbeat(Config.MYSELF);
 				try {
@@ -86,17 +92,24 @@ public class Server extends Thread {
 		this.heartbeats.start();
 	}
 
+	Agent me = Config.MYSELF.build();
+
 	void registerMyself() {
 		new Thread(() -> {
 			for (;;) {
-				if (this.session() != null) {
-					this.startHearbeats();
-					break;
-				}
 				try {
+					if (this.heartbeats != null) {
+						Thread.sleep(1000);
+						continue;
+					}
+					if (this.session() != null) {
+						this.startHearbeats();
+						Thread.sleep(1000);
+						continue;
+					}
 					System.out.println("|RestServer| Registering myself");
 					MaestroService service = Utils.getMaestro();
-					Call<StandardResponse> call = service.registerAgent(Config.MYSELF);
+					Call<StandardResponse> call = service.registerAgent(me);
 					call.execute();
 					Thread.sleep(1000);
 				} catch (IOException e) {
