@@ -72,7 +72,7 @@ public class ValueMapper {
 	}
 
 	void addDiscrete(String feature, HashSet<String> _labels) {
-		if (Config.ID.equals(feature)) {
+		if (Config.ID.equals(feature) || Config.PRIMER.equals(feature)) {
 			return;
 		}
 		if (_labels.size() > this.dataset.sampleCount() / 2) {
@@ -89,7 +89,7 @@ public class ValueMapper {
 	}
 
 	void addNumeric(String feature, ArrayList<Double> values) {
-		if (Config.ID.equals(feature)) {
+		if (Config.ID.equals(feature) || Config.PRIMER.equals(feature)) {
 			return;
 		}
 		NumericValuesDescriptor mapper = new NumericValuesDescriptor();
@@ -99,7 +99,7 @@ public class ValueMapper {
 	}
 
 	void addMixed(String feature, HashSet<String> _labels, ArrayList<Double> numerics) {
-		if (Config.ID.equals(feature)) {
+		if (Config.ID.equals(feature) || Config.PRIMER.equals(feature)) {
 			return;
 		}
 		ArrayList<String> labels = limitLabels(_labels, Config.DEFAULT_DISCRETE_LABEL_COUNT / 2);

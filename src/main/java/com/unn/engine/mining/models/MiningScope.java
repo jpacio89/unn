@@ -79,9 +79,13 @@ public class MiningScope implements IEnvironment, Serializable {
 		if (Config.ASSERT) {
 			// refinery.checkConsistency();
 		}
-		
-		this.refinedModel = refinery.refine();
-		
+
+		if (model.getArtifacts().size() > 0) {
+			this.refinedModel = refinery.refine();
+		} else {
+			System.out.println("|MiningScope| Wheats are not separable from Weeds -> dataset in equilibrium for this scope.");
+		}
+
 		getStatusObservable().updateStatusLabel("DONE");
 		
 		return this.refinedModel.getStatsWalker();

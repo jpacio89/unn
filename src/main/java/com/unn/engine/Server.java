@@ -26,10 +26,12 @@ public class Server extends Thread {
 	int port;
 	Thread heartbeats;
 	Context unnContext;
-	
+	Agent myself;
+
 	public Server(int port) {
 		this.port = port;
 		this.unnContext = new Context();
+		this.myself = Config.MYSELF.newInstance();
 	}
 
 	Session session() {
@@ -77,22 +79,23 @@ public class Server extends Thread {
 			for(;;) {
 				if (this.session() == null) {
 					this.heartbeats = null;
-					this.me = Config.MYSELF.build();
+					this.myself = Config.MYSELF.newInstance();
 					break;
 				}
-				MaestroService service = Utils.getMaestro();
-				service.heartbeat(Config.MYSELF);
 				try {
+					MaestroService service = Utils.getMaestro();
+					Call<StandardResponse> call = service.heartbeat(this.myself);
+					call.execute();
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		});
 		this.heartbeats.start();
 	}
-
-	Agent me = Config.MYSELF.build();
 
 	void registerMyself() {
 		new Thread(() -> {
@@ -109,7 +112,7 @@ public class Server extends Thread {
 					}
 					System.out.println("|RestServer| Registering myself");
 					MaestroService service = Utils.getMaestro();
-					Call<StandardResponse> call = service.registerAgent(me);
+					Call<StandardResponse> call = service.registerAgent(this.myself);
 					call.execute();
 					Thread.sleep(1000);
 				} catch (IOException e) {
