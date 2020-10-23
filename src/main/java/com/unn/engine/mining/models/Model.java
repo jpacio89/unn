@@ -198,6 +198,10 @@ public class Model implements Serializable {
 		return hit;
 	}
 
+	public boolean isEmpty() {
+		return this.getArtifacts().size() == 0;
+	}
+
 	public IFunctor getRewardSelector() {
 		return rewardSelector;
 	}

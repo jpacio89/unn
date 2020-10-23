@@ -14,6 +14,7 @@ import com.unn.engine.session.Session;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class MineAction extends Action {
 	Session session;
@@ -65,14 +66,20 @@ public class MineAction extends Action {
 			scopes.put(scopeName, scope);
 		}
 
-		for (MiningScope scope : scopes.values()) {
+		ArrayList<String> toRemove = new ArrayList<>();
+		for (Map.Entry<String, MiningScope> entry : scopes.entrySet()) {
+			String id = entry.getKey();
+			MiningScope scope = entry.getValue();
 			try {
 				scope.mine();
+				if (scope.getModel().isEmpty()) {
+					toRemove.add(id);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-
+		toRemove.forEach(scopeId -> scopes.remove(scopeId));
 		System.out.println("|MineActor| All scopes have been processed");
 	}
 }

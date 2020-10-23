@@ -101,7 +101,7 @@ public class Session implements Serializable {
 	}
 
 	private boolean isModelPublishable() {
-		return true;
+		return this.scopes.size() > 0;
 	}
 
 	private void publish(DatasetLocator locator) {

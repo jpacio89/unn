@@ -83,6 +83,7 @@ public class MiningScope implements IEnvironment, Serializable {
 		if (model.getArtifacts().size() > 0) {
 			this.refinedModel = refinery.refine();
 		} else {
+            this.refinedModel = model;
 			System.out.println("|MiningScope| Wheats are not separable from Weeds -> dataset in equilibrium for this scope.");
 		}
 
@@ -102,7 +103,11 @@ public class MiningScope implements IEnvironment, Serializable {
 		if (this.refinedModel == null) {
 			return null;
 		}
-		return this.refinedModel.predict(inputs, null, null);
+		Double prediction = this.refinedModel.predict(inputs, null, null);
+		if (prediction == null) {
+			return 0.0;
+		}
+		return prediction;
 	}
 	
 	public Model getModel() {
