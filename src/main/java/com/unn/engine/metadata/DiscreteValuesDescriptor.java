@@ -20,9 +20,9 @@ public class DiscreteValuesDescriptor extends ValuesDescriptor implements Serial
 	}
 
 	@Override
-	public ArrayList<String> getGroups(String suffix) {
+	public ArrayList<String> getGroups() {
 		return this.values.stream()
-			.map(value -> String.format("discrete_%s_%s", value, suffix))
+			.map(value -> String.format("discrete_%s_%s", value, getSuffix()))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
@@ -35,13 +35,13 @@ public class DiscreteValuesDescriptor extends ValuesDescriptor implements Serial
 	}
 
 	@Override
-	public ArrayList<String> getGroupByOuterValue(String outerFeatureValue, String suffix) {
+	public ArrayList<String> getGroupByOuterValue(String outerFeatureValue) {
 		ArrayList response = new ArrayList<>();
 		if (!this.values.contains(outerFeatureValue)) {
-			response.add(String.format("discrete_labelized_int_%s_%s", outerFeatureValue, suffix));
+			response.add(String.format("discrete_labelized_int_%s_%s", outerFeatureValue, getSuffix()));
 			return response;
 		}
-		response.add(String.format("discrete_%s_%s", outerFeatureValue, suffix));
+		response.add(String.format("discrete_%s_%s", outerFeatureValue, getSuffix()));
 		return response;
 	}
 }

@@ -53,7 +53,7 @@ public class MineAction extends Action {
 
 		ArrayList<IFunctor> targetGroups = new ArrayList<>();
 
-		for (String group : valuesDescriptor.getGroups(config.targetFeature)) {
+		for (String group : valuesDescriptor.getGroups()) {
 			IFunctor op = valuesDescriptor.getFunctorByGroup(group);
 			targetGroups.add(op);
 		}

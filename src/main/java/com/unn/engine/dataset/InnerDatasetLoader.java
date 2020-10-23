@@ -47,7 +47,7 @@ public class InnerDatasetLoader {
 			if (valuesDescriptor == null) {
 				continue;
 			}
-			for (String group : valuesDescriptor.getGroups(feature)) {
+			for (String group : valuesDescriptor.getGroups()) {
 				IFunctor raw = valuesDescriptor.getFunctorByGroup(group);
 				operators.add(raw);
 			}

@@ -28,9 +28,9 @@ public class MixedValuesDescriptor extends ValuesDescriptor implements Serializa
 	}
 
 	@Override
-	public ArrayList<String> getGroups(String suffix) {
-		ArrayList<String> discreteGroup = this.discreteDescriptor.getGroups(suffix);
-		ArrayList<String> numericGroup = this.numericDescriptor.getGroups(suffix);
+	public ArrayList<String> getGroups() {
+		ArrayList<String> discreteGroup = this.discreteDescriptor.getGroups();
+		ArrayList<String> numericGroup = this.numericDescriptor.getGroups();
 		ArrayList<String> fused = new ArrayList<>();
 		fused.addAll(discreteGroup);
 		fused.addAll(numericGroup);
@@ -45,12 +45,12 @@ public class MixedValuesDescriptor extends ValuesDescriptor implements Serializa
 	}
 
 	@Override
-	public ArrayList<String> getGroupByOuterValue(String outerFeatureValue, String suffix) {
+	public ArrayList<String> getGroupByOuterValue(String outerFeatureValue) {
 		try {
 			Double.parseDouble(outerFeatureValue);
-			return this.numericDescriptor.getGroupByOuterValue(outerFeatureValue, suffix);
+			return this.numericDescriptor.getGroupByOuterValue(outerFeatureValue);
 		} catch (Exception e) {
-			return this.discreteDescriptor.getGroupByOuterValue(outerFeatureValue, suffix);
+			return this.discreteDescriptor.getGroupByOuterValue(outerFeatureValue);
 		}
 	}
 }

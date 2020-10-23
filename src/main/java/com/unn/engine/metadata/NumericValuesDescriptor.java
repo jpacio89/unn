@@ -42,9 +42,9 @@ public class NumericValuesDescriptor extends ValuesDescriptor implements Seriali
 	}
 
 	@Override
-	public ArrayList<String> getGroups(String suffix) {
+	public ArrayList<String> getGroups() {
 		return this.groups.keySet().stream()
-			.map(group -> String.format("%s_%s", group, suffix))
+			.map(group -> String.format("%s_%s", group, getSuffix()))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
@@ -56,11 +56,11 @@ public class NumericValuesDescriptor extends ValuesDescriptor implements Seriali
 	}
 
 	@Override
-	public ArrayList<String> getGroupByOuterValue(String outerFeatureValue, String suffix) {
+	public ArrayList<String> getGroupByOuterValue(String outerFeatureValue) {
 		double parsedValue = Double.parseDouble(outerFeatureValue);
 		return this.groups.keySet().stream()
 			.filter(group -> getInnerValue(group, parsedValue) == Config.STIM_MAX)
-			.map(group -> String.format("%s_%s", group, suffix))
+			.map(group -> String.format("%s_%s", group, getSuffix()))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 

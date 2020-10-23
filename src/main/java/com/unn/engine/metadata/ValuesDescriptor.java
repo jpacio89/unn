@@ -4,9 +4,22 @@ import com.unn.engine.interfaces.IFunctor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public abstract class ValuesDescriptor implements Serializable {
-	public abstract ArrayList<String> getGroups(String suffix);
+	protected String suffix;
+
+	public ValuesDescriptor() {
+		this.suffix = UUID.randomUUID().toString()
+			.replace("-", "")
+			.substring(0, 10);
+	}
+
+	public String getSuffix() {
+		return suffix;
+	}
+
+	public abstract ArrayList<String> getGroups();
 	public abstract IFunctor getFunctorByGroup(String group);
-	public abstract ArrayList<String> getGroupByOuterValue(String outerFeatureValue, String suffix);
+	public abstract ArrayList<String> getGroupByOuterValue(String outerFeatureValue);
 }
