@@ -14,7 +14,7 @@ public class Datasets {
 
     public static InnerDataset toInnerDataset(OuterDataset dataset, ValueMapper mapper) {
         // TODO: implement
-        String timeFeatureName = "id"; // job.getTimeFeatureName();
+        String timeFeatureName = "primer"; // job.getTimeFeatureName();
         InnerDataset innerDataset = new InnerDataset();
         ArrayList<IFunctor> rawFunctors = InnerDatasetLoader.getFunctorsByFeatures(mapper);
         innerDataset.setFunctors(rawFunctors);
@@ -71,9 +71,8 @@ public class Datasets {
             Row row = new Row();
             ArrayList<String> rowVals = new ArrayList<>();
             int j = 0;
-            refs = Arrays.stream(refs).filter((ref) -> {
-                return !Config.PRIMER.equals(ref) && !Config.ID.equals(ref);
-            }).toArray(size -> new String[size]);
+            refs = Arrays.stream(refs).filter((ref) ->
+                !Config.PRIMER.equals(ref) && !Config.ID.equals(ref)).toArray(size -> new String[size]);
             for (String ref : refs) {
                 ArrayList<Prediction> refPrediction = predictions.get(ref);
                 if (i >= refPrediction.size()) {
@@ -90,11 +89,11 @@ public class Datasets {
                 }
                 j++;
             }
-            if (rowVals.size() == refs.length+1)  {
+            if (rowVals.size() == 0) {
+                break;
+            } else if (rowVals.size() >= refs.length + 1)  {
                 row.withValues(rowVals.toArray(new String[rowVals.size()]));
                 rows.add(row);
-            } else if (rowVals.size() == 0) {
-                break;
             }
         }
         Body body = new Body()

@@ -30,8 +30,6 @@ public class PublishAction extends Action {
     int upstreamLayer;
     private DatasetLocator datasetLocator;
 
-    Thread thrd;
-
     public PublishAction() { }
 
     public void setSession(Session session) {
@@ -64,15 +62,8 @@ public class PublishAction extends Action {
     }
 
     public void act() {
-        if (this.thrd != null) {
-            return;
-        }
-        this.thrd = new Thread(() -> {
-            fetchPredictPublish();
-            this.thrd = null;
-            System.out.println("|PublisherActor| Fetch -> Predict -> Publish done.");
-        });
-        this.thrd.start();
+        fetchPredictPublish();
+        System.out.println("|PublisherActor| Fetch -> Predict -> Publish done.");
         return;
     }
 
@@ -84,6 +75,7 @@ public class PublishAction extends Action {
                 break;
             }
             OuterDataset outerDataset = Datasets.toOuterDataset(dataset);
+            System.out.println(String.format("|PublishAction| Batch predicting %d rows", outerDataset.sampleCount()));
             if (outerDataset.sampleCount() == 0) {
                 break;
             }
