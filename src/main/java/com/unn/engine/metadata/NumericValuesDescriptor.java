@@ -32,12 +32,18 @@ public class NumericValuesDescriptor extends ValuesDescriptor implements Seriali
 		createGroups();
 	}
 
+	void addGroup(double value, boolean isInverted) {
+		String name = String.format("numeric_%f_%b", value, isInverted);
+		this.groups.put(name, new Pair<>(value, isInverted));
+	}
+
 	void createGroups() {
+		this.addGroup(this.minValue, true);
+		this.addGroup(this.maxValue, false);
 		for (int i = 0; i < this.groupCount; ++i) {
 			double midPoint = RandomManager.getOne(this.possibleValues);
 			boolean isInverted = RandomManager.getBoolean();
-			String name = String.format("numeric_%f_%b", midPoint, isInverted);
-			this.groups.put(name, new Pair<>(midPoint, isInverted));
+			this.addGroup(midPoint, isInverted);
 		}
 	}
 
