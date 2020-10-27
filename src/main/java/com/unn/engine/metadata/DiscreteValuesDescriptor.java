@@ -13,7 +13,9 @@ public class DiscreteValuesDescriptor extends ValuesDescriptor implements Serial
 	private static final long serialVersionUID = 2644249077021570502L;
 	private ArrayList<String> values;
 	
-	public DiscreteValuesDescriptor() { }
+	public DiscreteValuesDescriptor() {
+		super();
+	}
 
 	public void init(ArrayList<String> _values) {
 		this.values = _values;

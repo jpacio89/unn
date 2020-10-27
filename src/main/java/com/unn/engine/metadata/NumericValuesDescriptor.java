@@ -21,7 +21,9 @@ public class NumericValuesDescriptor extends ValuesDescriptor implements Seriali
 	double minValue;
 	double maxValue;
 
-	public NumericValuesDescriptor() { }
+	public NumericValuesDescriptor() {
+		super();
+	}
 	
 	public void init(int groupCount, ArrayList<Double> possibleValues) {
 		this.groups = new HashMap<>();

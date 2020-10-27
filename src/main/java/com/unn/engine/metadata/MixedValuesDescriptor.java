@@ -18,7 +18,9 @@ public class MixedValuesDescriptor extends ValuesDescriptor implements Serializa
 	NumericValuesDescriptor numericDescriptor;
 	DiscreteValuesDescriptor discreteDescriptor;
 
-	public MixedValuesDescriptor() { }
+	public MixedValuesDescriptor() {
+		super();
+	}
 	
 	public void init(int groupCount, ArrayList<Double> numerics, ArrayList<String> labels) {
 		this.numericDescriptor = new NumericValuesDescriptor();
