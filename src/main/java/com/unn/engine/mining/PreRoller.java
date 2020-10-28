@@ -116,23 +116,18 @@ public class PreRoller {
 		
 		while (missingBadTimes.size() > 0) {
 			assert availableOpHits.size() > 0;
-			
+			boolean  anyRemoved = false;
+
 			Artifact.Portion opHit = RandomManager.getOne(availableOpHits);
 			availableOpHits.remove(opHit);
-			
 			ArrayList<Integer> opHitTimes = opHitPresences.get(opHit);
-			
-			// TODO: check this
-			if (opHitTimes == null || opHitTimes.size() == 0) {
-				continue;
-			}
-			
-			boolean  anyRemoved = false;
-			
-			for (Integer opHitTime : opHitTimes) {
-				boolean wasRemoved = missingBadTimes.remove(opHitTime);
-				if (wasRemoved) {
-					anyRemoved = true;
+
+			if (opHitTimes != null) {
+				for (Integer opHitTime : opHitTimes) {
+					boolean wasRemoved = missingBadTimes.remove(opHitTime);
+					if (wasRemoved) {
+						anyRemoved = true;
+					}
 				}
 			}
 			
@@ -142,25 +137,6 @@ public class PreRoller {
 			
 			chosenSet.add(opHit);
 		}
-		
-		/* boolean weedFound = false;
-
-		for (Integer time : badTimes) {
-			boolean isRemoved = false;
-			for (OperatorHit opHit : chosenSet) {
-				boolean isCheck = checkTime(opHit.operator, time, opHit.hit);
-				if (!isCheck) {
-					isRemoved = true;
-					break;
-				}
-			}
-			if (!isRemoved) {
-				weedFound = true;
-				break;
-			}
-		}
-		
-		assert weedFound == false; */
 
 		ArrayList<Integer> chosenSetWheatTimes = new ArrayList<Integer>();
 		
