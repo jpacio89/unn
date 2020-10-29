@@ -16,7 +16,7 @@ public interface IEnvironment {
 
 	ValueMapper getMapper();
 
-	StatisticsAnalyzer getStatsWalker();
+	StatisticsAnalyzer getStatisticsAnalyzer();
 
 	ScopeConfig getConfig();
 }

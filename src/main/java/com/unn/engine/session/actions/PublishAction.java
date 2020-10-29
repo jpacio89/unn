@@ -6,6 +6,7 @@ import com.unn.common.dataset.Feature;
 import com.unn.common.dataset.Header;
 import com.unn.common.server.NetworkUtils;
 import com.unn.common.server.services.DatacenterService;
+import com.unn.common.server.services.MaestroService;
 import com.unn.common.utils.CSVHelper;
 import com.unn.common.utils.Utils;
 import com.unn.engine.Config;
@@ -16,6 +17,7 @@ import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.dataset.datacenter.DatacenterLocator;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.metadata.ValueMapper;
+import com.unn.common.mining.MiningReport;
 import com.unn.engine.mining.models.MiningScope;
 import com.unn.engine.prediction.Prediction;
 import com.unn.engine.session.Session;
@@ -62,9 +64,20 @@ public class PublishAction extends Action {
     }
 
     public void act() {
-        fetchPredictPublish();
+        this.sendMiningReport();
+        this.fetchPredictPublish();
         System.out.println("|PublisherActor| Fetch -> Predict -> Publish done.");
-        return;
+    }
+
+    private void sendMiningReport() {
+        try {
+            MiningReport report = this.session.getReport();
+            MaestroService service = Utils.getMaestro();
+            Call<String> call = service.sendMiningReport(report);
+            call.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void fetchPredictPublish() {

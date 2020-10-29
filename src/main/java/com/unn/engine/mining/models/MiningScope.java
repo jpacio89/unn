@@ -96,7 +96,7 @@ public class MiningScope implements IEnvironment, Serializable {
 		return this.refinedModel.getStatsWalker();
 	}
 	
-	public StatisticsAnalyzer getStatsWalker() {
+	public StatisticsAnalyzer getStatisticsAnalyzer() {
 		if (this.refinedModel != null) {
 			return this.refinedModel.getStatsWalker();
 		}

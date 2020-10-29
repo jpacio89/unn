@@ -73,10 +73,7 @@ public class Model implements Serializable {
 		Double prediction = this.predict(inputs, null, null);
 		double adjustedPrediction = prediction == null ? Config.STIM_NULL: prediction.doubleValue();
 		int historicAction = this.dataset.getValueByTime(this.rewardSelector, time);
-		walker.addHit2Matrix(time, historicAction, adjustedPrediction);
-		if (prediction == null) {
-			walker.incUnknown();
-		}
+		walker.addHit2Matrix(historicAction, adjustedPrediction);
 	}
 	
 	public Double predict(int time, Long[] weights, ArrayList<Long> _hitWeights) {

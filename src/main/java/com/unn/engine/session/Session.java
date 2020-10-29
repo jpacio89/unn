@@ -4,19 +4,16 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
+import com.unn.common.mining.ConfusionMatrix;
 import com.unn.common.operations.AgentRole;
 import com.unn.common.server.services.DatacenterService;
 import com.unn.common.utils.Utils;
 import com.unn.engine.dataset.datacenter.DatacenterLocator;
 import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.mining.models.MiningScope;
-import com.unn.engine.mining.models.MiningReport;
+import com.unn.common.mining.MiningReport;
 import com.unn.engine.dataset.DatasetLocator;
 import com.unn.engine.dataset.OuterDataset;
-import com.unn.engine.dataset.OuterDatasetLoader;
-import com.unn.engine.mining.models.Artifact;
-import com.unn.engine.mining.models.Model;
-import com.unn.engine.mining.StatisticsAnalyzer;
 import com.unn.engine.session.actions.*;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -75,7 +72,7 @@ public class Session implements Serializable {
 	}
 
 	public MiningReport getReport() {
-		MiningReport report = new MiningReport();
+		MiningReport report = new MiningReport(this.role);
 		scopes.entrySet().stream()
 			.forEach(entry -> putConfusionMatrix(report, entry));
 		return report;
@@ -160,6 +157,8 @@ public class Session implements Serializable {
 	}
 
 	private void putConfusionMatrix(MiningReport report, Map.Entry<String, MiningScope> entry) {
-		report.confusionMatrixes.put(entry.getKey(), entry.getValue().getStatsWalker());
+		String scopeId = entry.getKey();
+		ConfusionMatrix matrix = entry.getValue().getStatisticsAnalyzer().getConfusionMatrix();
+		report.confusionMatrixes.put(scopeId, matrix);
 	}
 }
