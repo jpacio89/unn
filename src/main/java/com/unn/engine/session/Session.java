@@ -92,17 +92,37 @@ public class Session implements Serializable {
 			DatasetLocator locator = selectFeatures();
 			if (locator != null) {
 				mine(locator);
-			}
-			if (isModelPublishable()) {
-				publish(locator);
+				MiningReport report = getReport();
+				if (isModelPublishable(report)) {
+					publish(locator);
+				} else if (isLowUnknownRate(report)) {
+					notifyDeadEnd();
+				}
 			}
 			self.minerThread = null;
 		});
 		this.minerThread.start();
 	}
 
-	private boolean isModelPublishable() {
-		return this.scopes.size() > 0;
+	private void notifyDeadEnd() {
+		// TODO: implement
+	}
+
+	private boolean isModelPublishable(MiningReport report) {
+		if (this.scopes.size() == 0) {
+			return false;
+		}
+		return isLowUnknownRate(report) && isHighAccuracyRate(report);
+	}
+
+	private boolean isLowUnknownRate(MiningReport report) {
+		// TODO: implement - check if report is null as well
+		return true;
+	}
+
+	private boolean isHighAccuracyRate(MiningReport report) {
+		// TODO: implement
+		return true;
 	}
 
 	private void publish(DatasetLocator locator) {

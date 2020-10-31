@@ -160,7 +160,7 @@ public class PublishAction extends Action {
     }
 
     private DatasetDescriptor register(PublishAction action) {
-        String id = UUID.randomUUID().toString()
+        String id = this.session.getRole().getAgent().getUuid()
                 .replace("-", "")
                 .substring(0, 5);
         String namespace = String.format("com.unn.engine.%s", id);
