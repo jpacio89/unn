@@ -84,7 +84,7 @@ public class Server extends Thread {
 				}
 				try {
 					MaestroService service = Utils.getMaestro();
-					Call<StandardResponse> call = service.heartbeat(this.myself);
+					Call<StandardResponse> call = service.heartbeat(this.session().getRole());
 					call.execute();
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {

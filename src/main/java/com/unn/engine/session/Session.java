@@ -78,6 +78,10 @@ public class Session implements Serializable {
 		return report;
 	}
 
+	public AgentRole getRole() {
+		return role;
+	}
+
 	public boolean isAlive() {
 		return this.minerThread != null;
 	}

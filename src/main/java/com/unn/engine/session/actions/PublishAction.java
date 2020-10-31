@@ -5,6 +5,7 @@ import com.unn.common.dataset.DatasetDescriptor;
 import com.unn.common.dataset.Feature;
 import com.unn.common.dataset.Header;
 import com.unn.common.server.NetworkUtils;
+import com.unn.common.server.StandardResponse;
 import com.unn.common.server.services.DatacenterService;
 import com.unn.common.server.services.MaestroService;
 import com.unn.common.utils.CSVHelper;
@@ -73,7 +74,7 @@ public class PublishAction extends Action {
         try {
             MiningReport report = this.session.getReport();
             MaestroService service = Utils.getMaestro();
-            Call<String> call = service.sendMiningReport(report);
+            Call<StandardResponse> call = service.sendMiningReport(report);
             call.execute();
         } catch (IOException e) {
             e.printStackTrace();
