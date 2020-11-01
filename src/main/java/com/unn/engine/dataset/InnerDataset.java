@@ -1,6 +1,7 @@
 package com.unn.engine.dataset;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,7 +54,12 @@ public class InnerDataset implements Serializable {
 		Collections.shuffle(times);
 		return times.stream()
 			.filter((time) -> getValueByTime(selector, time) == value)
-//			.limit(limit)
+			.collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	public ArrayList<Integer> getTimesByFunctor(IFunctor selector, Integer value, ArrayList<Integer> seedTimes) {
+		return seedTimes.stream()
+			.filter((time) -> getValueByTime(selector, time) == value)
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 

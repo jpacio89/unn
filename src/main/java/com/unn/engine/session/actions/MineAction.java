@@ -1,5 +1,6 @@
 package com.unn.engine.session.actions;
 
+import com.unn.engine.Config;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.InnerDatasetLoader;
 import com.unn.engine.dataset.OuterDataset;
@@ -8,13 +9,17 @@ import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.metadata.ValuesDescriptor;
 import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.mining.models.MiningScope;
+import com.unn.engine.mining.models.Model;
 import com.unn.engine.mining.models.ScopeConfig;
 import com.unn.engine.session.Context;
 import com.unn.engine.session.Session;
+import com.unn.engine.utils.Pair;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MineAction extends Action {
 	Session session;
@@ -58,9 +63,17 @@ public class MineAction extends Action {
 			targetGroups.add(op);
 		}
 
+		Pair<ArrayList<Integer>, ArrayList<Integer>> splittedTimes = splitDataset(innerDataset);
+
 		for (IFunctor func : targetGroups) {
-			ScopeConfig scopeConf = new ScopeConfig(loader, innerDataset,
-					config.targetFeature, func, targetGroups);
+			ScopeConfig scopeConf = new ScopeConfig(
+				loader,
+				innerDataset,
+				config.targetFeature,
+				func,
+				targetGroups,
+				splittedTimes.first(),
+				splittedTimes.second());
 			MiningScope scope = new MiningScope(scopeConf);
 			String scopeName = func.getDescriptor().getVtrName();
 			scopes.put(scopeName, scope);
@@ -81,5 +94,19 @@ public class MineAction extends Action {
 		}
 		toRemove.forEach(scopeId -> scopes.remove(scopeId));
 		System.out.println("|MineActor| All scopes have been processed");
+	}
+
+	private Pair<ArrayList<Integer>, ArrayList<Integer>> splitDataset(InnerDataset dataset) {
+		ArrayList<Integer> allTimes = dataset.getTimes().stream()
+			.collect(Collectors.toCollection(ArrayList::new));
+		Collections.shuffle(allTimes);
+		int midPoint = allTimes.size() / 2;
+		ArrayList<Integer> trainTimeSets = allTimes.stream()
+				.limit(midPoint)
+				.collect(Collectors.toCollection(ArrayList::new));
+		ArrayList<Integer> testTimeSets = allTimes.stream()
+				.skip(midPoint)
+				.collect(Collectors.toCollection(ArrayList::new));
+		return new Pair<>(testTimeSets, testTimeSets);
 	}
 }

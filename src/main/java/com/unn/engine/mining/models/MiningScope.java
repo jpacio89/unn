@@ -14,7 +14,6 @@ import com.unn.engine.mining.StatisticsAnalyzer;
 import com.unn.engine.mining.RefineryNew;
 
 public class MiningScope implements IEnvironment, Serializable {
-	private static final long serialVersionUID = -8783414205445675354L;
 	private Model refinedModel;
 	private ScopeConfig config;
 	
@@ -61,7 +60,7 @@ public class MiningScope implements IEnvironment, Serializable {
 			this.config.getNoMiningGroups(),
 			getStatusObservable()
 		);
-		miner.init();
+		miner.init(config.getTrainTimes(), config.getTestTimes());
 		
 		if (!miner.ready()) {
 			System.out.println(String.format(" Not enough data. Skipping..."));

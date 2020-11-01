@@ -6,8 +6,11 @@ import java.util.*;
 
 import com.unn.common.mining.ConfusionMatrix;
 import com.unn.common.operations.AgentRole;
+import com.unn.common.server.StandardResponse;
 import com.unn.common.server.services.DatacenterService;
+import com.unn.common.server.services.MaestroService;
 import com.unn.common.utils.Utils;
+import com.unn.engine.Config;
 import com.unn.engine.dataset.datacenter.DatacenterLocator;
 import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.mining.models.MiningScope;
@@ -95,8 +98,8 @@ public class Session implements Serializable {
 				MiningReport report = getReport();
 				if (isModelPublishable(report)) {
 					publish(locator);
-				} else if (isLowUnknownRate(report)) {
-					notifyDeadEnd();
+				} else if (this.scopes.size() == 0 || !isLowUnknownRate(report)) {
+					notifyDeadEnd(this.role);
 				}
 			}
 			self.minerThread = null;
@@ -104,25 +107,33 @@ public class Session implements Serializable {
 		this.minerThread.start();
 	}
 
-	private void notifyDeadEnd() {
-		// TODO: implement
+	private void notifyDeadEnd(AgentRole role) {
+		try {
+			MaestroService service = Utils.getMaestro();
+			Call<StandardResponse> call = service.deadEnd(role);
+			call.execute();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private boolean isModelPublishable(MiningReport report) {
-		if (this.scopes.size() == 0) {
-			return false;
-		}
-		return isLowUnknownRate(report) && isHighAccuracyRate(report);
+		return this.scopes.size() > 0 &&
+			isLowUnknownRate(report) &&
+			isHighAccuracyRate(report);
 	}
 
 	private boolean isLowUnknownRate(MiningReport report) {
-		// TODO: implement - check if report is null as well
-		return true;
+		return report != null && report.getConfusionMatrixes().values().stream()
+			.filter(matrix -> matrix.getUnknownRate() <= Config.MAX_UNKNOWN_RATE)
+			.count() > 0;
 	}
 
 	private boolean isHighAccuracyRate(MiningReport report) {
-		// TODO: implement
-		return true;
+		return report != null && report.getConfusionMatrixes().values().stream()
+			.filter(matrix -> matrix.getAccuracy() >= Config.MIN_ACCURACY_RATE)
+			.count() > 0;
 	}
 
 	private void publish(DatasetLocator locator) {

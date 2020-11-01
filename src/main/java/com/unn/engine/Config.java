@@ -17,4 +17,6 @@ public class Config {
 		.withPort(7000);
 	public static int DEFAULT_NUMERIC_CLUSTER_COUNT = 10;
 	public static int DEFAULT_DISCRETE_LABEL_COUNT = 10;
+	public static int MAX_UNKNOWN_RATE = 80;
+	public static int MIN_ACCURACY_RATE = 60;
 }

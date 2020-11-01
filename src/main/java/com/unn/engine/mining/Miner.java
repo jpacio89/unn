@@ -27,6 +27,9 @@ public class Miner {
 	ArrayList<PreRoller> timetables;
 
 	private long miningStartTime;
+
+	ArrayList<Integer> trainTimes;
+	ArrayList<Integer> testTimes;
 	
 	public Miner(InnerDataset dataset, IFunctor miningTarget, ArrayList<IFunctor> functorBlacklist, MiningStatusObservable statusObservable) {
 		this.dataset = dataset;
@@ -39,49 +42,40 @@ public class Miner {
 		this.miningTarget = miningTarget;
 	}
 	
-	public void init() throws Exception {
+	public void init(ArrayList<Integer> trainTimes, ArrayList<Integer> testTimes) throws Exception {
+		this.trainTimes = trainTimes;
+		this.testTimes = testTimes;
+
 		this.trainTimeSets.clear();
 		this.testTimeSets.clear();
 		this.timetables.clear();
 		this.model = new Model(this.dataset, this.miningTarget);
 
-		ArrayList<Integer> allTimesLow  = dataset.getTimesByFunctor(
-			this.miningTarget, Config.STIM_MIN);
-		ArrayList<Integer> allTimesNull  = dataset.getTimesByFunctor(
-			this.miningTarget, Config.STIM_NULL);
-
-		if (allTimesNull.size() > 0) {
-			System.out.println("|Miner| ERROR -> found NULL times");
-		}
+		ArrayList<Integer> trainTimesLow  = dataset.getTimesByFunctor(
+			this.miningTarget, Config.STIM_MIN, this.trainTimes);
+		ArrayList<Integer> trainTimesHigh = dataset.getTimesByFunctor(
+			this.miningTarget, Config.STIM_MAX, this.trainTimes);
+		ArrayList<Integer> testTimesLow  = dataset.getTimesByFunctor(
+			this.miningTarget, Config.STIM_MIN, this.testTimes);
+		ArrayList<Integer> testTimesHigh = dataset.getTimesByFunctor(
+			this.miningTarget, Config.STIM_MAX, this.testTimes);
 		
-		ArrayList<Integer> allTimesHigh = dataset.getTimesByFunctor(
-			this.miningTarget, Config.STIM_MAX);
-		
-		if (allTimesLow.size() == 0 || allTimesHigh.size() == 0) {
+		if (trainTimesLow.size() == 0 || trainTimesHigh.size() == 0 ||
+			testTimesLow.size() == 0 || testTimesHigh.size() == 0) {
 			return;
 		}
 		
-		Collections.shuffle(allTimesLow);
-		Collections.shuffle(allTimesHigh);
-		
-		int midPointLow = allTimesLow.size() / 2;
-		int midPointHigh = allTimesHigh.size() / 2;
-		
 		System.out.println(String.format("|Miner| Training set size: lows=%d, highs=%d",
-			midPointLow, midPointHigh));
+			trainTimesLow.size(), trainTimesHigh.size()));
 
-		this.trainTimeSets.add(allTimesLow.stream()
-			.limit(midPointLow)
+		this.trainTimeSets.add(trainTimesLow.stream()
 			.collect(Collectors.toCollection(ArrayList::new)));
-		this.trainTimeSets.add(allTimesHigh.stream()
-			.limit(midPointHigh)
+		this.trainTimeSets.add(trainTimesHigh.stream()
 			.collect(Collectors.toCollection(ArrayList::new)));
-		this.testTimeSets.add(allTimesLow.stream()
-				.skip(midPointLow)
-				.collect(Collectors.toCollection(ArrayList::new)));
-		this.testTimeSets.add(allTimesHigh.stream()
-				.skip(midPointHigh)
-				.collect(Collectors.toCollection(ArrayList::new)));
+		this.testTimeSets.add(testTimesLow.stream()
+			.collect(Collectors.toCollection(ArrayList::new)));
+		this.testTimeSets.add(testTimesHigh.stream()
+			.collect(Collectors.toCollection(ArrayList::new)));
 
 		if (Config.ASSERT) {
 			assertDisjoint();
