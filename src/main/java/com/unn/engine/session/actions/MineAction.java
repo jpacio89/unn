@@ -64,6 +64,7 @@ public class MineAction extends Action {
 		}
 
 		Pair<ArrayList<Integer>, ArrayList<Integer>> splittedTimes = splitDataset(innerDataset);
+		this.session.setMakerTimes(splittedTimes.first());
 
 		for (IFunctor func : targetGroups) {
 			ScopeConfig scopeConf = new ScopeConfig(

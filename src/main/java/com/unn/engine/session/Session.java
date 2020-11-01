@@ -28,7 +28,8 @@ public class Session implements Serializable {
 	private JobConfig mineConfig;
 	private AgentRole role;
 	private Thread minerThread;
-	
+	private ArrayList<Integer> makerTimes;
+
 	public Session(Context context, AgentRole role) {
 		this.scopes = new HashMap<>();
 		this.context = context;
@@ -195,5 +196,13 @@ public class Session implements Serializable {
 		String scopeId = entry.getKey();
 		ConfusionMatrix matrix = entry.getValue().getStatisticsAnalyzer().getConfusionMatrix();
 		report.confusionMatrixes.put(scopeId, matrix);
+	}
+
+	public void setMakerTimes(ArrayList<Integer> times) {
+		this.makerTimes = times;
+	}
+
+	public ArrayList<Integer> getMakerTimes() {
+		return makerTimes;
 	}
 }

@@ -177,7 +177,8 @@ public class PublishAction extends Action {
                 .withHeader(new Header().withNames(names))
                 .withNamespace(namespace)
                 .withUpstreamDependencies(dependencies)
-                .withDescription("Mined dataset");
+                .withDescription("Mined dataset")
+                .withMakerPrimers(this.session.getMakerTimes());
         NetworkUtils.registerAgent(descriptor);
         return descriptor;
     }
