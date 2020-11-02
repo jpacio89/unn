@@ -108,6 +108,6 @@ public class MineAction extends Action {
 		ArrayList<Integer> testTimeSets = allTimes.stream()
 				.skip(midPoint)
 				.collect(Collectors.toCollection(ArrayList::new));
-		return new Pair<>(testTimeSets, testTimeSets);
+		return new Pair<>(trainTimeSets, testTimeSets);
 	}
 }
