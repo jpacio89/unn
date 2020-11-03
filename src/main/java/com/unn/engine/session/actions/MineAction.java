@@ -91,7 +91,7 @@ public class MineAction extends Action {
 			MiningScope scope = entry.getValue();
 			try {
 				scope.mine();
-				if (scope.getModel().isEmpty()) {
+				if (scope.getModel() == null || scope.getModel().isEmpty()) {
 					toRemove.add(id);
 				}
 			} catch (Exception e) {
