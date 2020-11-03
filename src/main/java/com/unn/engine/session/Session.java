@@ -100,7 +100,7 @@ public class Session implements Serializable {
 				if (isModelPublishable(report)) {
 					publish(locator);
 				} else if (this.scopes.size() == 0 || !isLowUnknownRate(report)) {
-					notifyDeadEnd(this.role);
+					// notifyDeadEnd(this.role);
 				}
 			}
 			self.minerThread = null;
@@ -113,8 +113,7 @@ public class Session implements Serializable {
 			MaestroService service = Utils.getMaestro();
 			Call<StandardResponse> call = service.deadEnd(role);
 			call.execute();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -167,7 +166,7 @@ public class Session implements Serializable {
 			options = this.fetchRandomFeatures(role.getTarget().getFeature());
 			locator = new DatacenterLocator(options);
 			System.out.println(locator.toString());
-		} while(options.size() == 0 && attempts < 10);
+		} while((options == null || options.size() == 0) && attempts < 10);
 
 		if (options.size() == 0) {
 			this.role = null;

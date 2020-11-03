@@ -45,6 +45,11 @@ public class MineAction extends Action {
 
 	public void act() {
 		OuterDataset dataset = this.session.getOuterDataset();
+
+		if (dataset.getHeader().size() <= 3) {
+			return;
+		}
+
 		Context context = this.session.getContext();
 		HashMap<String, MiningScope> scopes = this.session.getScopes();
 		JobConfig config = getConf();
