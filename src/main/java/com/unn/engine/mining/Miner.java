@@ -84,6 +84,11 @@ public class Miner {
 		ArrayList<IFunctor> trainingFunctors = dataset.getFunctors().stream()
 			.filter((functor) -> !functorBlacklist.contains(functor))
 			.collect(Collectors.toCollection(ArrayList::new));
+
+		if (trainingFunctors.size() == 0) {
+			return;
+		}
+
 		ArrayList<IFunctor> thresholdLayer = PreRoller.getBooleanParameters(trainingFunctors);
 		Integer[] rewards = { Config.STIM_MAX, Config.STIM_MIN };
 		int i = 0;
