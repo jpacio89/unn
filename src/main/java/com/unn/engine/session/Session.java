@@ -2,6 +2,7 @@ package com.unn.engine.session;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.SocketTimeoutException;
 import java.util.*;
 
 import com.unn.common.mining.ConfusionMatrix;
@@ -176,17 +177,17 @@ public class Session implements Serializable {
 	}
 
 	public HashMap<String, List<String>> fetchRandomFeatures(String targetFeature) {
-		try {
-			DatacenterService service = Utils.getDatacenter(true);
-			ArrayList<String> whitelist = new ArrayList<>();
-			whitelist.add(targetFeature);
-			Call<HashMap<String, List<String>>> call = service.getRandomFeatures(role.getLayer(), whitelist);
-			// TODO bug is the response type that mismatches
-			Response<HashMap<String, List<String>>> response = call.execute();
-			return response.body();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
+		for(int retry = 0; retry < 10; ++retry) {
+			try {
+				DatacenterService service = Utils.getDatacenter(true);
+				ArrayList<String> whitelist = new ArrayList<>();
+				whitelist.add(targetFeature);
+				Call<HashMap<String, List<String>>> call = service.getRandomFeatures(role.getLayer(), whitelist);
+				Response<HashMap<String, List<String>>> response = call.execute();
+				return response.body();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}

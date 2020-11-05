@@ -104,21 +104,23 @@ public class PublishAction extends Action {
 
     private Dataset fetchUnpredicted(DatasetDescriptor descriptor) {
         // NOTE: fetch source rows that are predictable and have no prediction yet
-        try {
-            DatacenterService service = Utils.getDatacenter(true);
-            Call<String> csv = service.fetchUnpredicted(descriptor.getNamespace());
-            Response<String> response = csv.execute();
-            String body = response.body();
-            if (body == null) {
-                return null;
+        for (int retry = 0; retry < 10; ++retry) {
+            try {
+                DatacenterService service = Utils.getDatacenter(true);
+                Call<String> csv = service.fetchUnpredicted(descriptor.getNamespace());
+                Response<String> response = csv.execute();
+                String body = response.body();
+                if (body == null) {
+                    return null;
+                }
+                DatasetDescriptor upstreamDescriptor = new DatasetDescriptor()
+                        .withHeader(new Header().withNames(getHeader(body)));
+                Dataset dataset = new CSVHelper().parse(body)
+                        .withDescriptor(upstreamDescriptor);
+                return dataset;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            DatasetDescriptor upstreamDescriptor = new DatasetDescriptor()
-                    .withHeader(new Header().withNames(getHeader(body)));
-            Dataset dataset = new CSVHelper().parse(body)
-                    .withDescriptor(upstreamDescriptor);
-            return dataset;
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return null;
     }
