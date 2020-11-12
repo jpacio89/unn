@@ -2,7 +2,6 @@ package com.unn.engine.session;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.SocketTimeoutException;
 import java.util.*;
 
 import com.unn.common.mining.ConfusionMatrix;
@@ -14,7 +13,7 @@ import com.unn.common.utils.Utils;
 import com.unn.engine.Config;
 import com.unn.engine.dataset.datacenter.DatacenterLocator;
 import com.unn.engine.mining.models.JobConfig;
-import com.unn.engine.mining.models.MiningScope;
+import com.unn.engine.mining.MiningScope;
 import com.unn.common.mining.MiningReport;
 import com.unn.engine.dataset.DatasetLocator;
 import com.unn.engine.dataset.OuterDataset;
@@ -98,6 +97,11 @@ public class Session implements Serializable {
 			if (locator != null) {
 				mine(locator);
 				MiningReport report = getReport();
+				if (report == null || report.getConfusionMatrixes().size() == 0) {
+					System.out.println("Report statistics --> null");
+				} else {
+					System.out.println(String.format("Report statistics -->\n%s", report.toString()));
+				}
 				if (isModelPublishable(report)) {
 					publish(locator);
 				} else if (this.scopes.size() == 0 || !isLowUnknownRate(report)) {

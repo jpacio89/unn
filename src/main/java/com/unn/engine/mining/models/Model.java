@@ -223,4 +223,8 @@ public class Model implements Serializable {
 		}
 		return inputs;
 	}
+
+	public void setArtifacts(ArrayList<Artifact> artifacts) {
+		this.artifacts = artifacts;
+	}
 }

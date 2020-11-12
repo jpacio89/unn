@@ -19,7 +19,7 @@ import com.unn.engine.dataset.datacenter.DatacenterLocator;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.common.mining.MiningReport;
-import com.unn.engine.mining.models.MiningScope;
+import com.unn.engine.mining.MiningScope;
 import com.unn.engine.prediction.Prediction;
 import com.unn.engine.session.Session;
 import retrofit2.Call;

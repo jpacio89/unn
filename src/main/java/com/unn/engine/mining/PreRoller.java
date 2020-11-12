@@ -89,22 +89,14 @@ public class PreRoller {
 	public void presetFindings(ArrayList<Integer> badTimes) throws Exception {
 		this.findings = new MultiplesHashMap<>();
 		this.opHitPresences = new MultiplesHashMap<>();
-		
-		long n = 0;
-		long maxN = badTimes.size() * this.opHits.size();
-		
+	}
+
+	void setPreferencesByOpHit(Artifact.Portion opHit, ArrayList<Integer> badTimes) throws Exception {
 		for (Integer time : badTimes) {
-			for (Artifact.Portion opHit : this.opHits) {
-				boolean isCheck = checkTime(opHit.operator, time, opHit.hit);
-				if (!isCheck) {
-					findings.put(time, opHit);
-					opHitPresences.put(opHit, time);
-				}
-				if (n % 10000 == 0) {
-					System.out.println((n * 100.0 / maxN) + "%");
-				}
-				this.miningStatusObservable.updateProgress(n, maxN);
-				n++;
+			boolean isCheck = checkTime(opHit.operator, time, opHit.hit);
+			if (!isCheck) {
+				findings.put(time, opHit);
+				opHitPresences.put(opHit, time);
 			}
 		}
 	}
@@ -113,7 +105,7 @@ public class PreRoller {
 		ArrayList<Integer> missingBadTimes = new ArrayList<Integer>(badTimes);		
 		ArrayList<Artifact.Portion> availableOpHits = new ArrayList<Artifact.Portion>(this.opHits);
 		ArrayList<Artifact.Portion> chosenSet = new ArrayList<Artifact.Portion>();
-		
+
 		while (missingBadTimes.size() > 0) {
 			assert availableOpHits.size() > 0;
 			boolean  anyRemoved = false;
@@ -121,6 +113,11 @@ public class PreRoller {
 			Artifact.Portion opHit = RandomManager.getOne(availableOpHits);
 			availableOpHits.remove(opHit);
 			ArrayList<Integer> opHitTimes = opHitPresences.get(opHit);
+
+			if (opHitTimes == null) {
+				setPreferencesByOpHit(opHit, badTimes);
+				opHitTimes = opHitPresences.get(opHit);
+			}
 
 			if (opHitTimes != null) {
 				for (Integer opHitTime : opHitTimes) {

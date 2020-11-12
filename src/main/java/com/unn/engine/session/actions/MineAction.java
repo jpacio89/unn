@@ -1,6 +1,5 @@
 package com.unn.engine.session.actions;
 
-import com.unn.engine.Config;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.InnerDatasetLoader;
 import com.unn.engine.dataset.OuterDataset;
@@ -8,8 +7,7 @@ import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.metadata.ValuesDescriptor;
 import com.unn.engine.mining.models.JobConfig;
-import com.unn.engine.mining.models.MiningScope;
-import com.unn.engine.mining.models.Model;
+import com.unn.engine.mining.MiningScope;
 import com.unn.engine.mining.models.ScopeConfig;
 import com.unn.engine.session.Context;
 import com.unn.engine.session.Session;
