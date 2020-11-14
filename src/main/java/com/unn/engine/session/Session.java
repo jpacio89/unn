@@ -209,4 +209,8 @@ public class Session implements Serializable {
 	public ArrayList<Integer> getMakerTimes() {
 		return makerTimes;
 	}
+
+	public void setOuterDataset(OuterDataset outerDataset) {
+		this.outerDataset = outerDataset;
+	}
 }
