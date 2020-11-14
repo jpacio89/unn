@@ -12,7 +12,6 @@ import com.unn.engine.mining.models.MiningStatusObservable;
 import com.unn.engine.mining.models.Model;
 
 public class Miner {
-	public final int MIN_WHEAT_COUNT = 0;
 	public final long MINING_TIME = 1 * 60 * 1000;
 	
 	InnerDataset dataset;
@@ -95,7 +94,6 @@ public class Miner {
 		for (Integer reward : rewards) {
 			PreRoller table = new PreRoller(dataset, reward, this.statusObservable);
 			table.init(trainingFunctors, thresholdLayer);
-			table.presetFindings(this.trainTimeSets.get(i));
 			this.timetables.add(table);
 			i++;
 		}
@@ -132,8 +130,7 @@ public class Miner {
 				newArtifact = table.createMatrix(this.trainTimeSets.get(0), this.trainTimeSets.get(1));
 			}
 			
-			if (newArtifact != null && 
-				newArtifact.getWheatCount() > MIN_WHEAT_COUNT && 
+			if (newArtifact != null &&
 				Artifact.isRepetition(model.getArtifacts(), newArtifact) == null) {
 				model.add(newArtifact);
 				model.gatherStats(this.testTimeSets.get(0), this.testTimeSets.get(1));

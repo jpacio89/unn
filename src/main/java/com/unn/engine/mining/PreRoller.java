@@ -47,6 +47,9 @@ public class PreRoller {
 			this.operatorIndex.put(operator, i * 2);
 			i++;
 		}
+
+		this.findings = new MultiplesHashMap<>();
+		this.opHitPresences = new MultiplesHashMap<>();
 	}
 	
 	public static ArrayList<IFunctor> getBooleanParameters (ArrayList<IFunctor> args) {
@@ -85,13 +88,8 @@ public class PreRoller {
 		assert val != null;
 		return val == hitToCheck;
 	}
-	
-	public void presetFindings(ArrayList<Integer> badTimes) throws Exception {
-		this.findings = new MultiplesHashMap<>();
-		this.opHitPresences = new MultiplesHashMap<>();
-	}
 
-	void setPreferencesByOpHit(Artifact.Portion opHit, ArrayList<Integer> badTimes) throws Exception {
+	void setPresencesByOpHit(Artifact.Portion opHit, ArrayList<Integer> badTimes) throws Exception {
 		for (Integer time : badTimes) {
 			boolean isCheck = checkTime(opHit.operator, time, opHit.hit);
 			if (!isCheck) {
@@ -102,95 +100,33 @@ public class PreRoller {
 	}
 	
 	public Artifact createMatrix(ArrayList<Integer> goodTimes, ArrayList<Integer> badTimes) throws Exception {
-		ArrayList<Integer> missingBadTimes = new ArrayList<Integer>(badTimes);		
-		ArrayList<Artifact.Portion> availableOpHits = new ArrayList<Artifact.Portion>(this.opHits);
-		ArrayList<Artifact.Portion> chosenSet = new ArrayList<Artifact.Portion>();
+		ArrayList<Integer> missingBadTimes = new ArrayList<>(badTimes);
+		ArrayList<Artifact.Portion> availableOpHits = new ArrayList<>(this.opHits);
+		ArrayList<Artifact.Portion> chosenSet = new ArrayList<>();
 
 		while (missingBadTimes.size() > 0) {
-			assert availableOpHits.size() > 0;
-			boolean  anyRemoved = false;
-
 			Artifact.Portion opHit = RandomManager.getOne(availableOpHits);
 			availableOpHits.remove(opHit);
 			ArrayList<Integer> opHitTimes = opHitPresences.get(opHit);
 
 			if (opHitTimes == null) {
-				setPreferencesByOpHit(opHit, badTimes);
+				setPresencesByOpHit(opHit, badTimes);
 				opHitTimes = opHitPresences.get(opHit);
 			}
 
 			if (opHitTimes != null) {
-				for (Integer opHitTime : opHitTimes) {
-					boolean wasRemoved = missingBadTimes.remove(opHitTime);
-					if (wasRemoved) {
-						anyRemoved = true;
-					}
+				if (!missingBadTimes.removeAll(opHitTimes)) {
+					continue;
 				}
+				chosenSet.add(opHit);
 			}
-			
-			if (!anyRemoved) {
-				continue;
-			}
-			
-			chosenSet.add(opHit);
 		}
 
-		ArrayList<Integer> chosenSetWheatTimes = new ArrayList<Integer>();
-		
-		for (Integer time : goodTimes) {
-			boolean isRemoved = false;
-			for (Artifact.Portion opHit : chosenSet) {
-				boolean isCheck = checkTime(opHit.operator, time, opHit.hit);
-				if (!isCheck) {
-					isRemoved = true;
-					break;
-				}
-			}
-			if (!isRemoved) {
-				chosenSetWheatTimes.add(time);
-			}
-		}
-		
-		Artifact artifact = new Artifact(chosenSet, chosenSetWheatTimes, this.reward);
-		
-		/*if (Config.ASSERT) {
-			boolean ret = checkNegatedArtifact(artifact, goodTimes, badTimes);
-			
-			if (!ret) {
-				return null;
-			}
-		}*/
-		
-		return artifact;
-	}
-	
-	private boolean checkNegatedArtifact(Artifact artifact, ArrayList<Integer> goodTimes, ArrayList<Integer> badTimes) throws Exception {
-		long timeCounter = 0;
-		for (Integer time : badTimes) {
-			boolean isValid = false;
-			for (Artifact.Portion opHit : artifact.opHits) {
-				boolean ret = checkTime(opHit.operator, time, -opHit.hit);
-				if (ret) {
-					isValid = true;
-					break;
-				}
-			}
-			if (isValid) {
-				timeCounter++;
-			}
-		}
-		
-		if (timeCounter == 0) {
-			return false;
-			// throw new Exception("|TimeTable| Negated artifact has hits");
-		}
-		
-		return true;
+		return new Artifact(chosenSet, this.reward);
 	}
 	
 	private void calculate(IFunctor operator, Integer time) throws Exception {
-		// operator.recycle();
-		HashMap<IFunctor, Integer> values = new HashMap<IFunctor, Integer>();
+		HashMap<IFunctor, Integer> values = new HashMap<>();
 		
 		for (IFunctor param : this.leafs) {
 			values.put(param, dataset.getValueByTime(param, time));

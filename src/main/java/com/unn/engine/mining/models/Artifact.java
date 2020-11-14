@@ -9,7 +9,6 @@ import com.unn.engine.utils.CombinationUtils;
 public class Artifact implements Serializable {
 	private static final long serialVersionUID = 5903929353773746851L;
 	public ArrayList<Portion> opHits;
-	public ArrayList<Integer> wheatTimes;
 	public int reward;
 	public Long weight;
 	
@@ -17,14 +16,9 @@ public class Artifact implements Serializable {
 		this.opHits = new ArrayList<>();
 	}
 	
-	public Artifact(ArrayList<Portion> opHits, ArrayList<Integer> wheatTimes, int reward) {
+	public Artifact(ArrayList<Portion> opHits, int reward) {
 		this.opHits = opHits;
-		this.wheatTimes = wheatTimes;
 		this.reward = reward;
-	}
-	
-	public int getWheatCount() {
-		return this.wheatTimes.size();
 	}
 	
 	public static boolean contains(Artifact pivot, Artifact candidate) {
