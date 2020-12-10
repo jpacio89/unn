@@ -106,7 +106,7 @@ public class PublishAction extends Action {
         // NOTE: fetch source rows that are predictable and have no prediction yet
         for (int retry = 0; retry < 10; ++retry) {
             try {
-                DatacenterService service = Utils.getDatacenter(true);
+                DatacenterService service = Utils.getDatacenter();
                 Call<String> csv = service.fetchUnpredicted(descriptor.getNamespace());
                 Response<String> response = csv.execute();
                 String body = response.body();

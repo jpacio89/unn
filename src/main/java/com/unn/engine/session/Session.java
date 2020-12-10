@@ -183,7 +183,7 @@ public class Session implements Serializable {
 	public HashMap<String, List<String>> fetchRandomFeatures(String targetFeature) {
 		for(int retry = 0; retry < 10; ++retry) {
 			try {
-				DatacenterService service = Utils.getDatacenter(true);
+				DatacenterService service = Utils.getDatacenter();
 				ArrayList<String> whitelist = new ArrayList<>();
 				whitelist.add(targetFeature);
 				Call<HashMap<String, List<String>>> call = service.getRandomFeatures(role.getLayer(), whitelist);
