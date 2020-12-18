@@ -12,7 +12,7 @@ import com.unn.engine.functions.ValueTime;
 import com.unn.engine.Config;
 import com.unn.engine.mining.models.Artifact;
 import com.unn.engine.mining.models.MiningStatusObservable;
-import com.unn.engine.utils.MultiplesHashMap;
+import com.unn.common.utils.MultiplesHashMap;
 import com.unn.engine.utils.RandomManager;
 
 public class PreRoller {

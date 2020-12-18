@@ -175,12 +175,12 @@ public class PublishAction extends Action {
         }
         String[] names = refs.toArray(new String[refs.size()]);
         DatasetDescriptor descriptor = new DatasetDescriptor()
-                .withLayer(action.getUpstreamLayer()+1)
-                .withHeader(new Header().withNames(names))
-                .withNamespace(namespace)
-                .withUpstreamDependencies(dependencies)
-                .withDescription("Mined dataset")
-                .withMakerPrimers(this.session.getMakerTimes());
+            .withLayer(action.getUpstreamLayer()+1)
+            .withHeader(new Header().withNames(names))
+            .withNamespace(namespace)
+            .withUpstreamDependencies(dependencies)
+            .withDescription("Mined dataset")
+            .withMakerPrimers(this.session.getMakerTimes());
         NetworkUtils.registerAgent(descriptor);
         return descriptor;
     }
