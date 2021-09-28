@@ -13,15 +13,11 @@ import com.unn.engine.session.Context;
 public class InnerDatasetLoader {
 	private ValueMapper mapper;
 	OuterDataset outerDataset;
-	JobConfig config;
-	Context context;
 	
 	public InnerDatasetLoader() {}
 	
-	public void init(Context context, JobConfig config, OuterDataset outerDataset) {
+	public void init(OuterDataset outerDataset) {
 		this.outerDataset = outerDataset;
-		this.config = config;
-		this.context = context;
 	}
 	
 	public InnerDataset load () {

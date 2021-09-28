@@ -24,7 +24,7 @@ public class DatacenterDatasetSource {
 
 	public String fetchDataset(HashMap<String, List<String>> filter) {
 		try {
-			DatacenterService service = Utils.getDatacenter(false);
+			DatacenterService service = Utils.getDatacenter();
 			Call<String> call = service.fetchDataset(filter);
 			Response<String> response = call.execute();
 			return response.body();

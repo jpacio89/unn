@@ -35,7 +35,7 @@ public class TestInnerDatasetLoader {
         Context context = getContext();
         JobConfig job = getJob();
         InnerDatasetLoader loader = new InnerDatasetLoader();
-        loader.init(null, job, outerDataset);
+        loader.init(outerDataset);
         InnerDataset innerDataset = loader.load();
         // TODO: do checks
     }

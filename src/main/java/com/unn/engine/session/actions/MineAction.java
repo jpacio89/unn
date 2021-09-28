@@ -53,7 +53,7 @@ public class MineAction extends Action {
 		JobConfig config = getConf();
 
 		InnerDatasetLoader loader = new InnerDatasetLoader();
-		loader.init(context, config, dataset);
+		loader.init(dataset);
 		InnerDataset innerDataset = loader.load();
 		ValueMapper mapper = loader.getValueMapper();
 		ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(
