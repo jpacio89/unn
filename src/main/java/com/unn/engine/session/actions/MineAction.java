@@ -1,5 +1,6 @@
 package com.unn.engine.session.actions;
 
+import com.unn.engine.dataset.BoosterProvider;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.InnerDatasetLoader;
 import com.unn.engine.dataset.OuterDataset;
@@ -65,6 +66,10 @@ public class MineAction extends Action {
 			IFunctor op = valuesDescriptor.getFunctorByGroup(group);
 			targetGroups.add(op);
 		}
+
+		// NOTE: if use Dataset boosting
+		BoosterProvider boosterProvider = new BoosterProvider(innerDataset);
+		innerDataset = boosterProvider.boost(targetGroups);
 
 		Pair<ArrayList<Integer>, ArrayList<Integer>> splittedTimes = splitDataset(innerDataset);
 		this.session.setMakerTimes(splittedTimes.first());
