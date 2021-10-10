@@ -5,6 +5,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.unn.engine.interfaces.IFunctor;
@@ -94,5 +95,19 @@ public class InnerDataset implements Serializable {
 			input.put(functor, value);
 		}
 		return input;
+	}
+
+	public InnerDataset copy() {
+		InnerDataset dataset = new InnerDataset();
+		dataset.times = (ArrayList<Integer>) this.times.clone();
+		dataset.timedValues = new HashMap<>();
+		for (Map.Entry<IFunctor,
+				HashMap<Integer, Integer>> entry : timedValues.entrySet()) {
+			dataset.timedValues.put(entry.getKey(),
+					(HashMap<Integer, Integer>) entry.getValue().clone());
+		}
+		dataset.args = (ArrayList<IFunctor>) args.clone();
+		dataset.localArgs = localArgs.clone();
+		return dataset;
 	}
 }
