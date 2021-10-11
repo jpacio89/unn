@@ -16,7 +16,6 @@ public class InnerDataset implements Serializable {
 	ArrayList<Integer> times;
 	HashMap<IFunctor, HashMap<Integer, Integer>> timedValues;
 	ArrayList<IFunctor> args;
-	IFunctor[] localArgs;
 	
 	public InnerDataset() {
 		this.times = new ArrayList<>();
@@ -78,15 +77,6 @@ public class InnerDataset implements Serializable {
 	public void setFunctors(ArrayList<IFunctor> leaves) {
 		this.args = leaves;
 	}
-	
-	public IFunctor getFunctorByClassName(String className) {
-		for (IFunctor op : this.localArgs) {
-			if (op.getDescriptor().getVtrName().equals(className)) {
-				return op;
-			}
-		}
-		return null;
-	}
 
 	public HashMap<IFunctor, Integer> bundleSample(int time) {
 		HashMap<IFunctor, Integer> input = new HashMap<>();
@@ -107,7 +97,6 @@ public class InnerDataset implements Serializable {
 					(HashMap<Integer, Integer>) entry.getValue().clone());
 		}
 		dataset.args = (ArrayList<IFunctor>) args.clone();
-		dataset.localArgs = localArgs.clone();
 		return dataset;
 	}
 }
