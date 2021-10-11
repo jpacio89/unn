@@ -63,19 +63,20 @@ public class TestMiner {
     @Test
     public void testSinusoideWheats() {
         OuterDataset outerDataset = new OuterDataset();
-        String[] features = { "id", "primer", "x", "y", "reward" };
+        String[] features = { "id", "primer", "x", "y", "mod", "reward" };
         outerDataset.setHeader(features);
 
-        for (int i = 0; i < 100; ++i) {
+        for (int i = 0; i < 1000; ++i) {
             double x = Math.random() * 360;
             double y = 2 * Math.random() - 1;
             String reward = y > Math.sin(2 * (Math.PI * x / 360.0)) ? "T" : "F";
+            double mod = y - Math.sin(2 * (Math.PI * x / 360.0));
             //double uncertainty = Math.random();
             //if (uncertainty > .75) {
             //    reward = reward.equals("T") ? "F" : "T";
             //}
             String[] row = { Integer.toString(i), Integer.toString(i),
-                    Double.toString(x), Double.toString(y), reward };
+                    Double.toString(x), Double.toString(y), Double.toString(mod), reward };
             outerDataset.addSample(row);
         }
 
