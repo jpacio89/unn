@@ -3,13 +3,13 @@ package com.unn.engine;
 import com.unn.common.operations.Agent;
 
 public class Config {
+	public static boolean ASSERT_MODE = true;
 	public static String PRIMER = "primer";
 	public static String ID = "id";
-	public static int STIM_MIN = -1;
-	public static int STIM_MAX =  1;
+	public static int STIM_MIN = -10;
+	public static int STIM_MAX =  10;
 	public static int STIM_NULL = 0;
 	public static int STIM_RANGE = STIM_MAX - STIM_MIN;
-	public static boolean ASSERT = true;
 	public static Agent MYSELF = new Agent()
 		.withType("miner")
 		.withProtocol("http")

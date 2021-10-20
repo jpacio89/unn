@@ -4,7 +4,6 @@ import com.unn.common.mining.MiningReport;
 import com.unn.common.operations.Agent;
 import com.unn.common.operations.AgentRole;
 import com.unn.engine.dataset.OuterDataset;
-import com.unn.engine.mining.MinerXGBoost;
 import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.session.Context;
 import com.unn.engine.session.Session;
@@ -16,18 +15,12 @@ import java.util.ArrayList;
 public class TestMiner {
 
     @Test
-    public void testXGBoost() {
-        MinerXGBoost miner = new MinerXGBoost();
-        miner.mine();
-    }
-
-    @Test
     public void testCircleWheats() {
         OuterDataset outerDataset = new OuterDataset();
         String[] features = { "id", "primer", "x", "y", "distance", "reward" };
         outerDataset.setHeader(features);
 
-        for (int i = 0; i < 100; ++i) {
+        for (int i = 0; i < 1000; ++i) {
             double x = Math.random();
             double y = Math.random();
             double distance = Math.sqrt(x * x + y * y);
@@ -63,20 +56,20 @@ public class TestMiner {
     @Test
     public void testSinusoideWheats() {
         OuterDataset outerDataset = new OuterDataset();
-        String[] features = { "id", "primer", "x", "y", "mod", "reward" };
+        String[] features = { "id", "primer", "x", "y", /*"mod", */"reward" };
         outerDataset.setHeader(features);
 
         for (int i = 0; i < 1000; ++i) {
             double x = Math.random() * 360;
             double y = 2 * Math.random() - 1;
             String reward = y > Math.sin(2 * (Math.PI * x / 360.0)) ? "T" : "F";
-            double mod = y - Math.sin(2 * (Math.PI * x / 360.0));
+            //double mod = y - Math.sin(2 * (Math.PI * x / 360.0));
             //double uncertainty = Math.random();
             //if (uncertainty > .75) {
             //    reward = reward.equals("T") ? "F" : "T";
             //}
             String[] row = { Integer.toString(i), Integer.toString(i),
-                    Double.toString(x), Double.toString(y), Double.toString(mod), reward };
+                    Double.toString(x), Double.toString(y), /*Double.toString(mod),*/ reward };
             outerDataset.addSample(row);
         }
 

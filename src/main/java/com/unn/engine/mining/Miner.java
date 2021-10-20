@@ -76,7 +76,7 @@ public class Miner {
 		this.testTimeSets.add(testTimesHigh.stream()
 			.collect(Collectors.toCollection(ArrayList::new)));
 
-		if (Config.ASSERT) {
+		if (Config.ASSERT_MODE) {
 			assertDisjoint();
 		}
 
@@ -133,7 +133,6 @@ public class Miner {
 			if (newArtifact != null &&
 				Artifact.isRepetition(model.getArtifacts(), newArtifact) == null) {
 				model.add(newArtifact);
-				model.gatherStats(this.testTimeSets.get(0), this.testTimeSets.get(1));
 				this.statusObservable.updateArtifactCount(model.getArtifacts().size());
 			}
 			
@@ -143,6 +142,8 @@ public class Miner {
 			
 			this.statusObservable.updateProgress(System.currentTimeMillis() - this.miningStartTime, MINING_TIME);
 		}
+
+		model.gatherStats(this.testTimeSets.get(0), this.testTimeSets.get(1));
 	}
 	
 	public void gatherStats(Model model) {
@@ -158,19 +159,23 @@ public class Miner {
 	}
 
 	private void assertDisjoint() throws Exception {
-		assert this.trainTimeSets.size() == this.testTimeSets.size();
-		
-		for (int i = 0; i < this.trainTimeSets.size(); ++i) {
-			ArrayList<Integer> timesetTrain = this.trainTimeSets.get(i);
-			ArrayList<Integer> timesetTest = this.testTimeSets.get(i);
-			
-			boolean isDisjoint = Collections.disjoint(timesetTrain, timesetTest);
-			
-			if (!isDisjoint) {
-				throw new Exception("Train and Test datasets are not disjoint.");
+		if (this.trainTimeSets.size() != this.testTimeSets.size()) {
+			throw new Exception("Test and train datasets not set up properly");
+		}
+
+		ArrayList<ArrayList<Integer>> all = new ArrayList<>();
+		all.addAll(this.trainTimeSets);
+		all.addAll(this.testTimeSets);
+
+		for (int i = 0; i < all.size(); ++i) {
+			ArrayList<Integer> alpha = all.get(i);
+			for (int j = i + 1; j < all.size(); ++j) {
+				ArrayList<Integer> beta = all.get(j);
+				boolean isDisjoint = Collections.disjoint(alpha, beta);
+				if (!isDisjoint) {
+					throw new Exception("Mining datasets are not disjoint");
+				}
 			}
-			
-			assert isDisjoint;
 		}
 	}
 
