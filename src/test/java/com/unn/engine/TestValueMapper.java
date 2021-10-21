@@ -101,9 +101,18 @@ public class TestValueMapper {
             assertTrue("o".equals(value)  || "x".equals(value) || "b".equals(value));
         });
 
-        ArrayList<String> oGroups = discreteDescriptor.getGroupByOuterValue("o");
+        ArrayList<String> oGroups1 = discreteDescriptor.getGroupByOuterValue("o");
+        assertEquals(oGroups1.size(), 1);
+        assertTrue(oGroups1.get(0).contains("_o_"));
 
-        assertEquals(oGroups.size(), 1);
-        assertTrue(oGroups.get(0).contains("_o_"));
+        ArrayList<String> oGroups2 = discreteDescriptor.getGroupByOuterValue("x");
+        assertEquals(oGroups2.size(), 1);
+        assertTrue(oGroups2.get(0).contains("_x_"));
+
+        ArrayList<String> oGroups3 = discreteDescriptor.getGroupByOuterValue("b");
+        assertEquals(oGroups3.size(), 1);
+        assertTrue(oGroups3.get(0).contains("_b_"));
+
+        // TODO: test functor getter?
     }
 }
