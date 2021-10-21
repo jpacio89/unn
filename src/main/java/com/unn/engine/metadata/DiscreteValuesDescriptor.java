@@ -17,6 +17,10 @@ public class DiscreteValuesDescriptor extends ValuesDescriptor implements Serial
 		super();
 	}
 
+	public DiscreteValuesDescriptor(String _suffix) {
+		super(_suffix);
+	}
+
 	public void init(ArrayList<String> _values) {
 		this.values = _values;
 	}

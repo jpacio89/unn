@@ -24,7 +24,11 @@ public class NumericValuesDescriptor extends ValuesDescriptor implements Seriali
 	public NumericValuesDescriptor() {
 		super();
 	}
-	
+
+	public NumericValuesDescriptor(String _suffix) {
+		super(_suffix);
+	}
+
 	public void init(int groupCount, ArrayList<Double> possibleValues) {
 		this.groups = new HashMap<>();
 		this.groupCount = groupCount;

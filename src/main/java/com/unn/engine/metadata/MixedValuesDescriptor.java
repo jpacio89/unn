@@ -23,9 +23,9 @@ public class MixedValuesDescriptor extends ValuesDescriptor implements Serializa
 	}
 	
 	public void init(int groupCount, ArrayList<Double> numerics, ArrayList<String> labels) {
-		this.numericDescriptor = new NumericValuesDescriptor();
+		this.numericDescriptor = new NumericValuesDescriptor(getSuffix());
 		this.numericDescriptor.init(groupCount, numerics);
-		this.discreteDescriptor = new DiscreteValuesDescriptor();
+		this.discreteDescriptor = new DiscreteValuesDescriptor(getSuffix());
 		this.discreteDescriptor.init(labels);
 	}
 

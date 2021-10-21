@@ -15,6 +15,10 @@ public abstract class ValuesDescriptor implements Serializable {
 			.substring(0, 10);
 	}
 
+	public ValuesDescriptor(String _suffix) {
+		this.suffix = _suffix;
+	}
+
 	public String getSuffix() {
 		return suffix;
 	}
