@@ -72,4 +72,38 @@ public class TestValueMapper {
 
         // TODO: test functor getter?
     }
+
+    @Test
+    public void testDiscreteDescriptor() {
+        OuterDataset outer = Datasets.dummy2();
+        ValueMapper mapper = new ValueMapper(outer);
+
+        assertEquals(mapper.getFeatures().size(), 10);
+
+        mapper.analyzeValues("top-middle-square");
+        mapper.analyzeValues("Class");
+
+        ValuesDescriptor descriptor = mapper.getValuesDescriptorByFeature("top-middle-square");
+
+        assertNotNull(descriptor);
+        assertTrue(descriptor instanceof DiscreteValuesDescriptor);
+
+        DiscreteValuesDescriptor discreteDescriptor = (DiscreteValuesDescriptor) descriptor;
+        String suffix = String.format("_%s", discreteDescriptor.getSuffix());
+
+        assertEquals(discreteDescriptor.getGroups().size(), 3);
+
+        discreteDescriptor.getGroups().forEach(group -> {
+            assertTrue(group.startsWith("discrete_"));
+            assertTrue(group.endsWith(suffix));
+            String value = group.replace("discrete_", "")
+              .replace(suffix, "");
+            assertTrue("o".equals(value)  || "x".equals(value) || "b".equals(value));
+        });
+
+        ArrayList<String> oGroups = discreteDescriptor.getGroupByOuterValue("o");
+
+        assertEquals(oGroups.size(), 1);
+        assertTrue(oGroups.get(0).contains("_o_"));
+    }
 }
