@@ -5,8 +5,7 @@ import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.InnerDatasetLoader;
 import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.interfaces.IFunctor;
-import com.unn.engine.metadata.NumericValuesDescriptor;
-import com.unn.engine.metadata.ValueMapper;
+import com.unn.engine.metadata.*;
 import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.session.Context;
 import org.junit.Test;
@@ -18,24 +17,24 @@ import java.util.HashMap;
 import static org.junit.Assert.*;
 
 public class TestInnerDatasetLoader {
-    String[] getNumericParts(String suffix, String group) {
-        return group
-            .replace("numeric_", "")
-            .replace(suffix, "")
-            .split("_");
-    }
-
     @Test
     public void test() {
-        OuterDataset outerDataset = Datasets.dummy1();
+        OuterDataset outerDataset = Datasets.dummy4();
         InnerDatasetLoader loader = new InnerDatasetLoader();
         loader.init(outerDataset);
         InnerDataset innerDataset = loader.load();
         ValueMapper mapper = loader.getValueMapper();
 
-        Arrays.stream(new String[]{"x", "y", "z"}).forEach(feature -> {
-            NumericValuesDescriptor descriptor = (NumericValuesDescriptor)
-                mapper.getValuesDescriptorByFeature(feature);
+        Arrays.stream(new String[]{"x", "y", "z", "reward"}).forEach(feature -> {
+            ValuesDescriptor descriptor = mapper.getValuesDescriptorByFeature(feature);
+
+            if ("reward".equals(feature)) {
+                assertTrue(descriptor instanceof DiscreteValuesDescriptor);
+            } else if ("y".equals(feature)) {
+                assertTrue(descriptor instanceof MixedValuesDescriptor);
+            } else {
+                assertTrue(descriptor instanceof NumericValuesDescriptor);
+            }
 
             for (int i = 0; i < outerDataset.sampleCount(); ++i) {
                 HashMap<String, String> sample = outerDataset.getSampleAsMap(i);
@@ -59,6 +58,6 @@ public class TestInnerDatasetLoader {
             }
         });
 
-        // TODO: do checks
+        // TODO: test all inner values either MIN or MAX
     }
 }
