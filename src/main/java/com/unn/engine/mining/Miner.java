@@ -88,7 +88,7 @@ public class Miner {
 			return;
 		}
 
-		ArrayList<IFunctor> thresholdLayer = PreRoller.getBooleanParameters(trainingFunctors);
+		ArrayList<IFunctor> thresholdLayer = trainingFunctors; // PreRoller.getBooleanParameters(trainingFunctors);
 		Integer[] rewards = { Config.STIM_MAX, Config.STIM_MIN };
 		int i = 0;
 		for (Integer reward : rewards) {

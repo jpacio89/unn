@@ -179,7 +179,7 @@ public class Model implements Serializable {
 			Integer parcelOutcome = parcel.hit;
 			
 			try {
-				int thdOutcome = thd.operate(inputs);
+				int thdOutcome = inputs.get(thd); //thd.operate(inputs);
 				
 				if (parcelOutcome.intValue() != thdOutcome) {
 					hit = false;

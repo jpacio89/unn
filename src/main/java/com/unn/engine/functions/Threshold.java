@@ -55,9 +55,10 @@ public class Threshold extends BaseFunction implements IFunctor, Serializable
 	}
 	
 	public static int Threshold (int v, int lb, int ub) {
-		if(v >= lb && v <= ub) {
+		/*if (v >= lb && v <= ub) {
 			return Config.STIM_MAX;
 		}
-		return Config.STIM_MIN;
+		return Config.STIM_MIN;*/
+		return v;
 	}
 }
