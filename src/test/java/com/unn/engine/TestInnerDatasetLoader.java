@@ -30,7 +30,7 @@ public class TestInnerDatasetLoader {
             ArrayList<Integer> upTimes = innerDataset.getTimesByFunctor(functor, Config.STIM_MAX);
             ArrayList<Integer> nullTimes = innerDataset.getTimesByFunctor(functor, Config.STIM_NULL);
 
-            assertTrue(nullTimes == null || nullTimes.size() == 0);
+            assertTrue( nullTimes.size() == 0);
 
             innerDataset.getTimes().forEach(time -> {
                 Integer value = innerDataset.getValueByTime(functor, time);
