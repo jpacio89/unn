@@ -25,6 +25,29 @@ public class TestInnerDatasetLoader {
         InnerDataset innerDataset = loader.load();
         ValueMapper mapper = loader.getValueMapper();
 
+        innerDataset.getFunctors().forEach(functor -> {
+            ArrayList<Integer> downTimes = innerDataset.getTimesByFunctor(functor, Config.STIM_MIN);
+            ArrayList<Integer> upTimes = innerDataset.getTimesByFunctor(functor, Config.STIM_MAX);
+            ArrayList<Integer> nullTimes = innerDataset.getTimesByFunctor(functor, Config.STIM_NULL);
+
+            assertTrue(nullTimes == null || nullTimes.size() == 0);
+
+            innerDataset.getTimes().forEach(time -> {
+                Integer value = innerDataset.getValueByTime(functor, time);
+                assertTrue(value == Config.STIM_MIN || value == Config.STIM_MAX);
+
+                if (value == Config.STIM_MIN) {
+                    assertTrue(downTimes.contains(time));
+                    assertFalse(upTimes.contains(time));
+                } else if (value == Config.STIM_MAX) {
+                    assertFalse(downTimes.contains(time));
+                    assertTrue(upTimes.contains(time));
+                } else {
+                    assertTrue(false);
+                }
+            });
+        });
+
         Arrays.stream(new String[]{"x", "y", "z", "reward"}).forEach(feature -> {
             ValuesDescriptor descriptor = mapper.getValuesDescriptorByFeature(feature);
 
