@@ -117,28 +117,16 @@ public class Miner {
 		startClock();
 		this.statusObservable.updateStatusLabel("MINING");
 		
-		for (int i = 0; alive(); i = (i + 1) % this.timetables.size()) {
-			Artifact newArtifact = null;
-			
-			PreRoller table = this.timetables.get(i);
-			
-			assert i < this.timetables.size();
-			
-			if (i == 0) {
-				newArtifact = table.createMatrix(this.trainTimeSets.get(1), this.trainTimeSets.get(0));
-			} else {
-				newArtifact = table.createMatrix(this.trainTimeSets.get(0), this.trainTimeSets.get(1));
-			}
-			
+		for (int now = 0, next = 1; alive(); now = (now + 1) % 2, next = (next + 1) % 2) {
+			PreRoller table = this.timetables.get(now);
+			Artifact newArtifact = table.createMatrix(this.trainTimeSets.get(next),
+				this.trainTimeSets.get(now));
+
 			if (newArtifact != null &&
 				Artifact.isRepetition(model.getArtifacts(), newArtifact) == null) {
 				model.add(newArtifact);
 				this.statusObservable.updateArtifactCount(model.getArtifacts().size());
 			}
-			
-			//if ((System.currentTimeMillis() - this.miningStartTime) % 10000 < 1000) {
-			//	System.out.println(String.format("Mining... %d",  System.currentTimeMillis() - this.miningStartTime));
-			//}
 			
 			this.statusObservable.updateProgress(System.currentTimeMillis() - this.miningStartTime, MINING_TIME);
 		}
