@@ -19,6 +19,7 @@ public class StatisticsAnalyzer implements Serializable {
 	}
 	
 	public void addHit2Matrix(Integer expected, double guess) {
+		// TODO: put 0.8 in Config
 		int relaxation = (int) (0.8 * Config.STIM_MAX);
 
 		if (guess > 0) {

@@ -65,6 +65,7 @@ public class InnerDataset implements Serializable {
 
 	public Integer getValueByTime(IFunctor op, int time) {
 		if (!this.timedValues.containsKey(op)) {
+			System.err.println("|InnerDataset| Requested time does not have value");
 			return null;
 		}
 		return this.timedValues.get(op).get(time);

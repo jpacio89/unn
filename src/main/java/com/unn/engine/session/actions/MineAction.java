@@ -68,6 +68,7 @@ public class MineAction extends Action {
 		}
 
 		// NOTE: if use Dataset boosting
+		// TODO: uncomment when this module has been tested
 		BoosterProvider boosterProvider = new BoosterProvider(innerDataset);
 		innerDataset = boosterProvider.boost(targetGroups);
 

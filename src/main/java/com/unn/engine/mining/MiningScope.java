@@ -76,7 +76,7 @@ public class MiningScope implements IEnvironment, Serializable {
 		getStatusObservable().updateStatusLabel("OPTIMIZING");
 		
 		Model model = miner.getModel();
-		//Refinery refinery = new Refinery(miner, model);
+		Refinery refinery = new Refinery(miner, model);
 		
 		if (Config.ASSERT_MODE) {
 			//refinery.checkConsistency();
@@ -85,8 +85,8 @@ public class MiningScope implements IEnvironment, Serializable {
 		System.out.println(String.format("|MiningScope| Gross artifacts produced: %d.", model.getArtifacts().size()));
 
 		if (model.getArtifacts().size() > 0) {
-			//this.refinedModel = refinery.refine();
-			this.refinedModel = model;
+			this.refinedModel = refinery.refine();
+			//this.refinedModel = model;
 		} else {
             this.refinedModel = model;
 			System.out.println("|MiningScope| Wheats are not separable from Weeds -> dataset in equilibrium for this scope.");

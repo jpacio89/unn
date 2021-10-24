@@ -16,20 +16,17 @@ import com.unn.common.utils.MultiplesHashMap;
 import com.unn.engine.utils.RandomManager;
 
 public class PreRoller {
-	HashMap<IFunctor, Integer> operatorIndex;
 	ArrayList<IFunctor> leafs;
 	ArrayList<Artifact.Portion> opHits;
 	InnerDataset dataset;
 	
 	int reward;
-	MultiplesHashMap<Integer, Artifact.Portion> findings;
 	MultiplesHashMap<Artifact.Portion, Integer> opHitPresences;
 	MiningStatusObservable miningStatusObservable;
 	
 	public PreRoller(InnerDataset dataset, int reward, MiningStatusObservable statusObservable) {
 		this.dataset = dataset;
 		this.opHits = new ArrayList<>();
-		this.operatorIndex = new HashMap<>();
 		this.reward = reward;
 		this.miningStatusObservable = statusObservable;
 	}
@@ -39,64 +36,37 @@ public class PreRoller {
 		this.opHits.clear();
 		
 		ArrayList<IFunctor> operators = booleanLayer;
-		int i = 0;
-		
+
 		for (IFunctor operator : operators) {
 			this.opHits.add(new Artifact.Portion(operator, Config.STIM_MIN));
 			this.opHits.add(new Artifact.Portion(operator, Config.STIM_MAX));
-			this.operatorIndex.put(operator, i * 2);
-			i++;
 		}
 
-		this.findings = new MultiplesHashMap<>();
 		this.opHitPresences = new MultiplesHashMap<>();
 	}
 	
-	public static ArrayList<IFunctor> getBooleanParameters (ArrayList<IFunctor> args) {
-		ArrayList<IFunctor> booleanParameters = new ArrayList<>();
-		ArrayList<IFunctor> paramsWithContants = new ArrayList<>();
-		paramsWithContants.addAll(args);
-		
-		for (int i = Config.STIM_MIN; i <= Config.STIM_MAX; ++i) {
-			paramsWithContants.add(new Raw(i));
-		}
-
-		for (int i = 0; i < paramsWithContants.size(); ++i) {
-			for (int j = 0; j < paramsWithContants.size(); ++j) {
-				IFunctor lh = paramsWithContants.get(i);
-				IFunctor rh = paramsWithContants.get(j);
-				if (!lh.isParameter() && !rh.isParameter()) {
-					continue;
-				}
-				Threshold thd = new Threshold(lh, rh);
-				thd.setDescriptor(new FunctionDescriptor(thd.toString()));
-				booleanParameters.add(thd);
-			}
-		}
-		
-		return booleanParameters;
-	}
-	
-	public boolean checkTime(IFunctor op, int time, int hitToCheck) throws Exception {
-		Integer val = this.dataset.getValueByTime(op, time);
-		
-		if (val == null) {
-			calculate(op, time);
-			val = this.dataset.getValueByTime(op, time);
-		}
-
-		assert val != null;
-		return val == hitToCheck;
+	public boolean checkTime(IFunctor op, int time, int hitToCheck) {
+		return this.dataset.getValueByTime(op, time) == hitToCheck;
 	}
 
-	void setPresencesByOpHit(Artifact.Portion opHit, ArrayList<Integer> badTimes) throws Exception {
+	void setPresencesByOpHit(Artifact.Portion opHit, ArrayList<Integer> badTimes) {
 		for (Integer time : badTimes) {
 			boolean isCheck = checkTime(opHit.operator, time, opHit.hit);
 			if (!isCheck) {
-				findings.put(time, opHit);
 				opHitPresences.put(opHit, time);
 			}
 		}
+	}
+
+	int countGoodPresencesByOpHit(Artifact.Portion opHit, ArrayList<Integer> goodTimes) {
+		int counter = 0;
+		for (Integer time : goodTimes) {
+			boolean isCheck = checkTime(opHit.operator, time, opHit.hit);
+			if (!isCheck) {
+				counter++;
+			}
+		}
+		return counter;
 	}
 	
 	public Artifact createMatrix(ArrayList<Integer> goodTimes, ArrayList<Integer> badTimes) throws Exception {
@@ -118,29 +88,20 @@ public class PreRoller {
 				if (!missingBadTimes.removeAll(opHitTimes)) {
 					continue;
 				}
+
+				int goodRemovalCount = countGoodPresencesByOpHit(opHit, goodTimes);
+				int badRemovalCount = opHitTimes.size();
+
+				// TODO: put 80.0% in Config
+				if (badRemovalCount * 100.0 / (goodRemovalCount + badRemovalCount) < 33.0 ) {
+					continue;
+				}
+
 				chosenSet.add(opHit);
 			}
 		}
 
 		return new Artifact(chosenSet, this.reward);
 	}
-	
-	private void calculate(IFunctor operator, Integer time) throws Exception {
-		HashMap<IFunctor, Integer> values = new HashMap<>();
-		
-		for (IFunctor param : this.leafs) {
-			values.put(param, dataset.getValueByTime(param, time));
-		}
-		
-		int binaryResult = operator.operate(values);
-		Integer oldValue = dataset.getValueByTime(operator, time);
-		
-		if (oldValue == null) {
-			dataset.add(new ValueTime(operator, binaryResult, time));
-		} else if (oldValue != binaryResult) {
-			throw new Exception();
-		}
-	}
-	
 	
 }
