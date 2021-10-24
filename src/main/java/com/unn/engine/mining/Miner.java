@@ -125,6 +125,7 @@ public class Miner {
 			if (newArtifact != null &&
 				Artifact.isRepetition(model.getArtifacts(), newArtifact) == null) {
 				model.add(newArtifact);
+				System.out.println(String.format("|Miner| artifact count: %d\r", model.getArtifacts().size()));
 				this.statusObservable.updateArtifactCount(model.getArtifacts().size());
 			}
 			

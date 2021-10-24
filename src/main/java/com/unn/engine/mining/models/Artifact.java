@@ -49,7 +49,7 @@ public class Artifact implements Serializable {
 			}
 		}
 		if (toRemove.size() > 0) {
-			System.out.println("|Artifact| removing artifacts...");
+			// System.out.println("|Artifact| removing artifacts...");
 			artifacts.removeAll(toRemove);
 		}
 		return null;

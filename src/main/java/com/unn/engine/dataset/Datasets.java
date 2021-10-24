@@ -21,7 +21,10 @@ public class Datasets {
 
         for (int sampleIndex = 0; sampleIndex < dataset.sampleCount(); ++sampleIndex) {
             Integer timeFeatureIndex = dataset.getFeatureIndex(timeFeatureName);
-            Integer outerTimeValue = Integer.parseInt(dataset.getFeatureAtSample(sampleIndex, timeFeatureIndex));
+            Integer outerTimeValue = sampleIndex;
+            if (timeFeatureIndex > -1) {
+                outerTimeValue = Integer.parseInt(dataset.getFeatureAtSample(sampleIndex, timeFeatureIndex));
+            }
 
             for (int i = 0; i < dataset.featureCount(); ++i) {
                 String featureName = dataset.getHeader().get(i);

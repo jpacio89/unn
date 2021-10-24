@@ -3,6 +3,7 @@ package com.unn.engine;
 import com.unn.common.mining.MiningReport;
 import com.unn.common.operations.Agent;
 import com.unn.common.operations.AgentRole;
+import com.unn.engine.data.Datasets;
 import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.session.Context;
@@ -13,6 +14,25 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 public class TestMiner {
+    private void mine(OuterDataset outerDataset, String target) {
+        Context context = new Context();
+        AgentRole role = new AgentRole();
+        Session session = new Session(context, role);
+        session.setOuterDataset(outerDataset);
+
+        MineAction action = new MineAction();
+        action.setSession(session);
+        action.setConf(new JobConfig(target, new ArrayList<>()));
+
+        action.act();
+
+        MiningReport report = action.getSession().getReport();
+        if (report == null || report.getConfusionMatrixes().size() == 0) {
+            System.out.println("Report statistics --> null");
+        } else {
+            System.out.println(String.format("Report statistics -->\n%s", report.toString()));
+        }
+    }
 
     @Test
     public void testCircleWheats() {
@@ -30,27 +50,23 @@ public class TestMiner {
                 reward = reward.equals("T") ? "F" : "T";
             }
             String[] row = { Integer.toString(i), Integer.toString(i),
-                    Double.toString(x), Double.toString(y), Double.toString(distance), reward };
+                Double.toString(x), Double.toString(y), Double.toString(distance), reward };
             outerDataset.addSample(row);
         }
 
-        Context context = new Context();
-        AgentRole role = new AgentRole();
-        Session session = new Session(context, role);
-        session.setOuterDataset(outerDataset);
+        mine(outerDataset, "reward");
+    }
 
-        MineAction action = new MineAction();
-        action.setSession(session);
-        action.setConf(new JobConfig("reward", new ArrayList<>()));
+    @Test
+    public void testZoo() {
+        OuterDataset outerDataset = Datasets.dummy3();
+        mine(outerDataset, "type");
+    }
 
-        action.act();
-
-        MiningReport report = action.getSession().getReport();
-        if (report == null || report.getConfusionMatrixes().size() == 0) {
-            System.out.println("Report statistics --> null");
-        } else {
-            System.out.println(String.format("Report statistics -->\n%s", report.toString()));
-        }
+    @Test
+    public void testTicTacToe() {
+        OuterDataset outerDataset = Datasets.dummy2();
+        mine(outerDataset, "Class");
     }
 
     @Test
@@ -73,22 +89,6 @@ public class TestMiner {
             outerDataset.addSample(row);
         }
 
-        Context context = new Context();
-        AgentRole role = new AgentRole();
-        Session session = new Session(context, role);
-        session.setOuterDataset(outerDataset);
-
-        MineAction action = new MineAction();
-        action.setSession(session);
-        action.setConf(new JobConfig("reward", new ArrayList<>()));
-
-        action.act();
-
-        MiningReport report = action.getSession().getReport();
-        if (report == null || report.getConfusionMatrixes().size() == 0) {
-            System.out.println("Report statistics --> null");
-        } else {
-            System.out.println(String.format("Report statistics -->\n%s", report.toString()));
-        }
+        mine(outerDataset, "reward");
     }
 }

@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 import com.unn.engine.Config;
 import com.unn.engine.mining.models.Artifact;
-import com.unn.engine.mining.Miner;
 import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.mining.models.Model;
 import com.unn.engine.utils.Pair;
