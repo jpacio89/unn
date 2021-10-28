@@ -132,6 +132,7 @@ public class Miner {
 			this.statusObservable.updateProgress(System.currentTimeMillis() - this.miningStartTime, MINING_TIME);
 		}
 
+		model.sort();
 		model.gatherStats(this.testTimeSets.get(0), this.testTimeSets.get(1));
 	}
 	

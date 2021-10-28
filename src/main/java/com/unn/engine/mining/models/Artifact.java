@@ -8,6 +8,7 @@ import com.unn.engine.utils.CombinationUtils;
 
 public class Artifact implements Serializable {
 	private static final long serialVersionUID = 5903929353773746851L;
+	public ArrayList<Integer> targetTimes;
 	public ArrayList<Portion> opHits;
 	public int reward;
 	public Long weight;
@@ -16,9 +17,10 @@ public class Artifact implements Serializable {
 		this.opHits = new ArrayList<>();
 	}
 	
-	public Artifact(ArrayList<Portion> opHits, int reward) {
+	public Artifact(ArrayList<Portion> opHits, int reward, ArrayList<Integer> targetTimes) {
 		this.opHits = opHits;
 		this.reward = reward;
+		this.targetTimes = targetTimes;
 	}
 	
 	public static boolean contains(Artifact pivot, Artifact candidate) {
@@ -50,7 +52,7 @@ public class Artifact implements Serializable {
 		}
 		if (toRemove.size() > 0) {
 			System.out.println("|Artifact| removing artifacts...");
-			//artifacts.removeAll(toRemove);
+			artifacts.removeAll(toRemove);
 		}
 		return null;
 	}

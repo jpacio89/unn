@@ -3,6 +3,7 @@ package com.unn.engine.mining.models;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import com.unn.engine.Config;
@@ -37,6 +38,11 @@ public class Model implements Serializable {
 	public void add(Artifact artifact) {
 		this.artifacts.add(artifact);
 	}
+
+	public void sort() {
+		// TODO: check if the sorted order is right
+		this.artifacts.sort(Comparator.comparingInt(x -> -x.targetTimes.size()));
+	}
 	
 	public StatisticsAnalyzer getStatsWalker() {
 		return this.walker;
@@ -53,7 +59,6 @@ public class Model implements Serializable {
 		Collections.shuffle(testTimes);
 		
 		testTimes = new ArrayList<> (testTimes.subList(0, Math.min(TEST_SAMPLE_COUNT, testTimes.size())));
-		
 		for (Integer time : testTimes) {
 			predict(time, walker);
 		}
@@ -67,13 +72,14 @@ public class Model implements Serializable {
 		return prediction;
 	}
 
-	private void predict (int time, StatisticsAnalyzer walker) {
+	private boolean predict (int time, StatisticsAnalyzer walker) {
 		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
 		// TODO: simulation endpoint does not account for weights???
 		Double prediction = this.predict(inputs, null, null);
 		double adjustedPrediction = prediction == null ? Config.STIM_NULL: prediction.doubleValue();
 		int historicAction = this.dataset.getValueByTime(this.rewardSelector, time);
 		walker.addHit2Matrix(historicAction, adjustedPrediction);
+		return adjustedPrediction != Config.STIM_NULL;
 	}
 	
 	public Double predict(int time, Long[] weights, ArrayList<Long> _hitWeights) {
@@ -82,6 +88,7 @@ public class Model implements Serializable {
 	}
 	
 	public Double predict(HashMap<IFunctor, Integer> inputs, Long[] weights, ArrayList<Long> _hitWeights) {
+		int TARGET_HIT_COUNT = 10;
 		ArrayList<Long> hitWeights = _hitWeights;
 
 		if (hitWeights == null) {
@@ -101,6 +108,10 @@ public class Model implements Serializable {
 			Artifact artifact = this.artifacts.get(i);			
 			rewardAccumulator += artifact.reward * weight * 1.0;
 			hitCount += weight;
+
+			if (hitCount >= TARGET_HIT_COUNT) {
+				break;
+			}
 		}
 		
 		if (hitCount == 0) {

@@ -2,6 +2,7 @@ package com.unn.engine.mining;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.interfaces.IFunctor;
@@ -58,19 +59,15 @@ public class PreRoller {
 		}
 	}
 
-	int countGoodPresencesByOpHit(Artifact.Portion opHit, ArrayList<Integer> goodTimes) {
-		int counter = 0;
-		for (Integer time : goodTimes) {
-			boolean isCheck = checkTime(opHit.operator, time, opHit.hit);
-			if (!isCheck) {
-				counter++;
-			}
-		}
-		return counter;
+	ArrayList<Integer> getGoodRemovalsByOpHit(Artifact.Portion opHit, ArrayList<Integer> goodTimes) {
+		return goodTimes.stream()
+			.filter(time -> !checkTime(opHit.operator, time, opHit.hit))
+			.collect(Collectors.toCollection(ArrayList::new));
 	}
 	
 	public Artifact createMatrix(ArrayList<Integer> goodTimes, ArrayList<Integer> badTimes) throws Exception {
 		ArrayList<Integer> missingBadTimes = new ArrayList<>(badTimes);
+		ArrayList<Integer> remainingGoodTimes = new ArrayList<>(goodTimes);
 		ArrayList<Artifact.Portion> availableOpHits = new ArrayList<>(this.opHits);
 		ArrayList<Artifact.Portion> chosenSet = new ArrayList<>();
 
@@ -89,19 +86,19 @@ public class PreRoller {
 					continue;
 				}
 
-				int goodRemovalCount = countGoodPresencesByOpHit(opHit, goodTimes);
-				int badRemovalCount = opHitTimes.size();
+				ArrayList<Integer> goodRemovals = getGoodRemovalsByOpHit(opHit, goodTimes);
 
 				// TODO: put 80.0% in Config
-				if (badRemovalCount * 100.0 / (goodRemovalCount + badRemovalCount) < 33.0 ) {
-					continue;
-				}
+				//if (opHitTimes.size() * 100.0 / (goodRemovals.size() + opHitTimes.size()) < 5.0 ) {
+				//	continue;
+				//}
 
+				remainingGoodTimes.removeAll(goodRemovals);
 				chosenSet.add(opHit);
 			}
 		}
 
-		return new Artifact(chosenSet, this.reward);
+		return new Artifact(chosenSet, this.reward, remainingGoodTimes);
 	}
 	
 }
