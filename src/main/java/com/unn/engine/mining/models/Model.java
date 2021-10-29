@@ -24,7 +24,7 @@ public class Model implements Serializable {
 
 	public Model(InnerDataset dataset, IFunctor rewardSelector) {
 		this.dataset = dataset;
-		this.artifacts = new ArrayList<Artifact>();
+		this.artifacts = new ArrayList<>();
 		this.walker = new StatisticsAnalyzer();
 		this.rewardSelector = rewardSelector;
 	}
@@ -40,7 +40,6 @@ public class Model implements Serializable {
 	}
 
 	public void sort() {
-		// TODO: check if the sorted order is right
 		this.artifacts.sort(Comparator.comparingInt(x -> -x.targetTimes.size()));
 	}
 	
@@ -51,7 +50,7 @@ public class Model implements Serializable {
 	public void gatherStats (ArrayList<Integer> testTimesLow, ArrayList<Integer> testTimesHigh) {
 		this.walker = new StatisticsAnalyzer();
 		
-		ArrayList<Integer> testTimes = new ArrayList<Integer>();
+		ArrayList<Integer> testTimes = new ArrayList<>();
 		
 		testTimes.addAll(testTimesLow);
 		testTimes.addAll(testTimesHigh);
@@ -88,7 +87,7 @@ public class Model implements Serializable {
 	}
 	
 	public Double predict(HashMap<IFunctor, Integer> inputs, Long[] weights, ArrayList<Long> _hitWeights) {
-		int TARGET_HIT_COUNT = 10;
+		int TARGET_HIT_COUNT = 1;
 		ArrayList<Long> hitWeights = _hitWeights;
 
 		if (hitWeights == null) {
@@ -162,7 +161,7 @@ public class Model implements Serializable {
 			}
 		}
 		
-		return new Pair<ArrayList<Long>, Pair<Double, Long>> (hitWeights, new Pair<Double, Long>(accumulator, hitCount));
+		return new Pair<> (hitWeights, new Pair<>(accumulator, hitCount));
 	}
 	
 	public Boolean isHit (int time, int artifactIndex) {
