@@ -7,11 +7,7 @@ import java.util.HashMap;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.interfaces.IEnvironment;
 import com.unn.engine.interfaces.IFunctor;
-import com.unn.engine.Config;
 import com.unn.engine.metadata.ValueMapper;
-import com.unn.engine.mining.Miner;
-import com.unn.engine.mining.StatisticsAnalyzer;
-import com.unn.engine.mining.RefineryNew;
 import com.unn.engine.mining.models.MiningStatusObservable;
 import com.unn.engine.mining.models.Model;
 import com.unn.engine.mining.models.ScopeConfig;
@@ -76,19 +72,12 @@ public class MiningScope implements IEnvironment, Serializable {
 		getStatusObservable().updateStatusLabel("OPTIMIZING");
 		
 		Model model = miner.getModel();
-		//Refinery refinery = new Refinery(miner, model);
-		
-		if (Config.ASSERT_MODE) {
-			//refinery.checkConsistency();
-		}
 
 		System.out.println(String.format("|MiningScope| Gross artifacts produced: %d.", model.getArtifacts().size()));
 
-		if (model.getArtifacts().size() > 0) {
-			//this.refinedModel = refinery.refine();
-			this.refinedModel = model;
-		} else {
-            this.refinedModel = model;
+		this.refinedModel = model;
+
+		if (model.getArtifacts().size() == 0) {
 			System.out.println("|MiningScope| Wheats are not separable from Weeds -> dataset in equilibrium for this scope.");
 		}
 
