@@ -49,7 +49,6 @@ public class MineAction extends Action {
 			return;
 		}
 
-		Context context = this.session.getContext();
 		HashMap<String, MiningScope> scopes = this.session.getScopes();
 		JobConfig config = getConf();
 
@@ -69,8 +68,8 @@ public class MineAction extends Action {
 
 		// NOTE: if use Dataset boosting
 		// TODO: uncomment when this module has been tested
-		BoosterProvider boosterProvider = new BoosterProvider(innerDataset);
-		innerDataset = boosterProvider.boost(targetGroups);
+		//BoosterProvider boosterProvider = new BoosterProvider(innerDataset);
+		//innerDataset = boosterProvider.boost(targetGroups);
 
 		Pair<ArrayList<Integer>, ArrayList<Integer>> splittedTimes = splitDataset(innerDataset);
 		this.session.setMakerTimes(splittedTimes.first());
@@ -89,20 +88,27 @@ public class MineAction extends Action {
 			scopes.put(scopeName, scope);
 		}
 
-		ArrayList<String> toRemove = new ArrayList<>();
-		for (Map.Entry<String, MiningScope> entry : scopes.entrySet()) {
-			String id = entry.getKey();
-			MiningScope scope = entry.getValue();
-			try {
-				scope.mine();
-				if (scope.getModel() == null || scope.getModel().isEmpty()) {
-					toRemove.add(id);
+		// NOTE: for each scope mine the dataset and check model
+		//		 if model is empty, remove the scope from list
+		scopes.entrySet().stream()
+			.map(entry -> {
+				String id = entry.getKey();
+				MiningScope scope = entry.getValue();
+				try {
+					scope.mine();
+					if (scope.getModel() == null ||
+						scope.getModel().isEmpty()) {
+						return id;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					return id;
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		toRemove.forEach(scopeId -> scopes.remove(scopeId));
+				return null;
+			})
+			.filter(id -> id != null)
+			.forEach(id -> scopes.remove(id));
+
 		System.out.println("|MineActor| All scopes have been processed");
 	}
 

@@ -10,7 +10,7 @@ import com.unn.engine.utils.Triplet;
 
 public class JobConfig implements Serializable {
 	private static final long serialVersionUID = 3698978410470063835L;
-	public final static JobConfig DEFAULT = new JobConfig("", new LinkedList<String>());
+	public final static JobConfig DEFAULT = new JobConfig("", new LinkedList<>());
 	
 	public String jobSessionId;
 	public String targetFeature;

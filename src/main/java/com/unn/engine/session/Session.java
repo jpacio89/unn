@@ -37,6 +37,7 @@ public class Session implements Serializable {
 	}
 	
 	public void act(Action action) {
+		// TODO: make it not allowed to reuse Actions by checking if session is already set
 		if (action instanceof LoadDatasetAction) {
 			LoadDatasetAction __action = (LoadDatasetAction) action;
 			__action.setContext(this.context);
