@@ -5,18 +5,18 @@ import java.util.HashMap;
 
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.models.ScopeConfig;
-import com.unn.engine.mining.StatisticsAnalyzer;
+import com.unn.engine.mining.PerformanceAnalyzer;
 
 public interface IEnvironment {
 	ArrayList<IFunctor> getInputs(String spaceId);
 	
 	Double predict(HashMap<IFunctor, Integer> values);
 	
-	StatisticsAnalyzer mine() throws Exception;
+	PerformanceAnalyzer mine() throws Exception;
 
 	ValueMapper getMapper();
 
-	StatisticsAnalyzer getStatisticsAnalyzer();
+	PerformanceAnalyzer getStatisticsAnalyzer();
 
 	ScopeConfig getConfig();
 }

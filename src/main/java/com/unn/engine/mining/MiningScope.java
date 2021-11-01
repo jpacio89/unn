@@ -47,7 +47,7 @@ public class MiningScope implements IEnvironment, Serializable {
 		return this.config.getLoader().getValueMapper();
 	}
 	
-	public StatisticsAnalyzer mine() throws Exception {
+	public PerformanceAnalyzer mine() throws Exception {
 		System.out.println(String.format("|MiningEnvironment| Mining"));
 		this.refinedModel = null;
 		
@@ -87,7 +87,7 @@ public class MiningScope implements IEnvironment, Serializable {
 		return this.refinedModel.getStatsWalker();
 	}
 	
-	public StatisticsAnalyzer getStatisticsAnalyzer() {
+	public PerformanceAnalyzer getStatisticsAnalyzer() {
 		if (this.refinedModel != null) {
 			return this.refinedModel.getStatsWalker();
 		}

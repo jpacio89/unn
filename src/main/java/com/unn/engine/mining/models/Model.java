@@ -9,15 +9,14 @@ import java.util.HashMap;
 import com.unn.engine.Config;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.interfaces.IFunctor;
-import com.unn.engine.mining.StatisticsAnalyzer;
-import com.unn.engine.utils.Pair;
+import com.unn.engine.mining.PerformanceAnalyzer;
 
 public class Model implements Serializable {
 	private static final long serialVersionUID = 6696314435525368206L;
 
 	final int TEST_SAMPLE_COUNT = 1000;
 	
-	StatisticsAnalyzer walker;
+	PerformanceAnalyzer walker;
 	InnerDataset dataset;
 	ArrayList<Predicate> predicates;
 	IFunctor rewardSelector;
@@ -25,7 +24,7 @@ public class Model implements Serializable {
 	public Model(InnerDataset dataset, IFunctor rewardSelector) {
 		this.dataset = dataset;
 		this.predicates = new ArrayList<>();
-		this.walker = new StatisticsAnalyzer();
+		this.walker = new PerformanceAnalyzer();
 		this.rewardSelector = rewardSelector;
 	}
 	
@@ -43,12 +42,12 @@ public class Model implements Serializable {
 		this.predicates.sort(Comparator.comparingInt(x -> -x.targetTimes.size()));
 	}
 	
-	public StatisticsAnalyzer getStatsWalker() {
+	public PerformanceAnalyzer getStatsWalker() {
 		return this.walker;
 	}
 	
 	public void gatherStats (ArrayList<Integer> testTimesLow, ArrayList<Integer> testTimesHigh) {
-		this.walker = new StatisticsAnalyzer();
+		this.walker = new PerformanceAnalyzer();
 		
 		ArrayList<Integer> testTimes = new ArrayList<>();
 		
@@ -63,12 +62,12 @@ public class Model implements Serializable {
 		}
 	}
 
-	private boolean predict (int time, StatisticsAnalyzer walker) {
+	private boolean predict (int time, PerformanceAnalyzer walker) {
 		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
 		Double prediction = this.predict(inputs);
 		double adjustedPrediction = prediction == null ? Config.STIM_NULL: prediction.doubleValue();
 		int historicAction = this.dataset.getValueByTime(this.rewardSelector, time);
-		walker.addHit2Matrix(historicAction, adjustedPrediction);
+		walker.addEvent(historicAction, adjustedPrediction);
 		return adjustedPrediction != Config.STIM_NULL;
 	}
 	

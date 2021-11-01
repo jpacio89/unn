@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import com.unn.common.mining.ConfusionMatrix;
 import com.unn.engine.Config;
 
-public class StatisticsAnalyzer implements Serializable {
+public class PerformanceAnalyzer implements Serializable {
 	ArrayList<Integer> possibleValues;
 	ConfusionMatrix matrix;
 	
-	public StatisticsAnalyzer() {
+	public PerformanceAnalyzer() {
 		this.possibleValues = new ArrayList<>();
 		this.possibleValues.add(Config.STIM_MIN);
 		this.possibleValues.add(Config.STIM_NULL);
@@ -18,7 +18,7 @@ public class StatisticsAnalyzer implements Serializable {
 		this.matrix = new ConfusionMatrix(possibleValues.size());
 	}
 	
-	public void addHit2Matrix(Integer expected, double guess) {
+	public void addEvent(Integer expected, double guess) {
 		// TODO: put 0.8 in Config
 		int relaxation = (int) (0.8 * Config.STIM_MAX);
 
