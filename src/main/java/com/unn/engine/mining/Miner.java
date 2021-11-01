@@ -23,7 +23,7 @@ public class Miner {
 	MiningStatusObservable statusObservable;
 	ArrayList<ArrayList<Integer>> trainTimeSets;
 	ArrayList<ArrayList<Integer>> testTimeSets;
-	ArrayList<PreRoller> timetables;
+	ArrayList<PredicateFactory> predicateFactories;
 
 	private long miningStartTime;
 
@@ -34,7 +34,7 @@ public class Miner {
 		this.dataset = dataset;
 		this.trainTimeSets = new ArrayList<>();
 		this.testTimeSets = new ArrayList<>();
-		this.timetables = new ArrayList<>();
+		this.predicateFactories = new ArrayList<>();
 		this.isReady = false;
 		this.statusObservable = statusObservable;
 		this.functorBlacklist = functorBlacklist;
@@ -47,7 +47,7 @@ public class Miner {
 
 		this.trainTimeSets.clear();
 		this.testTimeSets.clear();
-		this.timetables.clear();
+		this.predicateFactories.clear();
 		this.model = new Model(this.dataset, this.miningTarget);
 
 		ArrayList<Integer> trainTimesLow  = dataset.getTimesByFunctor(
@@ -92,9 +92,9 @@ public class Miner {
 		Integer[] rewards = { Config.STIM_MAX, Config.STIM_MIN };
 		int i = 0;
 		for (Integer reward : rewards) {
-			PreRoller table = new PreRoller(dataset, reward, this.statusObservable);
-			table.init(trainingFunctors, thresholdLayer);
-			this.timetables.add(table);
+			PredicateFactory factory = new PredicateFactory(dataset, reward, this.statusObservable);
+			factory.init(trainingFunctors, thresholdLayer);
+			this.predicateFactories.add(factory);
 			i++;
 		}
 		
@@ -118,8 +118,8 @@ public class Miner {
 		this.statusObservable.updateStatusLabel("MINING");
 		
 		for (int now = 0, next = 1; alive(); now = (now + 1) % 2, next = (next + 1) % 2) {
-			PreRoller table = this.timetables.get(now);
-			Predicate newPredicate = table.createMatrix(this.trainTimeSets.get(next),
+			PredicateFactory factory = this.predicateFactories.get(now);
+			Predicate newPredicate = factory.randomPredicate(this.trainTimeSets.get(next),
 				this.trainTimeSets.get(now));
 
 			if (newPredicate != null &&

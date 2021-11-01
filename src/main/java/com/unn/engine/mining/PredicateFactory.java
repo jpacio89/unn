@@ -11,7 +11,7 @@ import com.unn.engine.mining.models.MiningStatusObservable;
 import com.unn.common.utils.MultiplesHashMap;
 import com.unn.engine.utils.RandomManager;
 
-public class PreRoller {
+public class PredicateFactory {
 	ArrayList<IFunctor> leafs;
 	ArrayList<Predicate.Condition> opHits;
 	InnerDataset dataset;
@@ -20,7 +20,7 @@ public class PreRoller {
 	MultiplesHashMap<Predicate.Condition, Integer> opHitPresences;
 	MiningStatusObservable miningStatusObservable;
 	
-	public PreRoller(InnerDataset dataset, int reward, MiningStatusObservable statusObservable) {
+	public PredicateFactory(InnerDataset dataset, int reward, MiningStatusObservable statusObservable) {
 		this.dataset = dataset;
 		this.opHits = new ArrayList<>();
 		this.reward = reward;
@@ -60,7 +60,7 @@ public class PreRoller {
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 	
-	public Predicate createMatrix(ArrayList<Integer> goodTimes, ArrayList<Integer> badTimes) throws Exception {
+	public Predicate randomPredicate(ArrayList<Integer> goodTimes, ArrayList<Integer> badTimes) throws Exception {
 		ArrayList<Integer> missingBadTimes = new ArrayList<>(badTimes);
 		ArrayList<Integer> remainingGoodTimes = new ArrayList<>(goodTimes);
 		ArrayList<Predicate.Condition> availableOpHits = new ArrayList<>(this.opHits);
