@@ -49,10 +49,5 @@ public class Raw extends BaseFunction implements Serializable
 			e.printStackTrace();
 		}
 	}
-
-	@Override
-	public Integer operate(HashMap<IFunctor, Integer> values) throws Exception {
-		throw new Exception();
-	}
 	
 }

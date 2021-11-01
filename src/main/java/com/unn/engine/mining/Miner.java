@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.Config;
-import com.unn.engine.mining.models.Artifact;
+import com.unn.engine.mining.models.Predicate;
 import com.unn.engine.mining.models.MiningStatusObservable;
 import com.unn.engine.mining.models.Model;
 
@@ -119,12 +119,12 @@ public class Miner {
 		
 		for (int now = 0, next = 1; alive(); now = (now + 1) % 2, next = (next + 1) % 2) {
 			PreRoller table = this.timetables.get(now);
-			Artifact newArtifact = table.createMatrix(this.trainTimeSets.get(next),
+			Predicate newPredicate = table.createMatrix(this.trainTimeSets.get(next),
 				this.trainTimeSets.get(now));
 
-			if (newArtifact != null &&
-				Artifact.isRepetition(model.getArtifacts(), newArtifact) == null) {
-				model.add(newArtifact);
+			if (newPredicate != null &&
+				Predicate.isRepetition(model.getArtifacts(), newPredicate) == null) {
+				model.add(newPredicate);
 				System.out.println(String.format("|Miner| artifact count: %d\r", model.getArtifacts().size()));
 				this.statusObservable.updateArtifactCount(model.getArtifacts().size());
 			}

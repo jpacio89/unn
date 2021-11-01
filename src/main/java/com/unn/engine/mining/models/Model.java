@@ -19,28 +19,28 @@ public class Model implements Serializable {
 	
 	StatisticsAnalyzer walker;
 	InnerDataset dataset;
-	ArrayList<Artifact> artifacts;
+	ArrayList<Predicate> predicates;
 	IFunctor rewardSelector;
 
 	public Model(InnerDataset dataset, IFunctor rewardSelector) {
 		this.dataset = dataset;
-		this.artifacts = new ArrayList<>();
+		this.predicates = new ArrayList<>();
 		this.walker = new StatisticsAnalyzer();
 		this.rewardSelector = rewardSelector;
 	}
 	
-	public Model(InnerDataset dataset, ArrayList<Artifact> sublist, IFunctor rewardSelector) {
+	public Model(InnerDataset dataset, ArrayList<Predicate> sublist, IFunctor rewardSelector) {
 		this.dataset = dataset;
-		this.artifacts = sublist;
+		this.predicates = sublist;
 		this.rewardSelector = rewardSelector;
 	}
 	
-	public void add(Artifact artifact) {
-		this.artifacts.add(artifact);
+	public void add(Predicate predicate) {
+		this.predicates.add(predicate);
 	}
 
 	public void sort() {
-		this.artifacts.sort(Comparator.comparingInt(x -> -x.targetTimes.size()));
+		this.predicates.sort(Comparator.comparingInt(x -> -x.targetTimes.size()));
 	}
 	
 	public StatisticsAnalyzer getStatsWalker() {
@@ -104,8 +104,8 @@ public class Model implements Serializable {
 				continue;
 			}
 			
-			Artifact artifact = this.artifacts.get(i);			
-			rewardAccumulator += artifact.reward * weight * 1.0;
+			Predicate predicate = this.predicates.get(i);
+			rewardAccumulator += predicate.reward * weight * 1.0;
 			hitCount += weight;
 
 			if (hitCount >= TARGET_HIT_COUNT) {
@@ -132,9 +132,9 @@ public class Model implements Serializable {
 		Double accumulator = 0.0;
 		long hitCount = 0;
 		
-		for (int i = 0; i < this.artifacts.size(); ++i) {
-			Artifact artifact = this.artifacts.get(i);
-			Long weight = artifact.weight;
+		for (int i = 0; i < this.predicates.size(); ++i) {
+			Predicate predicate = this.predicates.get(i);
+			Long weight = predicate.weight;
 			
 			if (weights != null) {
 				weight = weights[i];
@@ -154,7 +154,7 @@ public class Model implements Serializable {
 				}
 				hitWeights.add(w);
 				
-				accumulator += w * artifact.reward;
+				accumulator += w * predicate.reward;
 				hitCount += w;
 			} else {
 				hitWeights.add(0L);
@@ -179,12 +179,12 @@ public class Model implements Serializable {
 	}
 	
 	public Boolean isHit(HashMap<IFunctor, Integer> inputs, int artifactIndex) {
-		Artifact artifact = this.artifacts.get(artifactIndex);
-		ArrayList<Artifact.Portion> parcels = artifact.opHits;
+		Predicate predicate = this.predicates.get(artifactIndex);
+		ArrayList<Predicate.Condition> parcels = predicate.opHits;
 		
 		boolean hit = true;
 		
-		for (Artifact.Portion parcel : parcels) {
+		for (Predicate.Condition parcel : parcels) {
 			IFunctor thd = parcel.operator;
 			Integer parcelOutcome = parcel.hit;
 			
@@ -217,8 +217,8 @@ public class Model implements Serializable {
 		return this.dataset.getFunctors();
 	}
 	
-	public ArrayList<Artifact> getArtifacts() {
-		return this.artifacts;
+	public ArrayList<Predicate> getArtifacts() {
+		return this.predicates;
 	}
 
 	public InnerDataset getDataset() {
@@ -234,7 +234,7 @@ public class Model implements Serializable {
 		return inputs;
 	}
 
-	public void setArtifacts(ArrayList<Artifact> artifacts) {
-		this.artifacts = artifacts;
+	public void setArtifacts(ArrayList<Predicate> predicates) {
+		this.predicates = predicates;
 	}
 }

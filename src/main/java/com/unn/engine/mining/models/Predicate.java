@@ -6,26 +6,26 @@ import java.util.ArrayList;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.utils.CombinationUtils;
 
-public class Artifact implements Serializable {
+public class Predicate implements Serializable {
 	private static final long serialVersionUID = 5903929353773746851L;
 	public ArrayList<Integer> targetTimes;
-	public ArrayList<Portion> opHits;
+	public ArrayList<Condition> opHits;
 	public int reward;
 	public Long weight;
 	
-	public Artifact() {
+	public Predicate() {
 		this.opHits = new ArrayList<>();
 	}
 	
-	public Artifact(ArrayList<Portion> opHits, int reward, ArrayList<Integer> targetTimes) {
+	public Predicate(ArrayList<Condition> opHits, int reward, ArrayList<Integer> targetTimes) {
 		this.opHits = opHits;
 		this.reward = reward;
 		this.targetTimes = targetTimes;
 	}
 	
-	public static boolean contains(Artifact pivot, Artifact candidate) {
+	public static boolean contains(Predicate pivot, Predicate candidate) {
 		boolean contains = true;
-		for (Portion opHitCandidate : candidate.opHits) {
+		for (Condition opHitCandidate : candidate.opHits) {
 			if (!pivot.opHits.contains(opHitCandidate)) {
 				contains = false;
 				break;
@@ -35,45 +35,45 @@ public class Artifact implements Serializable {
 	}
 	
 	// TODO: make unit test
-	public static Artifact isRepetition(ArrayList<Artifact> artifacts, Artifact artifact) {
-		ArrayList<Artifact> toRemove = new ArrayList<>();
-		for (Artifact artifactCandidate : artifacts) {
-			if (artifactCandidate.opHits.size() > artifact.opHits.size()) {
-				boolean contains = contains(artifactCandidate, artifact);
+	public static Predicate isRepetition(ArrayList<Predicate> predicates, Predicate predicate) {
+		ArrayList<Predicate> toRemove = new ArrayList<>();
+		for (Predicate predicateCandidate : predicates) {
+			if (predicateCandidate.opHits.size() > predicate.opHits.size()) {
+				boolean contains = contains(predicateCandidate, predicate);
 				if (contains) {
-					toRemove.add(artifactCandidate);
+					toRemove.add(predicateCandidate);
 				}
 				continue;
 			}
-			boolean contains = contains(artifact, artifactCandidate);
+			boolean contains = contains(predicate, predicateCandidate);
 			if (contains) {
-				return artifactCandidate;
+				return predicateCandidate;
 			}
 		}
 		if (toRemove.size() > 0) {
 			System.out.println("|Artifact| removing artifacts...");
-			artifacts.removeAll(toRemove);
+			predicates.removeAll(toRemove);
 		}
 		return null;
 	}
 
 	// TODO: optimize as this is an sub-optimal solution
-	public static boolean isRepetitionFull(ArrayList<Artifact> artifacts, Artifact artifact) {
-		ArrayList<ArrayList<Integer>> indexes = CombinationUtils.getSubsets(artifact.opHits.size());
+	public static boolean isRepetitionFull(ArrayList<Predicate> predicates, Predicate predicate) {
+		ArrayList<ArrayList<Integer>> indexes = CombinationUtils.getSubsets(predicate.opHits.size());
 		
 		for (int i = 0; i < indexes.size(); ++i) {
 			ArrayList<Integer> subset = indexes.get(i);
-			Artifact dummy = new Artifact();
+			Predicate dummy = new Predicate();
 			
 			for (int j = 0; j < subset.size(); ++j) {	
-				dummy.opHits.add(artifact.opHits.get(subset.get(j)));
+				dummy.opHits.add(predicate.opHits.get(subset.get(j)));
 			}
 			
-			Artifact ret = isRepetition(artifacts, dummy);
+			Predicate ret = isRepetition(predicates, dummy);
 			
 			if (ret != null) {
-				if (artifact.opHits.size() < ret.opHits.size()) {
-					artifacts.remove(ret);
+				if (predicate.opHits.size() < ret.opHits.size()) {
+					predicates.remove(ret);
 					return false;
 				}
 				return true;
@@ -88,12 +88,12 @@ public class Artifact implements Serializable {
 		return "Artifact [opHits=" + opHits + ", reward=" + reward + "]";
 	}
 
-	public static class Portion implements Serializable {
+	public static class Condition implements Serializable {
 		private static final long serialVersionUID = 6076337110545632229L;
 		public IFunctor operator;
 		public int hit;
 
-		public Portion(IFunctor op, int hit) {
+		public Condition(IFunctor op, int hit) {
 			this.operator = op;
 			this.hit = hit;
 		}
@@ -120,7 +120,7 @@ public class Artifact implements Serializable {
 				return false;
 			if (getClass() != obj.getClass())
 				return false;
-			Portion other = (Portion) obj;
+			Condition other = (Condition) obj;
 			if (hit != other.hit)
 				return false;
 			if (operator == null) {
