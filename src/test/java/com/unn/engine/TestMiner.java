@@ -79,7 +79,7 @@ public class TestMiner {
             double x = Math.random() * 360;
             double y = 2 * Math.random() - 1;
             String reward = y > Math.sin(2 * (Math.PI * x / 360.0)) ? "T" : "F";
-            //double mod = y - Math.sin(2 * (Math.PI * x / 360.0));
+            //double mod = Math.sin(2 * (Math.PI * x / 360.0));
             //double uncertainty = Math.random();
             //if (uncertainty > .75) {
             //    reward = reward.equals("T") ? "F" : "T";

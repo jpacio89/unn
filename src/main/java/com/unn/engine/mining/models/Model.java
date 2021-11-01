@@ -63,50 +63,35 @@ public class Model implements Serializable {
 		}
 	}
 
-	// NOTE: used to bulk predict inputs
-	private Double predict (int time) {
-		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
-		// TODO: simulation endpoint does not account for weights???
-		Double prediction = this.predict(inputs, null, null);
-		return prediction;
-	}
-
 	private boolean predict (int time, StatisticsAnalyzer walker) {
 		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
-		// TODO: simulation endpoint does not account for weights???
-		Double prediction = this.predict(inputs, null, null);
+		Double prediction = this.predict(inputs);
 		double adjustedPrediction = prediction == null ? Config.STIM_NULL: prediction.doubleValue();
 		int historicAction = this.dataset.getValueByTime(this.rewardSelector, time);
 		walker.addHit2Matrix(historicAction, adjustedPrediction);
 		return adjustedPrediction != Config.STIM_NULL;
 	}
 	
-	public Double predict(int time, Long[] weights, ArrayList<Long> _hitWeights) {
+	public Double predict(int time) {
 		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
-		return this.predict(inputs, weights, _hitWeights);
+		return this.predict(inputs);
 	}
 	
-	public Double predict(HashMap<IFunctor, Integer> inputs, Long[] weights, ArrayList<Long> _hitWeights) {
+	public Double predict(HashMap<IFunctor, Integer> inputs) {
 		int TARGET_HIT_COUNT = 1;
-		ArrayList<Long> hitWeights = _hitWeights;
-
-		if (hitWeights == null) {
-			hitWeights = predictionHits(inputs, weights).first();
-		}
-		
-		double rewardAccumulator = 0;
+		double rewardAccumulator = 0.0;
 		long hitCount = 0;
 			
-		for (int i = 0; i < hitWeights.size(); ++i) {
-			Long weight = hitWeights.get(i);
+		for (int i = 0; i < this.predicates.size(); ++i) {
+			Predicate predicate = this.predicates.get(i);
+			boolean isHit = this.isHit(inputs, i);
 
-			if (weight == 0) {
+			if (!isHit) {
 				continue;
 			}
-			
-			Predicate predicate = this.predicates.get(i);
-			rewardAccumulator += predicate.reward * weight * 1.0;
-			hitCount += weight;
+
+			rewardAccumulator += isHit ? predicate.reward : Config.STIM_NULL;
+			hitCount++;
 
 			if (hitCount >= TARGET_HIT_COUNT) {
 				break;
@@ -122,62 +107,6 @@ public class Model implements Serializable {
 		return rewardAccumulator;
 	}
 	
-	public Pair<ArrayList<Long>, Pair<Double, Long>> predictionHits (int time, Long[] weights) {
-		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
-		return predictionHits(inputs, weights);
-	}
-	
-	public Pair<ArrayList<Long>, Pair<Double, Long>> predictionHits(HashMap<IFunctor, Integer> inputs, Long[] weights) {
-		ArrayList<Long> hitWeights = new ArrayList<Long>();
-		Double accumulator = 0.0;
-		long hitCount = 0;
-		
-		for (int i = 0; i < this.predicates.size(); ++i) {
-			Predicate predicate = this.predicates.get(i);
-			Long weight = predicate.weight;
-			
-			if (weights != null) {
-				weight = weights[i];
-			}
-
-			if (weight != null && weight == 0) {
-				hitWeights.add(0L);
-				continue;
-			}
-			
-			boolean hit = isHit(inputs, i);
-			
-			if (hit) {
-				long w = 1;
-				if (weight != null) {
-					w = weight;
-				}
-				hitWeights.add(w);
-				
-				accumulator += w * predicate.reward;
-				hitCount += w;
-			} else {
-				hitWeights.add(0L);
-			}
-		}
-		
-		return new Pair<> (hitWeights, new Pair<>(accumulator, hitCount));
-	}
-	
-	public Boolean isHit (int time, int artifactIndex) {
-		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
-		return isHit(inputs, artifactIndex);
-	}
-	
-	public Long artifactHits(Integer time, int artifactIndex, Long[] weights) {
-		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
-		boolean isHit = isHit(inputs, artifactIndex);
-		if (isHit) {
-			return weights[artifactIndex];
-		}
-		return 0L;
-	}
-	
 	public Boolean isHit(HashMap<IFunctor, Integer> inputs, int artifactIndex) {
 		Predicate predicate = this.predicates.get(artifactIndex);
 		ArrayList<Predicate.Condition> parcels = predicate.opHits;
@@ -189,7 +118,7 @@ public class Model implements Serializable {
 			Integer parcelOutcome = parcel.hit;
 			
 			try {
-				int thdOutcome = inputs.get(thd); //thd.operate(inputs);
+				int thdOutcome = inputs.get(thd);
 				
 				if (parcelOutcome.intValue() != thdOutcome) {
 					hit = false;

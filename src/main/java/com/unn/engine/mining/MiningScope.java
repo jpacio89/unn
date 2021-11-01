@@ -98,7 +98,7 @@ public class MiningScope implements IEnvironment, Serializable {
 		if (this.refinedModel == null) {
 			return null;
 		}
-		Double prediction = this.refinedModel.predict(inputs, null, null);
+		Double prediction = this.refinedModel.predict(inputs);
 		if (prediction == null) {
 			return 0.0;
 		}
