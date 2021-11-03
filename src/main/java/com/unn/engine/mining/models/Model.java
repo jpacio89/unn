@@ -67,7 +67,11 @@ public class Model implements Serializable {
 		Double prediction = this.predict(inputs);
 		double adjustedPrediction = prediction == null ? Config.STIM_NULL: prediction.doubleValue();
 		int historicAction = this.dataset.getValueByTime(this.rewardSelector, time);
-		walker.addEvent(historicAction, adjustedPrediction);
+		try {
+			walker.addEvent(historicAction, adjustedPrediction);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return adjustedPrediction != Config.STIM_NULL;
 	}
 	

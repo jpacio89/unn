@@ -18,7 +18,7 @@ public class PerformanceAnalyzer implements Serializable {
 		this.matrix = new ConfusionMatrix(possibleValues.size());
 	}
 	
-	public void addEvent(Integer expected, double guess) {
+	public void addEvent(Integer expected, double guess) throws Exception {
 		// TODO: put 0.8 in Config
 		int relaxation = (int) (0.8 * Config.STIM_MAX);
 
@@ -34,12 +34,14 @@ public class PerformanceAnalyzer implements Serializable {
 		if (guessIndex < 0) {
 			guessIndex = this.possibleValues.indexOf(Config.STIM_NULL);
 		}
-		
-		if (guessIndex >= 0 && expectedIndex >= 0) {
-			this.matrix.inc(guessIndex, expectedIndex);
-		} else {
-			System.err.println("|StatsWalker| Unexpected situation");
+
+		if (expectedIndex < 0 || expectedIndex == 1) {
+			throw new Exception(String.format("PerformanceAnalyzer: expected value either MIN or MAX. Instead '%d' was found.", expected));
+		} else if (guessIndex < 0) {
+			throw new Exception(String.format("PerformanceAnalyzer: guess value is weird: '%d'", guess));
 		}
+
+		this.matrix.inc(guessIndex, expectedIndex);
 	}
 
 	public ConfusionMatrix getConfusionMatrix() {
