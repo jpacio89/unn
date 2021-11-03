@@ -12,7 +12,7 @@ public class TestPerformanceAnalyzer {
     public void testError() {
         PerformanceAnalyzer analyzer = new PerformanceAnalyzer();
         try {
-            analyzer.addEvent(0, 10);
+            analyzer.addEvent(0, Config.STIM_MAX);
         } catch (Exception e) {
             return;
         }
@@ -32,5 +32,9 @@ public class TestPerformanceAnalyzer {
         assertEquals(matrix.getTpr(), 50);
         assertEquals(matrix.getTnr(), 100);
         assertEquals(matrix.getAccuracy(), 66);
+        assertEquals(matrix.getNr(), 50);
+        assertEquals(matrix.getPr(), 50);
+
+        System.out.println(matrix.toString());
     }
 }

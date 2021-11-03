@@ -17,7 +17,7 @@ public class Miner {
 	InnerDataset dataset;
 	Model model;
 	boolean isReady;
-	ArrayList<IFeature> functorBlacklist;
+	ArrayList<IFeature> featureBlacklist;
 	IFeature miningTarget;
 
 	MiningStatusObservable statusObservable;
@@ -30,14 +30,14 @@ public class Miner {
 	ArrayList<Integer> trainTimes;
 	ArrayList<Integer> testTimes;
 	
-	public Miner(InnerDataset dataset, IFeature miningTarget, ArrayList<IFeature> functorBlacklist, MiningStatusObservable statusObservable) {
+	public Miner(InnerDataset dataset, IFeature miningTarget, ArrayList<IFeature> featureBlacklist, MiningStatusObservable statusObservable) {
 		this.dataset = dataset;
 		this.trainTimeSets = new ArrayList<>();
 		this.testTimeSets = new ArrayList<>();
 		this.predicateFactories = new ArrayList<>();
 		this.isReady = false;
 		this.statusObservable = statusObservable;
-		this.functorBlacklist = functorBlacklist;
+		this.featureBlacklist = featureBlacklist;
 		this.miningTarget = miningTarget;
 	}
 	
@@ -80,22 +80,22 @@ public class Miner {
 			assertDisjoint();
 		}
 
-		ArrayList<IFeature> trainingFunctors = dataset.getFunctors().stream()
-			.filter((functor) -> !functorBlacklist.contains(functor))
+		// Note: this is to avoid feeding the solution to the miner
+		ArrayList<IFeature> trainingFeatures = dataset.getFunctors().stream()
+			.filter((functor) -> !featureBlacklist.contains(functor))
 			.collect(Collectors.toCollection(ArrayList::new));
 
-		if (trainingFunctors.size() == 0) {
+		if (trainingFeatures.size() == 0) {
 			return;
 		}
 
-		ArrayList<IFeature> thresholdLayer = trainingFunctors; // PreRoller.getBooleanParameters(trainingFunctors);
+
 		Integer[] rewards = { Config.STIM_MAX, Config.STIM_MIN };
-		int i = 0;
+
 		for (Integer reward : rewards) {
 			PredicateFactory factory = new PredicateFactory(dataset, reward, this.statusObservable);
-			factory.init(trainingFunctors, thresholdLayer);
+			factory.init(trainingFeatures);
 			this.predicateFactories.add(factory);
-			i++;
 		}
 		
 		this.isReady = true;
@@ -103,14 +103,6 @@ public class Miner {
 	
 	public Model getModel() {
 		return this.model;
-	}
-	
-	public ArrayList<Integer> getHighs() {
-		return this.trainTimeSets.get(1);
-	}
-	
-	public ArrayList<Integer> getLows() {
-		return this.trainTimeSets.get(0);
 	}
 	
 	public void mine() throws Exception {
@@ -123,20 +115,16 @@ public class Miner {
 				this.trainTimeSets.get(now));
 
 			if (newPredicate != null &&
-				Predicate.isRepetition(model.getArtifacts(), newPredicate) == null) {
+				Predicate.isRepetition(model.getPredicates(), newPredicate) == null) {
 				model.add(newPredicate);
-				System.out.println(String.format("|Miner| artifact count: %d\r", model.getArtifacts().size()));
-				this.statusObservable.updateArtifactCount(model.getArtifacts().size());
+				System.out.println(String.format("|Miner| artifact count: %d\r", model.getPredicates().size()));
+				this.statusObservable.updateArtifactCount(model.getPredicates().size());
 			}
 			
 			this.statusObservable.updateProgress(System.currentTimeMillis() - this.miningStartTime, MINING_TIME);
 		}
 
 		model.sort();
-		model.gatherStats(this.testTimeSets.get(0), this.testTimeSets.get(1));
-	}
-	
-	public void gatherStats(Model model) {
 		model.gatherStats(this.testTimeSets.get(0), this.testTimeSets.get(1));
 	}
 	

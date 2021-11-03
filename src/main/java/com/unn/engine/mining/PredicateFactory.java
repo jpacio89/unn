@@ -12,8 +12,8 @@ import com.unn.common.utils.MultiplesHashMap;
 import com.unn.engine.utils.RandomManager;
 
 public class PredicateFactory {
-	ArrayList<IFeature> leafs;
-	ArrayList<Predicate.Condition> opHits;
+	ArrayList<IFeature> features;
+	ArrayList<Predicate.Condition> allConditions;
 	InnerDataset dataset;
 	
 	int reward;
@@ -22,20 +22,18 @@ public class PredicateFactory {
 	
 	public PredicateFactory(InnerDataset dataset, int reward, MiningStatusObservable statusObservable) {
 		this.dataset = dataset;
-		this.opHits = new ArrayList<>();
+		this.allConditions = new ArrayList<>();
 		this.reward = reward;
 		this.miningStatusObservable = statusObservable;
 	}
 	
-	public void init(ArrayList<IFeature> leafs, ArrayList<IFeature> booleanLayer) {
-		this.leafs = leafs;
-		this.opHits.clear();
-		
-		ArrayList<IFeature> operators = booleanLayer;
+	public void init(ArrayList<IFeature> _features) {
+		this.features = _features;
+		this.allConditions.clear();
 
-		for (IFeature operator : operators) {
-			this.opHits.add(new Predicate.Condition(operator, Config.STIM_MIN));
-			this.opHits.add(new Predicate.Condition(operator, Config.STIM_MAX));
+		for (IFeature feature : _features) {
+			this.allConditions.add(new Predicate.Condition(feature, Config.STIM_MIN));
+			this.allConditions.add(new Predicate.Condition(feature, Config.STIM_MAX));
 		}
 
 		this.opHitPresences = new MultiplesHashMap<>();
@@ -45,11 +43,11 @@ public class PredicateFactory {
 		return this.dataset.getValueByTime(op, time) == hitToCheck;
 	}
 
-	void setPresencesByOpHit(Predicate.Condition opHit, ArrayList<Integer> badTimes) {
+	void setPresencesByOpHit(Predicate.Condition condition, ArrayList<Integer> badTimes) {
 		for (Integer time : badTimes) {
-			boolean isCheck = checkTime(opHit.operator, time, opHit.hit);
+			boolean isCheck = checkTime(condition.operator, time, condition.hit);
 			if (!isCheck) {
-				opHitPresences.put(opHit, time);
+				opHitPresences.put(condition, time);
 			}
 		}
 	}
@@ -63,7 +61,7 @@ public class PredicateFactory {
 	public Predicate randomPredicate(ArrayList<Integer> goodTimes, ArrayList<Integer> badTimes) throws Exception {
 		ArrayList<Integer> missingBadTimes = new ArrayList<>(badTimes);
 		ArrayList<Integer> remainingGoodTimes = new ArrayList<>(goodTimes);
-		ArrayList<Predicate.Condition> availableOpHits = new ArrayList<>(this.opHits);
+		ArrayList<Predicate.Condition> availableOpHits = new ArrayList<>(this.allConditions);
 		ArrayList<Predicate.Condition> chosenSet = new ArrayList<>();
 
 		while (missingBadTimes.size() > 0) {
@@ -80,14 +78,7 @@ public class PredicateFactory {
 				if (!missingBadTimes.removeAll(opHitTimes)) {
 					continue;
 				}
-
 				ArrayList<Integer> goodRemovals = getGoodRemovalsByOpHit(opHit, goodTimes);
-
-				// TODO: put 80.0% in Config
-				//if (opHitTimes.size() * 100.0 / (goodRemovals.size() + opHitTimes.size()) < 5.0 ) {
-				//	continue;
-				//}
-
 				remainingGoodTimes.removeAll(goodRemovals);
 				chosenSet.add(opHit);
 			}

@@ -56,32 +56,6 @@ public class Predicate implements Serializable {
 		}
 		return null;
 	}
-
-	// TODO: optimize as this is an sub-optimal solution
-	public static boolean isRepetitionFull(ArrayList<Predicate> predicates, Predicate predicate) {
-		ArrayList<ArrayList<Integer>> indexes = CombinationUtils.getSubsets(predicate.opHits.size());
-		
-		for (int i = 0; i < indexes.size(); ++i) {
-			ArrayList<Integer> subset = indexes.get(i);
-			Predicate dummy = new Predicate();
-			
-			for (int j = 0; j < subset.size(); ++j) {	
-				dummy.opHits.add(predicate.opHits.get(subset.get(j)));
-			}
-			
-			Predicate ret = isRepetition(predicates, dummy);
-			
-			if (ret != null) {
-				if (predicate.opHits.size() < ret.opHits.size()) {
-					predicates.remove(ret);
-					return false;
-				}
-				return true;
-			}
-		}
-		
-		return false;
-	}
 	
 	@Override
 	public String toString() {
@@ -130,7 +104,5 @@ public class Predicate implements Serializable {
 				return false;
 			return true;
 		}
-
-
 	}
 }

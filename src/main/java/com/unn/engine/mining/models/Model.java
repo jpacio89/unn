@@ -138,7 +138,7 @@ public class Model implements Serializable {
 	}
 
 	public boolean isEmpty() {
-		return this.getArtifacts().size() == 0;
+		return this.getPredicates().size() == 0;
 	}
 
 	public IFeature getRewardSelector() {
@@ -149,7 +149,7 @@ public class Model implements Serializable {
 		return this.dataset.getFunctors();
 	}
 	
-	public ArrayList<Predicate> getArtifacts() {
+	public ArrayList<Predicate> getPredicates() {
 		return this.predicates;
 	}
 
