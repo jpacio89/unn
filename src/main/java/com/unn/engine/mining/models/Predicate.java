@@ -3,7 +3,7 @@ package com.unn.engine.mining.models;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.interfaces.IFeature;
 import com.unn.engine.utils.CombinationUtils;
 
 public class Predicate implements Serializable {
@@ -90,10 +90,10 @@ public class Predicate implements Serializable {
 
 	public static class Condition implements Serializable {
 		private static final long serialVersionUID = 6076337110545632229L;
-		public IFunctor operator;
+		public IFeature operator;
 		public int hit;
 
-		public Condition(IFunctor op, int hit) {
+		public Condition(IFeature op, int hit) {
 			this.operator = op;
 			this.hit = hit;
 		}

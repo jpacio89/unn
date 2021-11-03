@@ -4,10 +4,9 @@ import com.unn.common.boosting.Archive;
 import com.unn.common.boosting.BrainfuckInterpreter;
 import com.unn.common.boosting.TuringConfig;
 import com.unn.common.dataset.Row;
-import com.unn.engine.functions.FunctionDescriptor;
-import com.unn.engine.functions.SimpleFunctor;
+import com.unn.engine.functions.SimpleFeature;
 import com.unn.engine.functions.ValueTime;
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.interfaces.IFeature;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +14,7 @@ import java.util.HashMap;
 public class BoosterProvider {
     public final int BOOSTER_COUNT = 10;
     private HashMap<String, String> functorMapper;
-    private ArrayList<IFunctor> functors;
+    private ArrayList<IFeature> functors;
 
     public final TuringConfig turingConfig = new TuringConfig();
     InnerDataset seedDataset;
@@ -24,7 +23,7 @@ public class BoosterProvider {
         this.seedDataset = _seedDataset;
     }
 
-    public InnerDataset boost(ArrayList<IFunctor> targetGroups) {
+    public InnerDataset boost(ArrayList<IFeature> targetGroups) {
         // Info: cloning original dataset and boost new one
         final InnerDataset boosted = this.seedDataset.copy();
         this.initFunctors(boosted);
@@ -40,7 +39,7 @@ public class BoosterProvider {
 
             this.functors.forEach(functor -> {
                 // Info: get random program and apply it to dataset
-                String functorName = functor.getDescriptor().getVtrName();
+                String functorName = functor.getName();
                 int bufferIndex = Integer.parseInt(functorName.split("-")[2]);
                 String program = this.functorMapper.get(functorName);
 
@@ -62,7 +61,7 @@ public class BoosterProvider {
     }
 
     private void initFunctors(InnerDataset boosted) {
-        ArrayList<IFunctor> functors = this.seedDataset.getFunctors();
+        ArrayList<IFeature> functors = this.seedDataset.getFunctors();
         this.functors = new ArrayList<>();
         this.functorMapper = new HashMap<>();
 
@@ -73,14 +72,14 @@ public class BoosterProvider {
 
             for (int index : record.getValidFeatureIndexes()) {
                 String functorName = String.format("booster-%s-%d", programHash, index);
-                SimpleFunctor function = new SimpleFunctor();
-                function.setDescriptor(new FunctionDescriptor(functorName));
+                SimpleFeature function = new SimpleFeature();
+                function.setName(functorName);
                 this.functors.add(function);
                 this.functorMapper.put(functorName, record.getProgram());
             }
         }
 
-        ArrayList<IFunctor> boostedFunctors = new ArrayList<>();
+        ArrayList<IFeature> boostedFunctors = new ArrayList<>();
         boostedFunctors.addAll(functors);
         boostedFunctors.addAll(this.functors);
         boosted.setFunctors(boostedFunctors);

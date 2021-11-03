@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 import com.unn.engine.dataset.InnerDataset;
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.interfaces.IFeature;
 import com.unn.engine.Config;
 import com.unn.engine.mining.models.Predicate;
 import com.unn.engine.mining.models.MiningStatusObservable;
@@ -17,8 +17,8 @@ public class Miner {
 	InnerDataset dataset;
 	Model model;
 	boolean isReady;
-	ArrayList<IFunctor> functorBlacklist;
-	IFunctor miningTarget;
+	ArrayList<IFeature> functorBlacklist;
+	IFeature miningTarget;
 
 	MiningStatusObservable statusObservable;
 	ArrayList<ArrayList<Integer>> trainTimeSets;
@@ -30,7 +30,7 @@ public class Miner {
 	ArrayList<Integer> trainTimes;
 	ArrayList<Integer> testTimes;
 	
-	public Miner(InnerDataset dataset, IFunctor miningTarget, ArrayList<IFunctor> functorBlacklist, MiningStatusObservable statusObservable) {
+	public Miner(InnerDataset dataset, IFeature miningTarget, ArrayList<IFeature> functorBlacklist, MiningStatusObservable statusObservable) {
 		this.dataset = dataset;
 		this.trainTimeSets = new ArrayList<>();
 		this.testTimeSets = new ArrayList<>();
@@ -80,7 +80,7 @@ public class Miner {
 			assertDisjoint();
 		}
 
-		ArrayList<IFunctor> trainingFunctors = dataset.getFunctors().stream()
+		ArrayList<IFeature> trainingFunctors = dataset.getFunctors().stream()
 			.filter((functor) -> !functorBlacklist.contains(functor))
 			.collect(Collectors.toCollection(ArrayList::new));
 
@@ -88,7 +88,7 @@ public class Miner {
 			return;
 		}
 
-		ArrayList<IFunctor> thresholdLayer = trainingFunctors; // PreRoller.getBooleanParameters(trainingFunctors);
+		ArrayList<IFeature> thresholdLayer = trainingFunctors; // PreRoller.getBooleanParameters(trainingFunctors);
 		Integer[] rewards = { Config.STIM_MAX, Config.STIM_MIN };
 		int i = 0;
 		for (Integer reward : rewards) {

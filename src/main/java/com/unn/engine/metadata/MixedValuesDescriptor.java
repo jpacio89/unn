@@ -1,8 +1,7 @@
 package com.unn.engine.metadata;
 
-import com.unn.engine.functions.FunctionDescriptor;
-import com.unn.engine.functions.SimpleFunctor;
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.functions.SimpleFeature;
+import com.unn.engine.interfaces.IFeature;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,9 +23,9 @@ public class MixedValuesDescriptor extends ValuesDescriptor implements Serializa
 	}
 
 	@Override
-	public ArrayList<String> getGroups() {
-		ArrayList<String> discreteGroup = this.discreteDescriptor.getGroups();
-		ArrayList<String> numericGroup = this.numericDescriptor.getGroups();
+	public ArrayList<String> getOutputFeatures() {
+		ArrayList<String> discreteGroup = this.discreteDescriptor.getOutputFeatures();
+		ArrayList<String> numericGroup = this.numericDescriptor.getOutputFeatures();
 		ArrayList<String> fused = new ArrayList<>();
 		fused.addAll(discreteGroup);
 		fused.addAll(numericGroup);
@@ -34,19 +33,19 @@ public class MixedValuesDescriptor extends ValuesDescriptor implements Serializa
 	}
 
 	@Override
-	public IFunctor getFunctorByGroup(String group) {
-		SimpleFunctor simpleFunctor = new SimpleFunctor();
-		simpleFunctor.setDescriptor(new FunctionDescriptor(group));
+	public IFeature getFeatureByName(String name) {
+		SimpleFeature simpleFunctor = new SimpleFeature();
+		simpleFunctor.setName(name);
 		return simpleFunctor;
 	}
 
 	@Override
-	public ArrayList<String> getGroupByOuterValue(String outerFeatureValue) {
+	public ArrayList<String> getActivatedOutputFeatures(String outerValue) {
 		try {
-			Double.parseDouble(outerFeatureValue);
-			return this.numericDescriptor.getGroupByOuterValue(outerFeatureValue);
+			Double.parseDouble(outerValue);
+			return this.numericDescriptor.getActivatedOutputFeatures(outerValue);
 		} catch (Exception e) {
-			return this.discreteDescriptor.getGroupByOuterValue(outerFeatureValue);
+			return this.discreteDescriptor.getActivatedOutputFeatures(outerValue);
 		}
 	}
 }

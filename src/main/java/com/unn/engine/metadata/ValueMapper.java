@@ -61,7 +61,7 @@ public class ValueMapper {
 		}
 	}
 
-	public Set<String> getFeatures() {
+	public Set<String> getInputFeatures() {
 		return new HashSet<>(this.dataset.getHeader().stream()
 			.filter(feature -> !Config.ID.equals(feature))
 			.collect(Collectors.toCollection(ArrayList::new)));

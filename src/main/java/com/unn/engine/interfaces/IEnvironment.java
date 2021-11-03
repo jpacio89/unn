@@ -8,9 +8,9 @@ import com.unn.engine.mining.models.ScopeConfig;
 import com.unn.engine.mining.PerformanceAnalyzer;
 
 public interface IEnvironment {
-	ArrayList<IFunctor> getInputs(String spaceId);
+	ArrayList<IFeature> getInputs(String spaceId);
 	
-	Double predict(HashMap<IFunctor, Integer> values);
+	Double predict(HashMap<IFeature, Integer> values);
 	
 	PerformanceAnalyzer mine() throws Exception;
 

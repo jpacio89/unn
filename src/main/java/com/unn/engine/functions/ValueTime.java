@@ -1,19 +1,19 @@
 package com.unn.engine.functions;
 
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.interfaces.IFeature;
 
 public class ValueTime {
 	Integer v;
 	Integer t;
-	IFunctor cls;
+	IFeature cls;
 	
-	public ValueTime(IFunctor _cls, Integer _v, Integer _t) {
+	public ValueTime(IFeature _cls, Integer _v, Integer _t) {
 		this.v = _v;
 		this.t = _t;
 		this.cls = _cls;
 	}
 	
-	public IFunctor getVTRClass() {
+	public IFeature getVTRClass() {
 		return this.cls;
 	}
 	

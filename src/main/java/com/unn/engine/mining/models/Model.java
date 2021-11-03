@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import com.unn.engine.Config;
 import com.unn.engine.dataset.InnerDataset;
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.interfaces.IFeature;
 import com.unn.engine.mining.PerformanceAnalyzer;
 
 public class Model implements Serializable {
@@ -19,16 +19,16 @@ public class Model implements Serializable {
 	PerformanceAnalyzer walker;
 	InnerDataset dataset;
 	ArrayList<Predicate> predicates;
-	IFunctor rewardSelector;
+	IFeature rewardSelector;
 
-	public Model(InnerDataset dataset, IFunctor rewardSelector) {
+	public Model(InnerDataset dataset, IFeature rewardSelector) {
 		this.dataset = dataset;
 		this.predicates = new ArrayList<>();
 		this.walker = new PerformanceAnalyzer();
 		this.rewardSelector = rewardSelector;
 	}
 	
-	public Model(InnerDataset dataset, ArrayList<Predicate> sublist, IFunctor rewardSelector) {
+	public Model(InnerDataset dataset, ArrayList<Predicate> sublist, IFeature rewardSelector) {
 		this.dataset = dataset;
 		this.predicates = sublist;
 		this.rewardSelector = rewardSelector;
@@ -63,7 +63,7 @@ public class Model implements Serializable {
 	}
 
 	private boolean predict (int time, PerformanceAnalyzer walker) {
-		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
+		HashMap<IFeature, Integer> inputs = this.getInputsByTime(time);
 		Double prediction = this.predict(inputs);
 		double adjustedPrediction = prediction == null ? Config.STIM_NULL: prediction.doubleValue();
 		int historicAction = this.dataset.getValueByTime(this.rewardSelector, time);
@@ -72,11 +72,11 @@ public class Model implements Serializable {
 	}
 	
 	public Double predict(int time) {
-		HashMap<IFunctor, Integer> inputs = this.getInputsByTime(time);
+		HashMap<IFeature, Integer> inputs = this.getInputsByTime(time);
 		return this.predict(inputs);
 	}
 	
-	public Double predict(HashMap<IFunctor, Integer> inputs) {
+	public Double predict(HashMap<IFeature, Integer> inputs) {
 		int TARGET_HIT_COUNT = 1;
 		double rewardAccumulator = 0.0;
 		long hitCount = 0;
@@ -106,14 +106,14 @@ public class Model implements Serializable {
 		return rewardAccumulator;
 	}
 	
-	public Boolean isHit(HashMap<IFunctor, Integer> inputs, int artifactIndex) {
+	public Boolean isHit(HashMap<IFeature, Integer> inputs, int artifactIndex) {
 		Predicate predicate = this.predicates.get(artifactIndex);
 		ArrayList<Predicate.Condition> parcels = predicate.opHits;
 		
 		boolean hit = true;
 		
 		for (Predicate.Condition parcel : parcels) {
-			IFunctor thd = parcel.operator;
+			IFeature thd = parcel.operator;
 			Integer parcelOutcome = parcel.hit;
 			
 			try {
@@ -137,11 +137,11 @@ public class Model implements Serializable {
 		return this.getArtifacts().size() == 0;
 	}
 
-	public IFunctor getRewardSelector() {
+	public IFeature getRewardSelector() {
 		return rewardSelector;
 	}
 
-	public ArrayList<IFunctor> getInputs() {
+	public ArrayList<IFeature> getInputs() {
 		return this.dataset.getFunctors();
 	}
 	
@@ -153,9 +153,9 @@ public class Model implements Serializable {
 		return this.dataset;
 	}
 	
-	private HashMap<IFunctor, Integer> getInputsByTime(int time) {
-		HashMap<IFunctor, Integer> inputs = new HashMap<IFunctor, Integer>();
-		for (IFunctor param : this.dataset.getFunctors()) {
+	private HashMap<IFeature, Integer> getInputsByTime(int time) {
+		HashMap<IFeature, Integer> inputs = new HashMap<IFeature, Integer>();
+		for (IFeature param : this.dataset.getFunctors()) {
 			int val = this.dataset.getValueByTime(param, time);
 			inputs.put(param, val);
 		}

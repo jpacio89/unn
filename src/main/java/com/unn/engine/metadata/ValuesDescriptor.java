@@ -1,6 +1,6 @@
 package com.unn.engine.metadata;
 
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.interfaces.IFeature;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public abstract class ValuesDescriptor implements Serializable {
 		return suffix;
 	}
 
-	public abstract ArrayList<String> getGroups();
-	public abstract IFunctor getFunctorByGroup(String group);
-	public abstract ArrayList<String> getGroupByOuterValue(String outerFeatureValue);
+	public abstract ArrayList<String> getOutputFeatures();
+	public abstract IFeature getFeatureByName(String name);
+	public abstract ArrayList<String> getActivatedOutputFeatures(String outerValue);
 }

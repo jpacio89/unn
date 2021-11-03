@@ -3,7 +3,7 @@ package com.unn.engine.dataset;
 import com.unn.common.dataset.*;
 import com.unn.engine.Config;
 import com.unn.engine.functions.ValueTime;
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.interfaces.IFeature;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.metadata.ValuesDescriptor;
 import com.unn.engine.prediction.Prediction;
@@ -16,7 +16,7 @@ public class Datasets {
         // TODO: implement
         String timeFeatureName = "primer"; // job.getTimeFeatureName();
         InnerDataset innerDataset = new InnerDataset();
-        ArrayList<IFunctor> rawFunctors = InnerDatasetLoader.getFunctorsByFeatures(mapper);
+        ArrayList<IFeature> rawFunctors = InnerDatasetLoader.getFunctorsByFeatures(mapper);
         innerDataset.setFunctors(rawFunctors);
 
         for (int sampleIndex = 0; sampleIndex < dataset.sampleCount(); ++sampleIndex) {
@@ -33,11 +33,11 @@ public class Datasets {
                 if (descriptor == null) {
                     continue;
                 }
-                ArrayList<String> targetGroups = descriptor.getGroupByOuterValue(outerValue);
-                for (String group : descriptor.getGroups()) {
+                ArrayList<String> targetGroups = descriptor.getActivatedOutputFeatures(outerValue);
+                for (String group : descriptor.getOutputFeatures()) {
                     Integer value = targetGroups.contains(group) ?
                         Config.STIM_MAX : Config.STIM_MIN;
-                    IFunctor func = descriptor.getFunctorByGroup(group);
+                    IFeature func = descriptor.getFeatureByName(group);
                     ValueTime vtr = new ValueTime(func, value, outerTimeValue);
                     innerDataset.add(vtr);
                 }

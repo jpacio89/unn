@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import com.unn.engine.metadata.ValuesDescriptor;
-import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.metadata.ValueMapper;
-import com.unn.engine.interfaces.IFunctor;
-import com.unn.engine.mining.models.MiningStatusObservable;
-import com.unn.engine.session.Context;
+import com.unn.engine.interfaces.IFeature;
 
 public class InnerDatasetLoader {
 	private ValueMapper mapper;
@@ -30,21 +27,21 @@ public class InnerDatasetLoader {
 	
 	private InnerDataset buildDataset() {
 		this.mapper = new ValueMapper(this.outerDataset);
-		this.mapper.getFeatures().stream().forEach((feature) ->
+		this.mapper.getInputFeatures().stream().forEach((feature) ->
 			this.mapper.analyzeValues(feature));
 		return Datasets.toInnerDataset(this.outerDataset, this.mapper);
 	}
 
-	public static ArrayList<IFunctor> getFunctorsByFeatures(ValueMapper mapper) {
-		Set<String> features = mapper.getFeatures();
-		ArrayList<IFunctor> operators = new ArrayList<>();
+	public static ArrayList<IFeature> getFunctorsByFeatures(ValueMapper mapper) {
+		Set<String> features = mapper.getInputFeatures();
+		ArrayList<IFeature> operators = new ArrayList<>();
 		for (String feature : features) {
 			ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(feature);
 			if (valuesDescriptor == null) {
 				continue;
 			}
-			for (String group : valuesDescriptor.getGroups()) {
-				IFunctor raw = valuesDescriptor.getFunctorByGroup(group);
+			for (String group : valuesDescriptor.getOutputFeatures()) {
+				IFeature raw = valuesDescriptor.getFeatureByName(group);
 				operators.add(raw);
 			}
     	}

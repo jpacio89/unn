@@ -1,21 +1,20 @@
 package com.unn.engine.dataset;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.interfaces.IFeature;
 import com.unn.engine.functions.ValueTime;
 
 public class InnerDataset implements Serializable {
 	private static final long serialVersionUID = 4804115730789995484L;
 	ArrayList<Integer> times;
-	HashMap<IFunctor, HashMap<Integer, Integer>> timedValues;
-	ArrayList<IFunctor> args;
+	HashMap<IFeature, HashMap<Integer, Integer>> timedValues;
+	ArrayList<IFeature> args;
 	
 	public InnerDataset() {
 		this.times = new ArrayList<>();
@@ -49,7 +48,7 @@ public class InnerDataset implements Serializable {
 		return this.times;
 	}
 
-	public ArrayList<Integer> getTimesByFunctor(IFunctor selector, Integer value) {
+	public ArrayList<Integer> getTimesByFunctor(IFeature selector, Integer value) {
 		ArrayList<Integer> times = getTimes();
 		Collections.shuffle(times);
 		return times.stream()
@@ -57,13 +56,13 @@ public class InnerDataset implements Serializable {
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
-	public ArrayList<Integer> getTimesByFunctor(IFunctor selector, Integer value, ArrayList<Integer> seedTimes) {
+	public ArrayList<Integer> getTimesByFunctor(IFeature selector, Integer value, ArrayList<Integer> seedTimes) {
 		return seedTimes.stream()
 			.filter((time) -> getValueByTime(selector, time) == value)
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
-	public Integer getValueByTime(IFunctor op, int time) {
+	public Integer getValueByTime(IFeature op, int time) {
 		if (!this.timedValues.containsKey(op)) {
 			System.err.println("|InnerDataset| Requested time does not have value");
 			return null;
@@ -71,17 +70,17 @@ public class InnerDataset implements Serializable {
 		return this.timedValues.get(op).get(time);
 	}
 	
-	public ArrayList<IFunctor> getFunctors() {
+	public ArrayList<IFeature> getFunctors() {
 		return this.args;
 	}
 	
-	public void setFunctors(ArrayList<IFunctor> leaves) {
+	public void setFunctors(ArrayList<IFeature> leaves) {
 		this.args = leaves;
 	}
 
-	public HashMap<IFunctor, Integer> bundleSample(int time) {
-		HashMap<IFunctor, Integer> input = new HashMap<>();
-		for (IFunctor functor : getFunctors()) {
+	public HashMap<IFeature, Integer> bundleSample(int time) {
+		HashMap<IFeature, Integer> input = new HashMap<>();
+		for (IFeature functor : getFunctors()) {
 			Integer value = getValueByTime(functor, time);
 			input.put(functor, value);
 		}
@@ -92,12 +91,12 @@ public class InnerDataset implements Serializable {
 		InnerDataset dataset = new InnerDataset();
 		dataset.times = (ArrayList<Integer>) this.times.clone();
 		dataset.timedValues = new HashMap<>();
-		for (Map.Entry<IFunctor,
+		for (Map.Entry<IFeature,
 				HashMap<Integer, Integer>> entry : timedValues.entrySet()) {
 			dataset.timedValues.put(entry.getKey(),
 					(HashMap<Integer, Integer>) entry.getValue().clone());
 		}
-		dataset.args = (ArrayList<IFunctor>) args.clone();
+		dataset.args = (ArrayList<IFeature>) args.clone();
 		return dataset;
 	}
 }

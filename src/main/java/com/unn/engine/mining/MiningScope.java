@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.interfaces.IEnvironment;
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.interfaces.IFeature;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.models.MiningStatusObservable;
 import com.unn.engine.mining.models.Model;
@@ -21,7 +21,7 @@ public class MiningScope implements IEnvironment, Serializable {
 	}
 	
 	@Override
-	public ArrayList<IFunctor> getInputs(String market) {
+	public ArrayList<IFeature> getInputs(String market) {
 		if (this.refinedModel == null) {
 			return null;
 		}
@@ -94,7 +94,7 @@ public class MiningScope implements IEnvironment, Serializable {
 		return null;
 	}
 	
-	public Double predict(HashMap<IFunctor, Integer> inputs) {
+	public Double predict(HashMap<IFeature, Integer> inputs) {
 		if (this.refinedModel == null) {
 			return null;
 		}

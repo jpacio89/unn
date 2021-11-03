@@ -7,9 +7,8 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import com.unn.engine.Config;
-import com.unn.engine.functions.FunctionDescriptor;
-import com.unn.engine.functions.SimpleFunctor;
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.functions.SimpleFeature;
+import com.unn.engine.interfaces.IFeature;
 import com.unn.engine.utils.Pair;
 import com.unn.engine.utils.RandomManager;
 
@@ -54,22 +53,22 @@ public class NumericValuesDescriptor extends ValuesDescriptor implements Seriali
 	}
 
 	@Override
-	public ArrayList<String> getGroups() {
+	public ArrayList<String> getOutputFeatures() {
 		return this.groups.keySet().stream()
 			.map(group -> String.format("%s_%s", group, getSuffix()))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
-	public IFunctor getFunctorByGroup(String group) {
-		SimpleFunctor simpleFunctor = new SimpleFunctor();
-		simpleFunctor.setDescriptor(new FunctionDescriptor(group));
+	public IFeature getFeatureByName(String name) {
+		SimpleFeature simpleFunctor = new SimpleFeature();
+		simpleFunctor.setName(name);
 		return simpleFunctor;
 	}
 
 	@Override
-	public ArrayList<String> getGroupByOuterValue(String outerFeatureValue) {
-		double parsedValue = Double.parseDouble(outerFeatureValue);
+	public ArrayList<String> getActivatedOutputFeatures(String outerValue) {
+		double parsedValue = Double.parseDouble(outerValue);
 		return this.groups.keySet().stream()
 			.filter(group -> getInnerValue(group, parsedValue) == Config.STIM_MAX)
 			.map(group -> String.format("%s_%s", group, getSuffix()))

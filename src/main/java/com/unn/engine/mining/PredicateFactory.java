@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import com.unn.engine.dataset.InnerDataset;
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.interfaces.IFeature;
 import com.unn.engine.Config;
 import com.unn.engine.mining.models.Predicate;
 import com.unn.engine.mining.models.MiningStatusObservable;
@@ -12,7 +12,7 @@ import com.unn.common.utils.MultiplesHashMap;
 import com.unn.engine.utils.RandomManager;
 
 public class PredicateFactory {
-	ArrayList<IFunctor> leafs;
+	ArrayList<IFeature> leafs;
 	ArrayList<Predicate.Condition> opHits;
 	InnerDataset dataset;
 	
@@ -27,13 +27,13 @@ public class PredicateFactory {
 		this.miningStatusObservable = statusObservable;
 	}
 	
-	public void init(ArrayList<IFunctor> leafs, ArrayList<IFunctor> booleanLayer) {
+	public void init(ArrayList<IFeature> leafs, ArrayList<IFeature> booleanLayer) {
 		this.leafs = leafs;
 		this.opHits.clear();
 		
-		ArrayList<IFunctor> operators = booleanLayer;
+		ArrayList<IFeature> operators = booleanLayer;
 
-		for (IFunctor operator : operators) {
+		for (IFeature operator : operators) {
 			this.opHits.add(new Predicate.Condition(operator, Config.STIM_MIN));
 			this.opHits.add(new Predicate.Condition(operator, Config.STIM_MAX));
 		}
@@ -41,7 +41,7 @@ public class PredicateFactory {
 		this.opHitPresences = new MultiplesHashMap<>();
 	}
 	
-	public boolean checkTime(IFunctor op, int time, int hitToCheck) {
+	public boolean checkTime(IFeature op, int time, int hitToCheck) {
 		return this.dataset.getValueByTime(op, time) == hitToCheck;
 	}
 

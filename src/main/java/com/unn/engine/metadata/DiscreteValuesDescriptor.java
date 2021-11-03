@@ -4,9 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import com.unn.engine.functions.FunctionDescriptor;
-import com.unn.engine.functions.SimpleFunctor;
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.functions.SimpleFeature;
+import com.unn.engine.interfaces.IFeature;
 
 public class DiscreteValuesDescriptor extends ValuesDescriptor implements Serializable {
 	private static final long serialVersionUID = 2644249077021570502L;
@@ -25,28 +24,28 @@ public class DiscreteValuesDescriptor extends ValuesDescriptor implements Serial
 	}
 
 	@Override
-	public ArrayList<String> getGroups() {
+	public ArrayList<String> getOutputFeatures() {
 		return this.values.stream()
 			.map(value -> String.format("discrete_%s_%s", value, getSuffix()))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
-	public IFunctor getFunctorByGroup(String group) {
-		SimpleFunctor simpleFunctor = new SimpleFunctor();
+	public IFeature getFeatureByName(String group) {
+		SimpleFeature simpleFunctor = new SimpleFeature();
 		String name = String.format("%s", group);
-		simpleFunctor.setDescriptor(new FunctionDescriptor(name));
+		simpleFunctor.setName(name);
 		return simpleFunctor;
 	}
 
 	@Override
-	public ArrayList<String> getGroupByOuterValue(String outerFeatureValue) {
+	public ArrayList<String> getActivatedOutputFeatures(String outerValue) {
 		ArrayList response = new ArrayList<>();
-		if (!this.values.contains(outerFeatureValue)) {
-			response.add(String.format("discrete_labelized_int_%s_%s", outerFeatureValue, getSuffix()));
+		if (!this.values.contains(outerValue)) {
+			response.add(String.format("discrete_labelized_int_%s_%s", outerValue, getSuffix()));
 			return response;
 		}
-		response.add(String.format("discrete_%s_%s", outerFeatureValue, getSuffix()));
+		response.add(String.format("discrete_%s_%s", outerValue, getSuffix()));
 		return response;
 	}
 }

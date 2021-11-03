@@ -2,22 +2,22 @@ package com.unn.engine.mining.models;
 
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.InnerDatasetLoader;
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.interfaces.IFeature;
 
 import java.util.ArrayList;
 
 public class ScopeConfig {
     String outerFeature;
-    IFunctor innerFeature;
+    IFeature innerFeature;
     InnerDatasetLoader loader;
     InnerDataset dataset;
-    ArrayList<IFunctor> noMiningGroups;
+    ArrayList<IFeature> noMiningGroups;
     ArrayList<Integer> trainTimes;
     ArrayList<Integer> testTimes;
 
     public ScopeConfig(InnerDatasetLoader loader, InnerDataset innerDataset,
-        String outerFeature, IFunctor featureSelector, ArrayList<IFunctor> rewardGroups,
-        ArrayList<Integer> trainTimes, ArrayList<Integer> testTimes) {
+                       String outerFeature, IFeature featureSelector, ArrayList<IFeature> rewardGroups,
+                       ArrayList<Integer> trainTimes, ArrayList<Integer> testTimes) {
         this.innerFeature = featureSelector;
         this.loader = loader;
         this.dataset = innerDataset;
@@ -27,11 +27,11 @@ public class ScopeConfig {
         this.testTimes = testTimes;
     }
 
-    public IFunctor getInnerFeature() {
+    public IFeature getInnerFeature() {
         return innerFeature;
     }
 
-    public void setInnerFeature(IFunctor innerFeature) {
+    public void setInnerFeature(IFeature innerFeature) {
         this.innerFeature = innerFeature;
     }
 
@@ -47,7 +47,7 @@ public class ScopeConfig {
         return this.dataset;
     }
 
-    public ArrayList<IFunctor> getNoMiningGroups() {
+    public ArrayList<IFeature> getNoMiningGroups() {
         return noMiningGroups;
     }
 

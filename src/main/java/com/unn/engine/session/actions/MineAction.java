@@ -1,23 +1,20 @@
 package com.unn.engine.session.actions;
 
-import com.unn.engine.dataset.BoosterProvider;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.InnerDatasetLoader;
 import com.unn.engine.dataset.OuterDataset;
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.interfaces.IFeature;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.metadata.ValuesDescriptor;
 import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.mining.MiningScope;
 import com.unn.engine.mining.models.ScopeConfig;
-import com.unn.engine.session.Context;
 import com.unn.engine.session.Session;
 import com.unn.engine.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MineAction extends Action {
@@ -59,10 +56,10 @@ public class MineAction extends Action {
 		ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(
 				config.targetFeature);
 
-		ArrayList<IFunctor> targetGroups = new ArrayList<>();
+		ArrayList<IFeature> targetGroups = new ArrayList<>();
 
-		for (String group : valuesDescriptor.getGroups()) {
-			IFunctor op = valuesDescriptor.getFunctorByGroup(group);
+		for (String group : valuesDescriptor.getOutputFeatures()) {
+			IFeature op = valuesDescriptor.getFeatureByName(group);
 			targetGroups.add(op);
 		}
 
@@ -74,7 +71,7 @@ public class MineAction extends Action {
 		Pair<ArrayList<Integer>, ArrayList<Integer>> splittedTimes = splitDataset(innerDataset);
 		this.session.setMakerTimes(splittedTimes.first());
 
-		for (IFunctor func : targetGroups) {
+		for (IFeature func : targetGroups) {
 			ScopeConfig scopeConf = new ScopeConfig(
 				loader,
 				innerDataset,
@@ -84,7 +81,7 @@ public class MineAction extends Action {
 				splittedTimes.first(),
 				splittedTimes.second());
 			MiningScope scope = new MiningScope(scopeConf);
-			String scopeName = func.getDescriptor().getVtrName();
+			String scopeName = func.getName();
 			scopes.put(scopeName, scope);
 		}
 

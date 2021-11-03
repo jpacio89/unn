@@ -16,7 +16,7 @@ import com.unn.engine.dataset.Datasets;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.dataset.datacenter.DatacenterLocator;
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.interfaces.IFeature;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.common.mining.MiningReport;
 import com.unn.engine.mining.MiningScope;
@@ -134,7 +134,7 @@ public class PublishAction extends Action {
             ValueMapper mapper = scope.getMapper();
             InnerDataset innerDataset = Datasets.toInnerDataset(dataset, mapper);
             for (Integer time : innerDataset.getTimes()) {
-                HashMap<IFunctor, Integer> input = innerDataset.bundleSample(time);
+                HashMap<IFeature, Integer> input = innerDataset.bundleSample(time);
                 Double prediction = scope.predict(input);
                 refPredictions.add(new Prediction()
                         .withTime(time)

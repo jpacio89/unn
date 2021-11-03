@@ -4,10 +4,8 @@ import com.unn.engine.data.Datasets;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.InnerDatasetLoader;
 import com.unn.engine.dataset.OuterDataset;
-import com.unn.engine.interfaces.IFunctor;
+import com.unn.engine.interfaces.IFeature;
 import com.unn.engine.metadata.*;
-import com.unn.engine.mining.models.JobConfig;
-import com.unn.engine.session.Context;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -63,18 +61,18 @@ public class TestInnerDatasetLoader {
                 HashMap<String, String> sample = outerDataset.getSampleAsMap(i);
                 int primer = Integer.parseInt(sample.get("primer"));
                 String outerValue = sample.get(feature);
-                ArrayList<String> activatedGroups = descriptor.getGroupByOuterValue(outerValue);
+                ArrayList<String> activatedGroups = descriptor.getActivatedOutputFeatures(outerValue);
 
                 activatedGroups.forEach(group -> {
-                    IFunctor functor = descriptor.getFunctorByGroup(group);
+                    IFeature functor = descriptor.getFeatureByName(group);
                     int innerValue = innerDataset.getValueByTime(functor, primer);
                     assertEquals(innerValue, Config.STIM_MAX);
                 });
 
-                descriptor.getGroups().stream()
+                descriptor.getOutputFeatures().stream()
                     .filter(e -> !activatedGroups.contains(e))
                     .forEach(group -> {
-                        IFunctor functor = descriptor.getFunctorByGroup(group);
+                        IFeature functor = descriptor.getFeatureByName(group);
                         int innerValue = innerDataset.getValueByTime(functor, primer);
                         assertEquals(innerValue, Config.STIM_MIN);
                     });
