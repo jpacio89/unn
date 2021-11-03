@@ -5,13 +5,12 @@ import com.unn.common.boosting.BrainfuckInterpreter;
 import com.unn.common.boosting.TuringConfig;
 import com.unn.common.dataset.Row;
 import com.unn.engine.functions.FunctionDescriptor;
-import com.unn.engine.functions.Raw;
+import com.unn.engine.functions.SimpleFunctor;
 import com.unn.engine.functions.ValueTime;
 import com.unn.engine.interfaces.IFunctor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.stream.IntStream;
 
 public class BoosterProvider {
     public final int BOOSTER_COUNT = 10;
@@ -74,7 +73,7 @@ public class BoosterProvider {
 
             for (int index : record.getValidFeatureIndexes()) {
                 String functorName = String.format("booster-%s-%d", programHash, index);
-                Raw function = new Raw();
+                SimpleFunctor function = new SimpleFunctor();
                 function.setDescriptor(new FunctionDescriptor(functorName));
                 this.functors.add(function);
                 this.functorMapper.put(functorName, record.getProgram());

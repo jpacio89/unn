@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import com.unn.engine.Config;
 import com.unn.engine.functions.FunctionDescriptor;
-import com.unn.engine.functions.Raw;
+import com.unn.engine.functions.SimpleFunctor;
 import com.unn.engine.interfaces.IFunctor;
 import com.unn.engine.utils.Pair;
 import com.unn.engine.utils.RandomManager;
@@ -62,9 +62,9 @@ public class NumericValuesDescriptor extends ValuesDescriptor implements Seriali
 
 	@Override
 	public IFunctor getFunctorByGroup(String group) {
-		Raw raw = new Raw();
-		raw.setDescriptor(new FunctionDescriptor(group));
-		return raw;
+		SimpleFunctor simpleFunctor = new SimpleFunctor();
+		simpleFunctor.setDescriptor(new FunctionDescriptor(group));
+		return simpleFunctor;
 	}
 
 	@Override

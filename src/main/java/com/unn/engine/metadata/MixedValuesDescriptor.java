@@ -1,17 +1,11 @@
 package com.unn.engine.metadata;
 
-import com.unn.engine.Config;
 import com.unn.engine.functions.FunctionDescriptor;
-import com.unn.engine.functions.Raw;
+import com.unn.engine.functions.SimpleFunctor;
 import com.unn.engine.interfaces.IFunctor;
-import com.unn.engine.utils.Pair;
-import com.unn.engine.utils.RandomManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.stream.Collectors;
 
 public class MixedValuesDescriptor extends ValuesDescriptor implements Serializable {
 	private static final long serialVersionUID = 1744475762857207392L;
@@ -41,9 +35,9 @@ public class MixedValuesDescriptor extends ValuesDescriptor implements Serializa
 
 	@Override
 	public IFunctor getFunctorByGroup(String group) {
-		Raw raw = new Raw();
-		raw.setDescriptor(new FunctionDescriptor(group));
-		return raw;
+		SimpleFunctor simpleFunctor = new SimpleFunctor();
+		simpleFunctor.setDescriptor(new FunctionDescriptor(group));
+		return simpleFunctor;
 	}
 
 	@Override

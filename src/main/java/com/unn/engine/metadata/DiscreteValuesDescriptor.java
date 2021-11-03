@@ -4,9 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import com.unn.engine.Config;
 import com.unn.engine.functions.FunctionDescriptor;
-import com.unn.engine.functions.Raw;
+import com.unn.engine.functions.SimpleFunctor;
 import com.unn.engine.interfaces.IFunctor;
 
 public class DiscreteValuesDescriptor extends ValuesDescriptor implements Serializable {
@@ -34,10 +33,10 @@ public class DiscreteValuesDescriptor extends ValuesDescriptor implements Serial
 
 	@Override
 	public IFunctor getFunctorByGroup(String group) {
-		Raw raw = new Raw();
+		SimpleFunctor simpleFunctor = new SimpleFunctor();
 		String name = String.format("%s", group);
-		raw.setDescriptor(new FunctionDescriptor(name));
-		return raw;
+		simpleFunctor.setDescriptor(new FunctionDescriptor(name));
+		return simpleFunctor;
 	}
 
 	@Override
