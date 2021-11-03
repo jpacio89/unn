@@ -46,16 +46,9 @@ public class Model implements Serializable {
 		return this.walker;
 	}
 	
-	public void gatherStats (ArrayList<Integer> testTimesLow, ArrayList<Integer> testTimesHigh) {
+	public void calculatePerformance(ArrayList<Integer> testTimes) {
 		this.walker = new PerformanceAnalyzer();
-		
-		ArrayList<Integer> testTimes = new ArrayList<>();
-		
-		testTimes.addAll(testTimesLow);
-		testTimes.addAll(testTimesHigh);
-		
 		Collections.shuffle(testTimes);
-		
 		testTimes = new ArrayList<> (testTimes.subList(0, Math.min(TEST_SAMPLE_COUNT, testTimes.size())));
 		for (Integer time : testTimes) {
 			predict(time, walker);

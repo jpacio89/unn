@@ -59,7 +59,7 @@ public class MiningScope implements IEnvironment, Serializable {
 			this.config.getNoMiningGroups(),
 			getStatusObservable()
 		);
-		miner.init(config.getTrainTimes(), config.getTestTimes());
+		miner.init(config.getTrainTimes());
 		
 		if (!miner.ready()) {
 			System.out.println(String.format(" Not enough data. Skipping..."));
@@ -72,6 +72,7 @@ public class MiningScope implements IEnvironment, Serializable {
 		getStatusObservable().updateStatusLabel("OPTIMIZING");
 		
 		Model model = miner.getModel();
+		model.calculatePerformance(config.getTestTimes());
 
 		System.out.println(String.format("|MiningScope| Gross artifacts produced: %d.", model.getPredicates().size()));
 

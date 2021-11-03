@@ -22,18 +22,15 @@ public class Miner {
 
 	MiningStatusObservable statusObservable;
 	ArrayList<ArrayList<Integer>> trainTimeSets;
-	ArrayList<ArrayList<Integer>> testTimeSets;
 	ArrayList<PredicateFactory> predicateFactories;
 
 	private long miningStartTime;
 
 	ArrayList<Integer> trainTimes;
-	ArrayList<Integer> testTimes;
 	
 	public Miner(InnerDataset dataset, IFeature miningTarget, ArrayList<IFeature> featureBlacklist, MiningStatusObservable statusObservable) {
 		this.dataset = dataset;
 		this.trainTimeSets = new ArrayList<>();
-		this.testTimeSets = new ArrayList<>();
 		this.predicateFactories = new ArrayList<>();
 		this.isReady = false;
 		this.statusObservable = statusObservable;
@@ -41,12 +38,9 @@ public class Miner {
 		this.miningTarget = miningTarget;
 	}
 	
-	public void init(ArrayList<Integer> trainTimes, ArrayList<Integer> testTimes) throws Exception {
+	public void init(ArrayList<Integer> trainTimes) throws Exception {
 		this.trainTimes = trainTimes;
-		this.testTimes = testTimes;
-
 		this.trainTimeSets.clear();
-		this.testTimeSets.clear();
 		this.predicateFactories.clear();
 		this.model = new Model(this.dataset, this.miningTarget);
 
@@ -54,13 +48,8 @@ public class Miner {
 			this.miningTarget, Config.STIM_MIN, this.trainTimes);
 		ArrayList<Integer> trainTimesHigh = dataset.getTimesByFunctor(
 			this.miningTarget, Config.STIM_MAX, this.trainTimes);
-		ArrayList<Integer> testTimesLow  = dataset.getTimesByFunctor(
-			this.miningTarget, Config.STIM_MIN, this.testTimes);
-		ArrayList<Integer> testTimesHigh = dataset.getTimesByFunctor(
-			this.miningTarget, Config.STIM_MAX, this.testTimes);
 		
-		if (trainTimesLow.size() == 0 || trainTimesHigh.size() == 0 ||
-			testTimesLow.size() == 0 || testTimesHigh.size() == 0) {
+		if (trainTimesLow.size() == 0 || trainTimesHigh.size() == 0) {
 			return;
 		}
 		
@@ -71,14 +60,10 @@ public class Miner {
 			.collect(Collectors.toCollection(ArrayList::new)));
 		this.trainTimeSets.add(trainTimesHigh.stream()
 			.collect(Collectors.toCollection(ArrayList::new)));
-		this.testTimeSets.add(testTimesLow.stream()
-			.collect(Collectors.toCollection(ArrayList::new)));
-		this.testTimeSets.add(testTimesHigh.stream()
-			.collect(Collectors.toCollection(ArrayList::new)));
 
-		if (Config.ASSERT_MODE) {
-			assertDisjoint();
-		}
+		//if (Config.ASSERT_MODE) {
+		//	assertDisjoint();
+		//}
 
 		// Note: this is to avoid feeding the solution to the miner
 		ArrayList<IFeature> trainingFeatures = dataset.getFunctors().stream()
@@ -125,7 +110,6 @@ public class Miner {
 		}
 
 		model.sort();
-		model.gatherStats(this.testTimeSets.get(0), this.testTimeSets.get(1));
 	}
 	
 	private void startClock() {
@@ -136,7 +120,7 @@ public class Miner {
 		return System.currentTimeMillis() - this.miningStartTime < MINING_TIME;
 	}
 
-	private void assertDisjoint() throws Exception {
+	/*private void assertDisjoint() throws Exception {
 		if (this.trainTimeSets.size() != this.testTimeSets.size()) {
 			throw new Exception("Test and train datasets not set up properly");
 		}
@@ -155,7 +139,7 @@ public class Miner {
 				}
 			}
 		}
-	}
+	}*/
 
 	public boolean ready() {
 		return this.isReady;
