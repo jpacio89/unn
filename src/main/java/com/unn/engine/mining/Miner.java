@@ -94,9 +94,9 @@ public class Miner {
 		startClock();
 		this.statusObservable.updateStatusLabel("MINING");
 		
-		for (int now = 0, next = 1; alive(); now = (now + 1) % 2, next = (next + 1) % 2) {
+		for (int now = 0; alive(); now = (now + 1) % 2) {
 			PredicateFactory factory = this.predicateFactories.get(now);
-			Predicate newPredicate = factory.randomPredicate(this.trainTimeSets.get(next),
+			Predicate newPredicate = factory.randomPredicate(this.trainTimeSets.get((now + 1) % 2),
 				this.trainTimeSets.get(now));
 
 			if (newPredicate != null &&
