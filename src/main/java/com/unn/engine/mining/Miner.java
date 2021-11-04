@@ -38,7 +38,7 @@ public class Miner {
 		this.miningTarget = miningTarget;
 	}
 	
-	public void init(ArrayList<Integer> trainTimes) throws Exception {
+	public void init(ArrayList<Integer> trainTimes) {
 		this.trainTimes = trainTimes;
 		this.trainTimeSets.clear();
 		this.predicateFactories.clear();
@@ -56,9 +56,9 @@ public class Miner {
 		System.out.println(String.format("|Miner| Training set size: lows=%d, highs=%d",
 			trainTimesLow.size(), trainTimesHigh.size()));
 
-		this.trainTimeSets.add(trainTimesLow.stream()
-			.collect(Collectors.toCollection(ArrayList::new)));
 		this.trainTimeSets.add(trainTimesHigh.stream()
+				.collect(Collectors.toCollection(ArrayList::new)));
+		this.trainTimeSets.add(trainTimesLow.stream()
 			.collect(Collectors.toCollection(ArrayList::new)));
 
 		//if (Config.ASSERT_MODE) {
@@ -73,7 +73,6 @@ public class Miner {
 		if (trainingFeatures.size() == 0) {
 			return;
 		}
-
 
 		Integer[] rewards = { Config.STIM_MAX, Config.STIM_MIN };
 
@@ -96,8 +95,8 @@ public class Miner {
 		
 		for (int now = 0; alive(); now = (now + 1) % 2) {
 			PredicateFactory factory = this.predicateFactories.get(now);
-			Predicate newPredicate = factory.randomPredicate(this.trainTimeSets.get((now + 1) % 2),
-				this.trainTimeSets.get(now));
+			Predicate newPredicate = factory.randomPredicate(this.trainTimeSets.get(now),
+				this.trainTimeSets.get((now + 1) % 2));
 
 			if (newPredicate != null &&
 				Predicate.isRepetition(model.getPredicates(), newPredicate) == null) {

@@ -84,6 +84,10 @@ public class PredicateFactory {
 			}
 		}
 
+		if (remainingGoodTimes.size() == 0) {
+			return null;
+		}
+
 		return new Predicate(chosenSet, this.reward, remainingGoodTimes);
 	}
 	
