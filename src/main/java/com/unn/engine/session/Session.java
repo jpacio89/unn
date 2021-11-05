@@ -199,7 +199,7 @@ public class Session implements Serializable {
 
 	private void putConfusionMatrix(MiningReport report, Map.Entry<String, MiningScope> entry) {
 		String scopeId = entry.getKey();
-		ConfusionMatrix matrix = entry.getValue().getStatisticsAnalyzer().getConfusionMatrix();
+		ConfusionMatrix matrix = entry.getValue().getModel().getPerformanceAnalyzer().getConfusionMatrix();
 		report.confusionMatrixes.put(scopeId, matrix);
 	}
 

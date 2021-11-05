@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.unn.engine.Config;
 import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.interfaces.IEnvironment;
 import com.unn.engine.interfaces.IFeature;
@@ -13,10 +14,9 @@ import com.unn.engine.mining.models.Model;
 import com.unn.engine.mining.models.ScopeConfig;
 
 public class MiningScope implements IEnvironment, Serializable {
-	private Model refinedModel;
 	private ScopeConfig config;
-
 	private Miner miner;
+	private Model model;
 	
 	public MiningScope(ScopeConfig config) {
 		this.config = config;
@@ -24,10 +24,10 @@ public class MiningScope implements IEnvironment, Serializable {
 	
 	@Override
 	public ArrayList<IFeature> getInputs(String market) {
-		if (this.refinedModel == null) {
+		if (this.model == null) {
 			return null;
 		}
-		return this.refinedModel.getInputs();
+		return this.model.getInputs();
 	}
 	
 	private MiningStatusObservable getStatusObservable() {
@@ -49,76 +49,53 @@ public class MiningScope implements IEnvironment, Serializable {
 		return this.config.getLoader().getValueMapper();
 	}
 	
-	public PerformanceAnalyzer mine() throws Exception {
-		System.out.println(String.format("|MiningEnvironment| Mining"));
-		this.refinedModel = null;
-		
+	public void mine() throws Exception {
 		getStatusObservable().updateStatusLabel("BUFFERING");
 
+		System.out.println(String.format("|MiningEnvironment| Mining"));
+
+		this.model = null;
 		this.miner = new Miner (
 			getInnerDataset(),
 			this.config.getInnerFeature(),
 			this.config.getNoMiningGroups(),
 			getStatusObservable()
 		);
-
 		this.miner.init(config.getTrainTimes());
-		
+
 		if (!this.miner.ready()) {
-			System.out.println(String.format(" Not enough data. Skipping..."));
+			System.out.println(String.format("|MiningScope| Miner failed to initialize"));
 			getStatusObservable().updateStatusLabel("DONE");
-			return null;
+			return;
 		}
-		
+
+		getStatusObservable().updateStatusLabel("MINING");
+
 		this.miner.mine();
-		
+
 		getStatusObservable().updateStatusLabel("OPTIMIZING");
-		
-		Model model = this.miner.getModel();
-		model.calculatePerformance(config.getTestTimes());
 
-		System.out.println(String.format("|MiningScope| Gross artifacts produced: %d.", model.getPredicates().size()));
+		this.model = this.miner.getModel();
+		this.model.calculatePerformance(this.config.getTestTimes());
 
-		this.refinedModel = model;
-
-		if (model.getPredicates().size() == 0) {
-			System.out.println("|MiningScope| wheat events are not separable from weeds -> dataset in equilibrium for this scope.");
+		if (this.model.getPredicates().size() == 0) {
+			System.out.println("|MiningScope| Events are not separable: dataset in equilibrium");
 		}
 
-		System.out.println(String.format("|MiningScope| Refined artifacts produced: %d.", this.refinedModel.getPredicates().size()));
+		System.out.println(String.format("|MiningScope| Predicates produced: %d.", this.model.getPredicates().size()));
 		getStatusObservable().updateStatusLabel("DONE");
-		
-		return this.refinedModel.getStatsWalker();
-	}
-	
-	public PerformanceAnalyzer getStatisticsAnalyzer() {
-		if (this.refinedModel != null) {
-			return this.refinedModel.getStatsWalker();
-		}
-		return null;
-	}
-	
-	public Double predict(HashMap<IFeature, Integer> inputs) {
-		if (this.refinedModel == null) {
-			return null;
-		}
-		Double prediction = this.refinedModel.predict(inputs);
-		if (prediction == null) {
-			return 0.0;
-		}
-		return prediction;
 	}
 
 	public Miner getMiner() {
-		return miner;
+		return this.miner;
 	}
 	
 	public Model getModel() {
-		return this.refinedModel;
+		return this.model;
 	}
 
 	public ScopeConfig getConfig() {
-		return config;
+		return this.config;
 	}
 
 	public void setConfig(ScopeConfig config) {

@@ -135,7 +135,7 @@ public class PublishAction extends Action {
             InnerDataset innerDataset = Datasets.toInnerDataset(dataset, mapper);
             for (Integer time : innerDataset.getTimes()) {
                 HashMap<IFeature, Integer> input = innerDataset.bundleSample(time);
-                Double prediction = scope.predict(input);
+                Double prediction = scope.getModel().predict(input);
                 refPredictions.add(new Prediction()
                         .withTime(time)
                         .withValue(prediction));

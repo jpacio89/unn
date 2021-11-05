@@ -12,8 +12,6 @@ import com.unn.engine.mining.models.MiningStatusObservable;
 import com.unn.engine.mining.models.Model;
 
 public class Miner {
-	public final long MINING_TIME = 1 * 60 * 1000;
-	
 	InnerDataset dataset;
 	Model model;
 	boolean isReady;
@@ -88,7 +86,6 @@ public class Miner {
 	
 	public void mine() throws Exception {
 		startClock();
-		this.statusObservable.updateStatusLabel("MINING");
 		
 		for (int now = 0; alive(); now = (now + 1) % 2) {
 			PredicateFactory factory = this.predicateFactories.get(now);
@@ -102,7 +99,7 @@ public class Miner {
 				this.statusObservable.updateArtifactCount(model.getPredicates().size());
 			}
 			
-			this.statusObservable.updateProgress(System.currentTimeMillis() - this.miningStartTime, MINING_TIME);
+			this.statusObservable.updateProgress(System.currentTimeMillis() - this.miningStartTime, Config.get().MINING_TIME);
 		}
 
 		model.sort();
@@ -113,7 +110,7 @@ public class Miner {
 	}
 	
 	private boolean alive() {
-		return System.currentTimeMillis() - this.miningStartTime < MINING_TIME;
+		return System.currentTimeMillis() - this.miningStartTime < Config.get().MINING_TIME;
 	}
 
 	/*private void assertDisjoint() throws Exception {

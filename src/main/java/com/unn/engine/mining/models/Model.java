@@ -16,7 +16,7 @@ public class Model implements Serializable {
 
 	final int TEST_SAMPLE_COUNT = 1000;
 	
-	PerformanceAnalyzer walker;
+	PerformanceAnalyzer performanceAnalyzer;
 	InnerDataset dataset;
 	ArrayList<Predicate> predicates;
 	IFeature rewardSelector;
@@ -24,7 +24,7 @@ public class Model implements Serializable {
 	public Model(InnerDataset dataset, IFeature rewardSelector) {
 		this.dataset = dataset;
 		this.predicates = new ArrayList<>();
-		this.walker = new PerformanceAnalyzer();
+		this.performanceAnalyzer = new PerformanceAnalyzer();
 		this.rewardSelector = rewardSelector;
 	}
 	
@@ -42,26 +42,26 @@ public class Model implements Serializable {
 		this.predicates.sort(Comparator.comparingInt(x -> -x.targetTimes.size()));
 	}
 	
-	public PerformanceAnalyzer getStatsWalker() {
-		return this.walker;
+	public PerformanceAnalyzer getPerformanceAnalyzer() {
+		return this.performanceAnalyzer;
 	}
 	
 	public void calculatePerformance(ArrayList<Integer> testTimes) {
-		this.walker = new PerformanceAnalyzer();
+		this.performanceAnalyzer = new PerformanceAnalyzer();
 		Collections.shuffle(testTimes);
 		testTimes = new ArrayList<> (testTimes.subList(0, Math.min(TEST_SAMPLE_COUNT, testTimes.size())));
 		for (Integer time : testTimes) {
-			predict(time, walker);
+			predict(time, performanceAnalyzer);
 		}
 	}
 
-	private boolean predict (int time, PerformanceAnalyzer walker) {
+	private boolean predict (int time, PerformanceAnalyzer analyzer) {
 		HashMap<IFeature, Integer> inputs = this.getInputsByTime(time);
 		Double prediction = this.predict(inputs);
 		double adjustedPrediction = prediction == null ? Config.get().STIM_NULL: prediction.doubleValue();
 		int historicAction = this.dataset.getValueByTime(this.rewardSelector, time);
 		try {
-			walker.addEvent(historicAction, adjustedPrediction);
+			analyzer.addEvent(historicAction, adjustedPrediction);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -94,7 +94,7 @@ public class Model implements Serializable {
 		}
 		
 		if (hitCount == 0) {
-			return null;
+			return (double) Config.get().STIM_NULL;
 		}
 		
 		rewardAccumulator /= hitCount;
