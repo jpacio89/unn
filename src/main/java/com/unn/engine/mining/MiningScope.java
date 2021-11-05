@@ -82,7 +82,7 @@ public class MiningScope implements IEnvironment, Serializable {
 		this.refinedModel = model;
 
 		if (model.getPredicates().size() == 0) {
-			System.out.println("|MiningScope| Wheats are not separable from Weeds -> dataset in equilibrium for this scope.");
+			System.out.println("|MiningScope| wheat events are not separable from weeds -> dataset in equilibrium for this scope.");
 		}
 
 		System.out.println(String.format("|MiningScope| Refined artifacts produced: %d.", this.refinedModel.getPredicates().size()));
