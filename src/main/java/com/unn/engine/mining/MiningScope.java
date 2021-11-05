@@ -15,6 +15,8 @@ import com.unn.engine.mining.models.ScopeConfig;
 public class MiningScope implements IEnvironment, Serializable {
 	private Model refinedModel;
 	private ScopeConfig config;
+
+	private Miner miner;
 	
 	public MiningScope(ScopeConfig config) {
 		this.config = config;
@@ -53,25 +55,26 @@ public class MiningScope implements IEnvironment, Serializable {
 		
 		getStatusObservable().updateStatusLabel("BUFFERING");
 
-		Miner miner = new Miner (
+		this.miner = new Miner (
 			getInnerDataset(),
 			this.config.getInnerFeature(),
 			this.config.getNoMiningGroups(),
 			getStatusObservable()
 		);
-		miner.init(config.getTrainTimes());
+
+		this.miner.init(config.getTrainTimes());
 		
-		if (!miner.ready()) {
+		if (!this.miner.ready()) {
 			System.out.println(String.format(" Not enough data. Skipping..."));
 			getStatusObservable().updateStatusLabel("DONE");
 			return null;
 		}
 		
-		miner.mine();
+		this.miner.mine();
 		
 		getStatusObservable().updateStatusLabel("OPTIMIZING");
 		
-		Model model = miner.getModel();
+		Model model = this.miner.getModel();
 		model.calculatePerformance(config.getTestTimes());
 
 		System.out.println(String.format("|MiningScope| Gross artifacts produced: %d.", model.getPredicates().size()));
@@ -104,6 +107,10 @@ public class MiningScope implements IEnvironment, Serializable {
 			return 0.0;
 		}
 		return prediction;
+	}
+
+	public Miner getMiner() {
+		return miner;
 	}
 	
 	public Model getModel() {

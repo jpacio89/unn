@@ -19,13 +19,10 @@ public class Miner {
 	boolean isReady;
 	ArrayList<IFeature> featureBlacklist;
 	IFeature miningTarget;
-
 	MiningStatusObservable statusObservable;
 	ArrayList<ArrayList<Integer>> trainTimeSets;
 	ArrayList<PredicateFactory> predicateFactories;
-
 	private long miningStartTime;
-
 	ArrayList<Integer> trainTimes;
 	
 	public Miner(InnerDataset dataset, IFeature miningTarget, ArrayList<IFeature> featureBlacklist, MiningStatusObservable statusObservable) {
@@ -142,5 +139,13 @@ public class Miner {
 
 	public boolean ready() {
 		return this.isReady;
+	}
+
+	public ArrayList<PredicateFactory> getPredicateFactories() {
+		return predicateFactories;
+	}
+
+	public IFeature getMiningTarget() {
+		return miningTarget;
 	}
 }

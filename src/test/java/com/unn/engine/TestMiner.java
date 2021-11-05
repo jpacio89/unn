@@ -5,6 +5,9 @@ import com.unn.common.operations.Agent;
 import com.unn.common.operations.AgentRole;
 import com.unn.engine.data.Datasets;
 import com.unn.engine.dataset.OuterDataset;
+import com.unn.engine.interfaces.IFeature;
+import com.unn.engine.mining.Miner;
+import com.unn.engine.mining.PredicateFactory;
 import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.session.Context;
 import com.unn.engine.session.Session;
@@ -12,6 +15,8 @@ import com.unn.engine.session.actions.MineAction;
 import org.junit.Test;
 
 import java.util.ArrayList;
+
+import static org.junit.Assert.assertTrue;
 
 public class TestMiner {
     private void mine(OuterDataset outerDataset, String target) {
@@ -32,6 +37,25 @@ public class TestMiner {
         } else {
             System.out.println(String.format("Report statistics -->\n%s", report.toString()));
         }
+
+        checkNoMiningGroupsNotUsed(session);
+    }
+
+    private void checkNoMiningGroupsNotUsed(Session session) {
+        // Note: make sure the predicate factories do not use the target feature (and blacklisted features)
+        session.getScopes().values().forEach(scope -> {
+            Miner miner = scope.getMiner();
+            ArrayList<IFeature> noMiningFeatures = scope.getConfig().getNoMiningGroups();
+            ArrayList<PredicateFactory> factories = miner.getPredicateFactories();
+
+            assertTrue(noMiningFeatures.contains(miner.getMiningTarget()));
+
+            factories.forEach(factory -> {
+                assertTrue(noMiningFeatures.stream()
+                    .filter(group -> factory.getFeatures().contains(group))
+                    .count() == 0);
+            });
+        });
     }
 
     @Test

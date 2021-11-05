@@ -90,5 +90,9 @@ public class PredicateFactory {
 
 		return new Predicate(chosenSet, this.reward, remainingGoodTimes);
 	}
+
+	public ArrayList<IFeature> getFeatures() {
+		return features;
+	}
 	
 }
