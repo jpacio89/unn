@@ -58,14 +58,14 @@ public class Model implements Serializable {
 	private boolean predict (int time, PerformanceAnalyzer walker) {
 		HashMap<IFeature, Integer> inputs = this.getInputsByTime(time);
 		Double prediction = this.predict(inputs);
-		double adjustedPrediction = prediction == null ? Config.STIM_NULL: prediction.doubleValue();
+		double adjustedPrediction = prediction == null ? Config.get().STIM_NULL: prediction.doubleValue();
 		int historicAction = this.dataset.getValueByTime(this.rewardSelector, time);
 		try {
 			walker.addEvent(historicAction, adjustedPrediction);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return adjustedPrediction != Config.STIM_NULL;
+		return adjustedPrediction != Config.get().STIM_NULL;
 	}
 	
 	public Double predict(int time) {
@@ -74,7 +74,6 @@ public class Model implements Serializable {
 	}
 	
 	public Double predict(HashMap<IFeature, Integer> inputs) {
-		int TARGET_HIT_COUNT = 1;
 		double rewardAccumulator = 0.0;
 		long hitCount = 0;
 			
@@ -86,10 +85,10 @@ public class Model implements Serializable {
 				continue;
 			}
 
-			rewardAccumulator += isHit ? predicate.reward : Config.STIM_NULL;
+			rewardAccumulator += isHit ? predicate.reward : Config.get().STIM_NULL;
 			hitCount++;
 
-			if (hitCount >= TARGET_HIT_COUNT) {
+			if (hitCount >= Config.get().MODEL_PREDICTION_PREDICATE_HIT_COUNT) {
 				break;
 			}
 		}

@@ -12,27 +12,26 @@ public class PerformanceAnalyzer implements Serializable {
 	
 	public PerformanceAnalyzer() {
 		this.possibleValues = new ArrayList<>();
-		this.possibleValues.add(Config.STIM_MIN);
-		this.possibleValues.add(Config.STIM_NULL);
-		this.possibleValues.add(Config.STIM_MAX);
+		this.possibleValues.add(Config.get().STIM_MIN);
+		this.possibleValues.add(Config.get().STIM_NULL);
+		this.possibleValues.add(Config.get().STIM_MAX);
 		this.matrix = new ConfusionMatrix(possibleValues.size());
 	}
 	
 	public void addEvent(Integer expected, double guess) throws Exception {
-		// TODO: put 0.8 in Config
-		int relaxation = (int) (0.8 * Config.STIM_MAX);
+		int relaxation = (int) (Config.get().MODEL_PREDICTION_ROUNDING_FACTOR * Config.get().STIM_MAX);
 
 		if (guess > 0) {
-			guess = guess >= Config.STIM_MAX - relaxation ? Config.STIM_MAX : guess;
+			guess = guess >= Config.get().STIM_MAX - relaxation ? Config.get().STIM_MAX : guess;
 		} else {
-			guess = guess <= Config.STIM_MIN + relaxation ? Config.STIM_MIN : guess;
+			guess = guess <= Config.get().STIM_MIN + relaxation ? Config.get().STIM_MIN : guess;
 		}
 		
 		int guessIndex = this.possibleValues.indexOf((int) Math.round(guess));
 		int expectedIndex = this.possibleValues.indexOf(expected);
 		
 		if (guessIndex < 0) {
-			guessIndex = this.possibleValues.indexOf(Config.STIM_NULL);
+			guessIndex = this.possibleValues.indexOf(Config.get().STIM_NULL);
 		}
 
 		if (expectedIndex < 0 || expectedIndex == 1) {

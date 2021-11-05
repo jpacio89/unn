@@ -3,20 +3,37 @@ package com.unn.engine;
 import com.unn.common.operations.Agent;
 
 public class Config {
-	public static boolean ASSERT_MODE = true;
-	public static String PRIMER = "primer";
-	public static String ID = "id";
-	public static int STIM_MIN = -10;
-	public static int STIM_MAX =  10;
-	public static int STIM_NULL = 0;
-	public static int STIM_RANGE = STIM_MAX - STIM_MIN;
-	public static Agent MYSELF = new Agent()
+	static Config instance;
+
+	public boolean ASSERT_MODE = true;
+	public String PRIMER = "primer";
+	public String ID = "id";
+	public int STIM_MIN = -10;
+	public int STIM_MAX =  10;
+	public int STIM_NULL = 0;
+	public int STIM_RANGE = STIM_MAX - STIM_MIN;
+	public double MODEL_PREDICTION_ROUNDING_FACTOR = 0.8;
+	public int MODEL_PREDICTION_PREDICATE_HIT_COUNT = 1;
+	public Agent MYSELF = new Agent()
 		.withType("miner")
 		.withProtocol("http")
 		.withHost("localhost")
 		.withPort(7000);
-	public static int DEFAULT_NUMERIC_CLUSTER_COUNT = 500;
-	public static int DEFAULT_DISCRETE_LABEL_COUNT = 100;
-	public static int MAX_UNKNOWN_RATE = 80;
-	public static int MIN_ACCURACY_RATE = 60;
+	public int DEFAULT_NUMERIC_CLUSTER_COUNT = 500;
+	public int DEFAULT_DISCRETE_LABEL_COUNT = 100;
+	public int MAX_UNKNOWN_RATE = 80;
+	public int MIN_ACCURACY_RATE = 60;
+
+	public Config() { }
+
+	public static Config get () {
+		if (instance == null) {
+			instance = new Config();
+		}
+		return instance;
+	}
+
+	public static void set (Config _config) {
+		instance = _config;
+	}
 }

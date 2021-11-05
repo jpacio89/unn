@@ -12,7 +12,7 @@ public class TestPerformanceAnalyzer {
     public void testError() {
         PerformanceAnalyzer analyzer = new PerformanceAnalyzer();
         try {
-            analyzer.addEvent(0, Config.STIM_MAX);
+            analyzer.addEvent(0, Config.get().STIM_MAX);
         } catch (Exception e) {
             return;
         }
@@ -22,10 +22,10 @@ public class TestPerformanceAnalyzer {
     @Test
     public void test1() throws Exception {
         PerformanceAnalyzer analyzer = new PerformanceAnalyzer();
-        analyzer.addEvent(Config.STIM_MIN, Config.STIM_MAX);
-        analyzer.addEvent(Config.STIM_MAX, Config.STIM_NULL);
-        analyzer.addEvent(Config.STIM_MAX, Config.STIM_MAX);
-        analyzer.addEvent(Config.STIM_MIN, Config.STIM_MIN);
+        analyzer.addEvent(Config.get().STIM_MIN, Config.get().STIM_MAX);
+        analyzer.addEvent(Config.get().STIM_MAX, Config.get().STIM_NULL);
+        analyzer.addEvent(Config.get().STIM_MAX, Config.get().STIM_MAX);
+        analyzer.addEvent(Config.get().STIM_MIN, Config.get().STIM_MIN);
 
         ConfusionMatrix matrix = analyzer.getConfusionMatrix();
         assertEquals(matrix.getUnknownRate(), 25);

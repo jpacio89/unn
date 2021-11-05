@@ -42,9 +42,9 @@ public class Miner {
 		this.model = new Model(this.dataset, this.miningTarget);
 
 		ArrayList<Integer> trainTimesLow  = dataset.getTimesByFunctor(
-			this.miningTarget, Config.STIM_MIN, this.trainTimes);
+			this.miningTarget, Config.get().STIM_MIN, this.trainTimes);
 		ArrayList<Integer> trainTimesHigh = dataset.getTimesByFunctor(
-			this.miningTarget, Config.STIM_MAX, this.trainTimes);
+			this.miningTarget, Config.get().STIM_MAX, this.trainTimes);
 		
 		if (trainTimesLow.size() == 0 || trainTimesHigh.size() == 0) {
 			return;
@@ -71,7 +71,7 @@ public class Miner {
 			return;
 		}
 
-		Integer[] rewards = { Config.STIM_MAX, Config.STIM_MIN };
+		Integer[] rewards = { Config.get().STIM_MAX, Config.get().STIM_MIN };
 
 		for (Integer reward : rewards) {
 			PredicateFactory factory = new PredicateFactory(dataset, reward, this.statusObservable);

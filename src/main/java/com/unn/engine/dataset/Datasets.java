@@ -36,7 +36,7 @@ public class Datasets {
                 ArrayList<String> targetGroups = descriptor.getActivatedOutputFeatures(outerValue);
                 for (String group : descriptor.getOutputFeatures()) {
                     Integer value = targetGroups.contains(group) ?
-                        Config.STIM_MAX : Config.STIM_MIN;
+                        Config.get().STIM_MAX : Config.get().STIM_MIN;
                     IFeature func = descriptor.getFeatureByName(group);
                     ValueTime vtr = new ValueTime(func, value, outerTimeValue);
                     innerDataset.add(vtr);
@@ -75,7 +75,7 @@ public class Datasets {
             ArrayList<String> rowVals = new ArrayList<>();
             int j = 0;
             refs = Arrays.stream(refs).filter((ref) ->
-                !Config.PRIMER.equals(ref) && !Config.ID.equals(ref)).toArray(size -> new String[size]);
+                !Config.get().PRIMER.equals(ref) && !Config.get().ID.equals(ref)).toArray(size -> new String[size]);
             for (String ref : refs) {
                 ArrayList<Prediction> refPrediction = predictions.get(ref);
                 if (i >= refPrediction.size()) {

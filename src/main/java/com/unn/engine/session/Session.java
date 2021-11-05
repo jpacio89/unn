@@ -132,13 +132,13 @@ public class Session implements Serializable {
 
 	private boolean isLowUnknownRate(MiningReport report) {
 		return report != null && report.getConfusionMatrixes().values().stream()
-			.filter(matrix -> matrix.getUnknownRate() <= Config.MAX_UNKNOWN_RATE)
+			.filter(matrix -> matrix.getUnknownRate() <= Config.get().MAX_UNKNOWN_RATE)
 			.count() > 0;
 	}
 
 	private boolean isHighAccuracyRate(MiningReport report) {
 		return report != null && report.getConfusionMatrixes().values().stream()
-			.filter(matrix -> matrix.getAccuracy() >= Config.MIN_ACCURACY_RATE)
+			.filter(matrix -> matrix.getAccuracy() >= Config.get().MIN_ACCURACY_RATE)
 			.count() > 0;
 	}
 

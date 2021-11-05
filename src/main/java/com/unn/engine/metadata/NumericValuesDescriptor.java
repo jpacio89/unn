@@ -70,7 +70,7 @@ public class NumericValuesDescriptor extends ValuesDescriptor implements Seriali
 	public ArrayList<String> getActivatedOutputFeatures(String outerValue) {
 		double parsedValue = Double.parseDouble(outerValue);
 		return this.groups.keySet().stream()
-			.filter(group -> getInnerValue(group, parsedValue) == Config.STIM_MAX)
+			.filter(group -> getInnerValue(group, parsedValue) == Config.get().STIM_MAX)
 			.map(group -> String.format("%s_%s", group, getSuffix()))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
@@ -78,7 +78,7 @@ public class NumericValuesDescriptor extends ValuesDescriptor implements Seriali
 	private Integer getInnerValue(String groupName, double value) {
 		Pair<Double, Boolean> params = this.groups.get(groupName);
 		return threshold(value, params.first(), params.second()) ?
-			Config.STIM_MAX : Config.STIM_MIN;
+			Config.get().STIM_MAX : Config.get().STIM_MIN;
 	}
 
 	boolean threshold (double value, double thresholdPoint, boolean inverted) {

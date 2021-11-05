@@ -32,8 +32,8 @@ public class PredicateFactory {
 		this.allConditions.clear();
 
 		for (IFeature feature : _features) {
-			this.allConditions.add(new Predicate.Condition(feature, Config.STIM_MIN));
-			this.allConditions.add(new Predicate.Condition(feature, Config.STIM_MAX));
+			this.allConditions.add(new Predicate.Condition(feature, Config.get().STIM_MIN));
+			this.allConditions.add(new Predicate.Condition(feature, Config.get().STIM_MAX));
 		}
 
 		this.opHitPresences = new MultiplesHashMap<>();

@@ -43,7 +43,7 @@ public class ValueMapper {
 		// (small cardinality) then convert to labels
 		if (doubleCount == 0 && numerics.size() > 0) {
 			HashSet<Double> set = new HashSet<>(numerics);
-			if (set.size() < Config.DEFAULT_NUMERIC_CLUSTER_COUNT) {
+			if (set.size() < Config.get().DEFAULT_NUMERIC_CLUSTER_COUNT) {
 				ArrayList<String> convertedLabels = set.stream()
 						.map((value) -> String.format("labelized_int_%d", Math.round(value)))
 						.collect(Collectors.toCollection(ArrayList::new));
@@ -63,7 +63,7 @@ public class ValueMapper {
 
 	public Set<String> getInputFeatures() {
 		return new HashSet<>(this.dataset.getHeader().stream()
-			.filter(feature -> !Config.ID.equals(feature))
+			.filter(feature -> !Config.get().ID.equals(feature))
 			.collect(Collectors.toCollection(ArrayList::new)));
 	}
 
@@ -72,7 +72,7 @@ public class ValueMapper {
 	}
 
 	void addDiscrete(String feature, HashSet<String> _labels) {
-		if (Config.ID.equals(feature) || Config.PRIMER.equals(feature)) {
+		if (Config.get().ID.equals(feature) || Config.get().PRIMER.equals(feature)) {
 			return;
 		}
 		if (_labels.size() > this.dataset.sampleCount() / 2) {
@@ -80,7 +80,7 @@ public class ValueMapper {
 			// These features won't produce statistically relevant artifacts
 			return;
 		}
-		ArrayList<String> labels = limitLabels(_labels, Config.DEFAULT_DISCRETE_LABEL_COUNT);
+		ArrayList<String> labels = limitLabels(_labels, Config.get().DEFAULT_DISCRETE_LABEL_COUNT);
 		DiscreteValuesDescriptor descriptor = new DiscreteValuesDescriptor();
 		descriptor.init(labels);
 		this.descriptors.put(feature, descriptor);
@@ -89,22 +89,22 @@ public class ValueMapper {
 	}
 
 	void addNumeric(String feature, ArrayList<Double> values) {
-		if (Config.ID.equals(feature) || Config.PRIMER.equals(feature)) {
+		if (Config.get().ID.equals(feature) || Config.get().PRIMER.equals(feature)) {
 			return;
 		}
 		NumericValuesDescriptor mapper = new NumericValuesDescriptor();
-		mapper.init(Config.DEFAULT_NUMERIC_CLUSTER_COUNT, values);
+		mapper.init(Config.get().DEFAULT_NUMERIC_CLUSTER_COUNT, values);
 		this.descriptors.put(feature, mapper);
 		System.out.println(String.format("Numeric descriptor: %s", feature));
 	}
 
 	void addMixed(String feature, HashSet<String> _labels, ArrayList<Double> numerics) {
-		if (Config.ID.equals(feature) || Config.PRIMER.equals(feature)) {
+		if (Config.get().ID.equals(feature) || Config.get().PRIMER.equals(feature)) {
 			return;
 		}
-		ArrayList<String> labels = limitLabels(_labels, Config.DEFAULT_DISCRETE_LABEL_COUNT / 2);
+		ArrayList<String> labels = limitLabels(_labels, Config.get().DEFAULT_DISCRETE_LABEL_COUNT / 2);
 		MixedValuesDescriptor mapper = new MixedValuesDescriptor();
-		int clusterCount = Config.DEFAULT_NUMERIC_CLUSTER_COUNT/2 + (Config.DEFAULT_DISCRETE_LABEL_COUNT/2 - labels.size());
+		int clusterCount = Config.get().DEFAULT_NUMERIC_CLUSTER_COUNT/2 + (Config.get().DEFAULT_DISCRETE_LABEL_COUNT/2 - labels.size());
 		mapper.init(clusterCount, numerics, labels);
 		this.descriptors.put(feature, mapper);
 		System.out.println(String.format("Mixed descriptor: %s", feature));

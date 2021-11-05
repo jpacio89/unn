@@ -31,7 +31,7 @@ public class Server extends Thread {
 	public Server(int port) {
 		this.port = port;
 		this.unnContext = new Context();
-		this.myself = Config.MYSELF.newInstance();
+		this.myself = Config.get().MYSELF.newInstance();
 	}
 
 	Session session() {
@@ -79,7 +79,7 @@ public class Server extends Thread {
 			for(;;) {
 				if (this.session() == null) {
 					this.heartbeats = null;
-					this.myself = Config.MYSELF.newInstance();
+					this.myself = Config.get().MYSELF.newInstance();
 					break;
 				}
 				try {

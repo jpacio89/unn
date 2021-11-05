@@ -36,15 +36,15 @@ public class TestPredicateFactory {
         ArrayList<IFeature> features = innerDataset.getFunctors();
         IFeature target = features.get(0);
 
-        PredicateFactory factory = new PredicateFactory(innerDataset, Config.STIM_MAX, null);
+        PredicateFactory factory = new PredicateFactory(innerDataset, Config.get().STIM_MAX, null);
         factory.init(features);
 
         ArrayList<Integer> times = innerDataset.getTimes();
 
         ArrayList<Integer> timesLow  = innerDataset.getTimesByFunctor(
-                target, Config.STIM_MIN, times);
+                target, Config.get().STIM_MIN, times);
         ArrayList<Integer> timesHigh = innerDataset.getTimesByFunctor(
-                target, Config.STIM_MAX, times);
+                target, Config.get().STIM_MAX, times);
 
         for (int i = 0; i < 100; ++i) {
             try {

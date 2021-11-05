@@ -24,20 +24,20 @@ public class TestInnerDatasetLoader {
         ValueMapper mapper = loader.getValueMapper();
 
         innerDataset.getFunctors().forEach(functor -> {
-            ArrayList<Integer> downTimes = innerDataset.getTimesByFunctor(functor, Config.STIM_MIN);
-            ArrayList<Integer> upTimes = innerDataset.getTimesByFunctor(functor, Config.STIM_MAX);
-            ArrayList<Integer> nullTimes = innerDataset.getTimesByFunctor(functor, Config.STIM_NULL);
+            ArrayList<Integer> downTimes = innerDataset.getTimesByFunctor(functor, Config.get().STIM_MIN);
+            ArrayList<Integer> upTimes = innerDataset.getTimesByFunctor(functor, Config.get().STIM_MAX);
+            ArrayList<Integer> nullTimes = innerDataset.getTimesByFunctor(functor, Config.get().STIM_NULL);
 
             assertTrue( nullTimes.size() == 0);
 
             innerDataset.getTimes().forEach(time -> {
                 Integer value = innerDataset.getValueByTime(functor, time);
-                assertTrue(value == Config.STIM_MIN || value == Config.STIM_MAX);
+                assertTrue(value == Config.get().STIM_MIN || value == Config.get().STIM_MAX);
 
-                if (value == Config.STIM_MIN) {
+                if (value == Config.get().STIM_MIN) {
                     assertTrue(downTimes.contains(time));
                     assertFalse(upTimes.contains(time));
-                } else if (value == Config.STIM_MAX) {
+                } else if (value == Config.get().STIM_MAX) {
                     assertFalse(downTimes.contains(time));
                     assertTrue(upTimes.contains(time));
                 } else {
@@ -66,7 +66,7 @@ public class TestInnerDatasetLoader {
                 activatedGroups.forEach(group -> {
                     IFeature functor = descriptor.getFeatureByName(group);
                     int innerValue = innerDataset.getValueByTime(functor, primer);
-                    assertEquals(innerValue, Config.STIM_MAX);
+                    assertEquals(innerValue, Config.get().STIM_MAX);
                 });
 
                 descriptor.getOutputFeatures().stream()
@@ -74,7 +74,7 @@ public class TestInnerDatasetLoader {
                     .forEach(group -> {
                         IFeature functor = descriptor.getFeatureByName(group);
                         int innerValue = innerDataset.getValueByTime(functor, primer);
-                        assertEquals(innerValue, Config.STIM_MIN);
+                        assertEquals(innerValue, Config.get().STIM_MIN);
                     });
             }
         });

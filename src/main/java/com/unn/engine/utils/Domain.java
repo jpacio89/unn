@@ -19,8 +19,8 @@ public class Domain
 		count_elements_ = 0;
 		range_list_  = new PriorityQueue<Range> (1, comparator);
 		extremes_    = new int[2];
-		extremes_[0] = Config.STIM_MAX;
-		extremes_[1] = Config.STIM_MIN;
+		extremes_[0] = Config.get().STIM_MAX;
+		extremes_[1] = Config.get().STIM_MIN;
 	}
 	
 	public int count_elements ()
@@ -39,7 +39,7 @@ public class Domain
 	
 	public Integer nearest_boundry (int v)
 	{
-		int min_dist = Config.STIM_MAX - Config.STIM_MIN + 1;
+		int min_dist = Config.get().STIM_MAX - Config.get().STIM_MIN + 1;
 		Integer boundry  = null;
 		
 		Iterator<Range> it = range_list_.iterator ();

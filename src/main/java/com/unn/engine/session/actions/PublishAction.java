@@ -169,7 +169,7 @@ public class PublishAction extends Action {
         DatacenterLocator locator = (DatacenterLocator) action.getDatasetLocator();
         String[] dependencies = bundleDependencies(locator);
         ArrayList<String> refs = new ArrayList<>();
-        refs.add(Config.PRIMER);
+        refs.add(Config.get().PRIMER);
         for (String scopeId : action.getSession().getScopes().keySet()) {
             refs.add(scopeId);
         }
