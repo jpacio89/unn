@@ -16,8 +16,8 @@ import static org.junit.Assert.fail;
 
 public class TestPredicateFactory {
     private long countFalseConditions(PredicateFactory factory, Predicate predicate, int time) {
-        return predicate.opHits.stream()
-            .filter(condition -> !factory.checkTime(condition.operator, time, condition.hit))
+        return predicate.conditions.stream()
+            .filter(condition -> !factory.checkTime(condition.feature, time, condition.activationValue))
             .count();
     }
 

@@ -45,7 +45,7 @@ public class PredicateFactory {
 
 	void setPresencesByOpHit(Predicate.Condition condition, ArrayList<Integer> badTimes) {
 		for (Integer time : badTimes) {
-			boolean isCheck = checkTime(condition.operator, time, condition.hit);
+			boolean isCheck = checkTime(condition.feature, time, condition.activationValue);
 			if (!isCheck) {
 				opHitPresences.put(condition, time);
 			}
@@ -54,7 +54,7 @@ public class PredicateFactory {
 
 	ArrayList<Integer> getGoodRemovalsByOpHit(Predicate.Condition opHit, ArrayList<Integer> goodTimes) {
 		return goodTimes.stream()
-			.filter(time -> !checkTime(opHit.operator, time, opHit.hit))
+			.filter(time -> !checkTime(opHit.feature, time, opHit.activationValue))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 	

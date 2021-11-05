@@ -50,6 +50,7 @@ public class Model implements Serializable {
 		this.performanceAnalyzer = new PerformanceAnalyzer();
 		Collections.shuffle(testTimes);
 		testTimes = new ArrayList<> (testTimes.subList(0, Math.min(TEST_SAMPLE_COUNT, testTimes.size())));
+
 		for (Integer time : testTimes) {
 			predict(time, performanceAnalyzer);
 		}
@@ -60,11 +61,13 @@ public class Model implements Serializable {
 		Double prediction = this.predict(inputs);
 		double adjustedPrediction = prediction == null ? Config.get().STIM_NULL: prediction.doubleValue();
 		int historicAction = this.dataset.getValueByTime(this.rewardSelector, time);
+
 		try {
 			analyzer.addEvent(historicAction, adjustedPrediction);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 		return adjustedPrediction != Config.get().STIM_NULL;
 	}
 	
@@ -74,67 +77,54 @@ public class Model implements Serializable {
 	}
 	
 	public Double predict(HashMap<IFeature, Integer> inputs) {
-		double rewardAccumulator = 0.0;
-		long hitCount = 0;
+		double accumulator = 0.0;
+		long activationCount = 0;
 			
 		for (int i = 0; i < this.predicates.size(); ++i) {
 			Predicate predicate = this.predicates.get(i);
-			boolean isHit = this.isHit(inputs, i);
 
-			if (!isHit) {
+			if (!this.isActivation(inputs, i)) {
 				continue;
 			}
 
-			rewardAccumulator += isHit ? predicate.reward : Config.get().STIM_NULL;
-			hitCount++;
+			accumulator += predicate.reward;
+			activationCount++;
 
-			if (hitCount >= Config.get().MODEL_PREDICTION_PREDICATE_HIT_COUNT) {
+			if (activationCount >= Config.get().MODEL_PREDICTION_PREDICATE_HIT_COUNT) {
 				break;
 			}
 		}
 		
-		if (hitCount == 0) {
+		if (activationCount == 0) {
 			return (double) Config.get().STIM_NULL;
 		}
 		
-		rewardAccumulator /= hitCount;
+		accumulator /= activationCount;
 		
-		return rewardAccumulator;
+		return accumulator;
 	}
 	
-	public Boolean isHit(HashMap<IFeature, Integer> inputs, int artifactIndex) {
+	public Boolean isActivation (HashMap<IFeature, Integer> inputs, int artifactIndex) {
+		boolean activated = true;
 		Predicate predicate = this.predicates.get(artifactIndex);
-		ArrayList<Predicate.Condition> parcels = predicate.opHits;
 		
-		boolean hit = true;
-		
-		for (Predicate.Condition parcel : parcels) {
-			IFeature thd = parcel.operator;
-			Integer parcelOutcome = parcel.hit;
-			
+		for (Predicate.Condition condition : predicate.conditions) {
 			try {
-				int thdOutcome = inputs.get(thd);
-				
-				if (parcelOutcome.intValue() != thdOutcome) {
-					hit = false;
+				if (inputs.get(condition.feature) != condition.activationValue) {
+					activated = false;
 					break;
 				}
-			}
-			catch (Exception e) {
-				hit = false;
+			} catch (Exception e) {
+				activated = false;
 				e.printStackTrace();
 			}
 		}
 		
-		return hit;
+		return activated;
 	}
 
 	public boolean isEmpty() {
 		return this.getPredicates().size() == 0;
-	}
-
-	public IFeature getRewardSelector() {
-		return rewardSelector;
 	}
 
 	public ArrayList<IFeature> getInputs() {
@@ -150,15 +140,13 @@ public class Model implements Serializable {
 	}
 	
 	private HashMap<IFeature, Integer> getInputsByTime(int time) {
-		HashMap<IFeature, Integer> inputs = new HashMap<IFeature, Integer>();
+		HashMap<IFeature, Integer> inputs = new HashMap<>();
+
 		for (IFeature param : this.dataset.getFunctors()) {
 			int val = this.dataset.getValueByTime(param, time);
 			inputs.put(param, val);
 		}
-		return inputs;
-	}
 
-	public void setArtifacts(ArrayList<Predicate> predicates) {
-		this.predicates = predicates;
+		return inputs;
 	}
 }
