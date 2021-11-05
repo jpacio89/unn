@@ -33,25 +33,25 @@ public class Server extends Thread {
 		this.unnContext = new Context();
 		this.myself = Config.get().MYSELF.newInstance();
 	}
-
-	Session session() {
-		return this.unnContext.getLiveSession();
-	}
 	
 	public void run() {
 		port(this.port);
 		SparkUtils.enableCORS("*","POST, GET, OPTIONS", null);
+
 		get("/", (request, response) -> "com.unn.engine server running");
+
 		get("/mine/report", (request, response) -> {
         	MiningReport report = this.session().getReport();
 			return new Gson().toJson(report);
         });
+
 		post("/miner/role", (request, response) -> {
 			AgentRole role = new Gson().fromJson(request.body(), AgentRole.class);
 			System.out.println(String.format("|RestServer| Received role layer=%d", role.getLayer()));
 			this.unnContext.setRole(role);
 			return SUCCESS;
 		});
+
 		this.onBooted();
 	}
 
@@ -75,26 +75,24 @@ public class Server extends Thread {
 	}
 
 	void startHearbeats() {
-		this.heartbeats = new Thread(() -> {
-			for(;;) {
+		(this.heartbeats = new Thread(() -> {
+			for (;;) {
 				if (this.session() == null) {
 					this.heartbeats = null;
 					this.myself = Config.get().MYSELF.newInstance();
 					break;
 				}
+
 				try {
 					MaestroService service = Utils.getMaestro();
 					Call<StandardResponse> call = service.heartbeat(this.session().getRole());
 					call.execute();
 					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-		});
-		this.heartbeats.start();
+		})).start();
 	}
 
 	void registerMyself() {
@@ -105,22 +103,27 @@ public class Server extends Thread {
 						Thread.sleep(1000);
 						continue;
 					}
+
 					if (this.session() != null) {
 						this.startHearbeats();
 						Thread.sleep(1000);
 						continue;
 					}
+
 					System.out.println("|RestServer| Registering myself");
 					MaestroService service = Utils.getMaestro();
 					Call<StandardResponse> call = service.registerAgent(this.myself);
 					call.execute();
 					Thread.sleep(1000);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
+
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}).start();
+	}
+
+	Session session() {
+		return this.unnContext.getLiveSession();
 	}
 }
