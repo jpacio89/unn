@@ -20,7 +20,7 @@ public class Config {
 		.withProtocol("http")
 		.withHost("localhost")
 		.withPort(7000);
-	public int DEFAULT_NUMERIC_CLUSTER_COUNT = 100;
+	public int DEFAULT_NUMERIC_CLUSTER_COUNT = 50;
 	public int DEFAULT_DISCRETE_LABEL_COUNT = 100;
 	public int MAX_UNKNOWN_RATE = 80;
 	public int MIN_ACCURACY_RATE = 60;
