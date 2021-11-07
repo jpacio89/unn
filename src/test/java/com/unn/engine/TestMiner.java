@@ -4,7 +4,11 @@ import com.unn.common.mining.MiningReport;
 import com.unn.common.operations.Agent;
 import com.unn.common.operations.AgentRole;
 import com.unn.engine.data.Datasets;
+import com.unn.engine.dataset.DatasetLocator;
 import com.unn.engine.dataset.OuterDataset;
+import com.unn.engine.dataset.filesystem.FilesystemDatasetProvider;
+import com.unn.engine.dataset.filesystem.FilesystemDatasetSource;
+import com.unn.engine.dataset.filesystem.FilesystemLocator;
 import com.unn.engine.interfaces.IFeature;
 import com.unn.engine.mining.Miner;
 import com.unn.engine.mining.PredicateFactory;
@@ -114,6 +118,14 @@ public class TestMiner {
         }
 
         mine(outerDataset, "reward");
+    }
+
+    @Test
+    public void testStock1() {
+        DatasetLocator locator = new FilesystemLocator("/Volumes/Legatron/data/datasets/stock-test-1.csv");
+        FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
+        OuterDataset outerDataset = provider.load();
+        mine(outerDataset, "outcome");
     }
 
     // TODO: test MineAction.splitDataset()

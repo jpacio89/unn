@@ -14,13 +14,13 @@ public class Config {
 	public int STIM_RANGE = STIM_MAX - STIM_MIN;
 	public double MODEL_PREDICTION_ROUNDING_FACTOR = 0.8;
 	public int MODEL_PREDICTION_PREDICATE_HIT_COUNT = 1;
-	public int MINING_TIME = 60 * 1000;
+	public int MINING_TIME = 1 * 60 * 1000;
 	public Agent MYSELF = new Agent()
 		.withType("miner")
 		.withProtocol("http")
 		.withHost("localhost")
 		.withPort(7000);
-	public int DEFAULT_NUMERIC_CLUSTER_COUNT = 500;
+	public int DEFAULT_NUMERIC_CLUSTER_COUNT = 100;
 	public int DEFAULT_DISCRETE_LABEL_COUNT = 100;
 	public int MAX_UNKNOWN_RATE = 80;
 	public int MIN_ACCURACY_RATE = 60;
