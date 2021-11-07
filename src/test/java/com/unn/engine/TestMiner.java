@@ -128,5 +128,13 @@ public class TestMiner {
         mine(outerDataset, "outcome");
     }
 
+    @Test
+    public void testStock2() {
+        DatasetLocator locator = new FilesystemLocator("/Volumes/Legatron/data/datasets/stock-test-2.csv");
+        FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
+        OuterDataset outerDataset = provider.load();
+        mine(outerDataset, "outcome");
+    }
+
     // TODO: test MineAction.splitDataset()
 }
