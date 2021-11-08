@@ -88,7 +88,7 @@ public class MineAction extends Action {
 
 		// NOTE: for each scope mine the dataset and check model
 		//		 if model is empty, remove the scope from list
-		scopes.entrySet().stream()
+		ArrayList<String> idsToRemove = scopes.entrySet().stream()
 			.map(entry -> {
 				String id = entry.getKey();
 				MiningScope scope = entry.getValue();
@@ -105,7 +105,11 @@ public class MineAction extends Action {
 				return null;
 			})
 			.filter(id -> id != null)
-			.forEach(id -> scopes.remove(id));
+			.collect(Collectors.toCollection(ArrayList::new));
+
+		for (String id : idsToRemove) {
+			scopes.remove(id);
+		}
 
 		System.out.println("|MineActor| All scopes have been processed");
 	}
