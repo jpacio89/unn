@@ -54,7 +54,8 @@ public class DatacenterDatasetSource {
 				String[] sample = line.split(separator);
 				
 				if (sample.length != dataset.featureCount()) {
-					System.err.println(String.format("[OpenMLDatasetProvider] Invalid line: %s", line));
+					System.err.println(String.format("[OpenMLDatasetProvider %d !== %d] Invalid line: %s",
+						sample.length, dataset.featureCount(), line));
 					continue;
 				}
 				
