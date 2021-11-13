@@ -1,5 +1,6 @@
 package com.unn.engine.mining;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,7 @@ import com.unn.engine.mining.models.MiningStatusObservable;
 import com.unn.common.utils.MultiplesHashMap;
 import com.unn.engine.utils.RandomManager;
 
-public class PredicateFactory {
+public class PredicateFactory implements Serializable {
 	ArrayList<IFeature> features;
 	ArrayList<Predicate.Condition> allConditions;
 	InnerDataset dataset;

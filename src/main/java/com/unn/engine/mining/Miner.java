@@ -1,5 +1,6 @@
 package com.unn.engine.mining;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -11,7 +12,7 @@ import com.unn.engine.mining.models.Predicate;
 import com.unn.engine.mining.models.MiningStatusObservable;
 import com.unn.engine.mining.models.Model;
 
-public class Miner {
+public class Miner implements Serializable {
 	InnerDataset dataset;
 	Model model;
 	boolean isReady;

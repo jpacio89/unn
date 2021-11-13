@@ -43,7 +43,8 @@ public class MineAction extends Action {
 	public void act() {
 		OuterDataset dataset = this.session.getOuterDataset();
 
-		if (dataset.getHeader().size() <= 3) {
+		if (dataset.getHeader().size() <= 3 ||
+			dataset.sampleCount() == 0) {
 			return;
 		}
 

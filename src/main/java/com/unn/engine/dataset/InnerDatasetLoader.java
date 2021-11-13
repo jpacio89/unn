@@ -1,5 +1,6 @@
 package com.unn.engine.dataset;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -7,7 +8,7 @@ import com.unn.engine.metadata.ValuesDescriptor;
 import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.interfaces.IFeature;
 
-public class InnerDatasetLoader {
+public class InnerDatasetLoader implements Serializable {
 	private ValueMapper mapper;
 	OuterDataset outerDataset;
 	

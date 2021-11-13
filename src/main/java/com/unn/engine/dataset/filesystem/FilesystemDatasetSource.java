@@ -26,7 +26,14 @@ public class FilesystemDatasetSource {
 			OuterDataset dataset = new OuterDataset();
 			BufferedReader reader = new BufferedReader(new FileReader(csv));
 			
-			String header = reader.readLine();
+			String header;
+			do {
+				header = reader.readLine();
+				if (header.startsWith("#")) {
+					header = null;
+				}
+			} while (header == null);
+
 			dataset.setHeader(header.split(separator));
 			String line = header;
 			

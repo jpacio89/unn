@@ -4,9 +4,10 @@ import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.InnerDatasetLoader;
 import com.unn.engine.interfaces.IFeature;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ScopeConfig {
+public class ScopeConfig implements Serializable {
     String outerFeature;
     IFeature innerFeature;
     InnerDatasetLoader loader;

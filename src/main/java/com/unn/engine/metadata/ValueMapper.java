@@ -1,12 +1,13 @@
 package com.unn.engine.metadata;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import com.unn.engine.Config;
 import com.unn.engine.dataset.OuterDataset;
 
-public class ValueMapper {
+public class ValueMapper implements Serializable {
 	OuterDataset dataset;
 	HashMap<String, ValuesDescriptor> descriptors;
 
