@@ -116,7 +116,7 @@ public class Model implements Serializable {
 				}
 			} catch (Exception e) {
 				activated = false;
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		
@@ -143,7 +143,7 @@ public class Model implements Serializable {
 		HashMap<IFeature, Integer> inputs = new HashMap<>();
 
 		for (IFeature param : this.dataset.getFunctors()) {
-			int val = this.dataset.getValueByTime(param, time);
+			Integer val = this.dataset.getValueByTime(param, time);
 			inputs.put(param, val);
 		}
 
