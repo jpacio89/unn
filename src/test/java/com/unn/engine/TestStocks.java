@@ -210,4 +210,13 @@ public class TestStocks {
             this.writeReportToFile(inputFolder, session);
         }
     }
+
+    @Test
+    public void testStockLayer2() {
+        String dataSourcePath = String.format("%s/target-1001/layer2.csv", folderPath);
+        DatasetLocator locator = new FilesystemLocator(dataSourcePath);
+        FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
+        OuterDataset outerDataset = provider.load();
+        mine(outerDataset, "outcome");
+    }
 }
