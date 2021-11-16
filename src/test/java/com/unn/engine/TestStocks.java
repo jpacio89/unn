@@ -78,7 +78,7 @@ public class TestStocks {
 
         HashMap<Integer, HashMap<String, Double>> predictions = new HashMap();
         ArrayList<String> featureNames = session.getScopes().keySet().stream()
-            .filter(featureName -> validScopes.contains(featureName))
+//            .filter(featureName -> validScopes.contains(featureName))
             .collect(Collectors.toCollection(ArrayList::new));
 
         for (Integer time : times) {
