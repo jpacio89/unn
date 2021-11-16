@@ -118,14 +118,27 @@ public class MineAction extends Action {
 	private Pair<ArrayList<Integer>, ArrayList<Integer>> splitDataset(InnerDataset dataset) {
 		ArrayList<Integer> allTimes = dataset.getTimes().stream()
 			.collect(Collectors.toCollection(ArrayList::new));
-		Collections.shuffle(allTimes);
-		int midPoint = allTimes.size() / 2;
 		ArrayList<Integer> trainTimeSets = allTimes.stream()
-				.limit(midPoint)
-				.collect(Collectors.toCollection(ArrayList::new));
+			.filter(time -> getGroup(time) == 0)
+			.collect(Collectors.toCollection(ArrayList::new));
 		ArrayList<Integer> testTimeSets = allTimes.stream()
-				.skip(midPoint)
-				.collect(Collectors.toCollection(ArrayList::new));
+			.filter(time -> getGroup(time) == 1)
+			.collect(Collectors.toCollection(ArrayList::new));
 		return new Pair<>(trainTimeSets, testTimeSets);
+	}
+
+	private Integer getGroup(int time) {
+		// TODO: handle layer in some sort of config
+		int layer = 2;
+		int hashcode = Integer.toString(time).hashCode();
+
+		for (int i = 0; i < layer - 1; ++i) {
+			if (hashcode % 2 == 0) {
+				return -1;
+			}
+			hashcode /= 2;
+		}
+
+		return hashcode % 2 == 0 ? 0 : 1;
 	}
 }

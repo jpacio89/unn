@@ -96,7 +96,8 @@ public class Model implements Serializable {
 		}
 		
 		if (activationCount == 0) {
-			return (double) Config.get().STIM_NULL;
+			//return (double) Config.get().STIM_NULL;
+			return null;
 		}
 		
 		accumulator /= activationCount;

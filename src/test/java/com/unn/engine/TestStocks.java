@@ -64,8 +64,21 @@ public class TestStocks {
     }
 
     private HashMap<Integer, HashMap<String, Double>> predictFromSession(ArrayList<Integer> times, Session session) {
+        ArrayList<String> validScopes = session.getReport().getConfusionMatrixes().entrySet().stream()
+                .filter(entry -> entry.getValue().getTpCount() >= 20 &&
+                        entry.getValue().getTpr() - entry.getValue().getPr() >= 20 &&
+                        entry.getValue().getTpr() > 70)
+                .map(entry -> entry.getKey())
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        if (validScopes.size() == 0) {
+            //System.out.println("Scope not good enough.");
+            //return null;
+        }
+
         HashMap<Integer, HashMap<String, Double>> predictions = new HashMap();
         ArrayList<String> featureNames = session.getScopes().keySet().stream()
+            .filter(featureName -> validScopes.contains(featureName))
             .collect(Collectors.toCollection(ArrayList::new));
 
         for (Integer time : times) {
@@ -178,8 +191,11 @@ public class TestStocks {
 
             Session session = (Session) Serializer.read(String.format("%s/predictor", inputFolder.getAbsolutePath()), "session");
             HashMap<Integer, HashMap<String, Double>> predictions = predictFromSession(times, session);
-            predictionBatch.add(predictions);
-            System.out.println(predictions);
+
+            if (predictions != null) {
+                predictionBatch.add(predictions);
+                System.out.println(predictions);
+            }
         }
 
         buildLayer2Dataset(pivotSession, predictionBatch);
