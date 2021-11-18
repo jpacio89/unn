@@ -25,8 +25,6 @@ public class InputBatchPredictor {
     }
 
     public InputBatchPredictor start() {
-        System.out.println(String.format("|StockAnalyzerApp| Predicting using layer 1 inputs"));
-
         ArrayList<Integer> times = null;
         Session pivotSession = (Session) Serializer.read(
             String.format("%s/target-%s/input-%s/predictor",

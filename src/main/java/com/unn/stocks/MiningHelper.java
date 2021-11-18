@@ -2,7 +2,10 @@ package com.unn.stocks;
 
 import com.unn.common.mining.MiningReport;
 import com.unn.common.operations.AgentRole;
+import com.unn.engine.dataset.DatasetLocator;
 import com.unn.engine.dataset.OuterDataset;
+import com.unn.engine.dataset.filesystem.FilesystemDatasetProvider;
+import com.unn.engine.dataset.filesystem.FilesystemLocator;
 import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.session.Context;
 import com.unn.engine.session.Session;
@@ -38,6 +41,17 @@ public class MiningHelper {
         return session;
     }
 
+    public static void mineOutputLayer(String folderPath, String targetInstrumentId) {
+        String dataSourcePath = String.format("%s/target-%s/output/dataset.csv",
+                folderPath, targetInstrumentId);
+        DatasetLocator locator = new FilesystemLocator(dataSourcePath);
+        FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
+        OuterDataset outerDataset = provider.load();
+        Session session = MiningHelper.mine(outerDataset, "outcome");
+
+        //MiningHelper.writeReportToFile(this.inputFolder, session);
+    }
+
     public static void writeReportToFile(File inputFolder, Session session) {
         BufferedWriter writer;
         try {
@@ -48,5 +62,18 @@ public class MiningHelper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean hasOutputDataset(String folderPath, String targetInstrumentId) {
+        String dataSourcePath = String.format("%s/target-%s/output", folderPath, targetInstrumentId);
+        File folder = new File(dataSourcePath);
+
+        if (!folder.exists()) {
+            folder.mkdirs();
+            return false;
+        }
+
+        File outputDataset = new File(String.format("%s/dataset.csv", folder.getAbsolutePath()));
+        return outputDataset.exists();
     }
 }
