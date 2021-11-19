@@ -3,6 +3,7 @@ package com.unn.stocks;
 import com.unn.common.dataset.*;
 import com.unn.common.utils.CSVHelper;
 import com.unn.common.utils.Serializer;
+import com.unn.common.utils.SerializerGson;
 import com.unn.engine.Config;
 import com.unn.engine.mining.MiningScope;
 import com.unn.engine.session.Session;
@@ -25,16 +26,13 @@ public class InputBatchPredictor {
     }
 
     public InputBatchPredictor start() {
-        ArrayList<Integer> times = null;
         Session pivotSession = (Session) Serializer.read(
             String.format("%s/target-%s/input-%s/predictor",
                 this.folderPath, this.targetInstrumentId,
                 this.targetInstrumentId), "session");
 
-        for (Map.Entry<String, MiningScope> entry : pivotSession.getScopes().entrySet()) {
-            times = entry.getValue().getModel().getDataset().getTimes();
-            break;
-        }
+        ArrayList<Integer> times = pivotSession.getInnerDatasetLoader()
+            .getInitialInnerDataset().getTimes();
 
         String dataSourcePath = String.format("%s/target-%s",
             this.folderPath, this.targetInstrumentId);

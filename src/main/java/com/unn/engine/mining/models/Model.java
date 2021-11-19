@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import com.unn.engine.Config;
 import com.unn.engine.dataset.InnerDataset;
@@ -136,10 +137,10 @@ public class Model implements Serializable {
 		return this.predicates;
 	}
 
-	public InnerDataset getDataset() {
-		return this.dataset;
+	public void setDataset(InnerDataset dataset) {
+		this.dataset = dataset;
 	}
-	
+
 	private HashMap<IFeature, Integer> getInputsByTime(int time) {
 		HashMap<IFeature, Integer> inputs = new HashMap<>();
 

@@ -77,7 +77,6 @@ public class MineAction extends Action {
 
 		for (IFeature func : targetGroups) {
 			ScopeConfig scopeConf = new ScopeConfig(
-				innerDataset,
 				config.targetFeature,
 				func,
 				targetGroups,

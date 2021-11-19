@@ -3,6 +3,7 @@ package com.unn.stocks;
 import com.unn.common.mining.MiningReport;
 import com.unn.common.operations.AgentRole;
 import com.unn.common.utils.Serializer;
+import com.unn.common.utils.SerializerGson;
 import com.unn.engine.dataset.DatasetLocator;
 import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.dataset.filesystem.FilesystemDatasetProvider;

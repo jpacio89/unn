@@ -4,14 +4,19 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.unn.common.dataset.Header;
 import com.unn.engine.Config;
 import com.unn.engine.dataset.OuterDataset;
 
 public class ValueMapper implements Serializable {
-	OuterDataset dataset;
+	ArrayList<String> datasetHeader;
+	long datasetSampleCount;
+	transient OuterDataset dataset;
 	HashMap<String, ValuesDescriptor> descriptors;
 
 	public ValueMapper(OuterDataset dataset) {
+		this.datasetHeader = dataset.getHeader();
+		this.datasetSampleCount = dataset.sampleCount();
 		this.dataset = dataset;
 		this.descriptors = new HashMap<>();
 	}
@@ -63,7 +68,7 @@ public class ValueMapper implements Serializable {
 	}
 
 	public Set<String> getInputFeatures() {
-		return new HashSet<>(this.dataset.getHeader().stream()
+		return new HashSet<>(this.datasetHeader.stream()
 			.filter(feature -> !Config.get().ID.equals(feature))
 			.collect(Collectors.toCollection(ArrayList::new)));
 	}
@@ -76,7 +81,7 @@ public class ValueMapper implements Serializable {
 		if (Config.get().ID.equals(feature) || Config.get().PRIMER.equals(feature)) {
 			return;
 		}
-		if (_labels.size() > this.dataset.sampleCount() / 2) {
+		if (_labels.size() > this.datasetSampleCount / 2) {
 			// NOTE: exluding features with lots of distinct values
 			// These features won't produce statistically relevant artifacts
 			return;
@@ -122,5 +127,9 @@ public class ValueMapper implements Serializable {
 				.collect(Collectors.toCollection(ArrayList::new));
 		}
 		return values;
+	}
+
+	public void setDataset(OuterDataset dataset) {
+		this.dataset = dataset;
 	}
 }

@@ -16,7 +16,7 @@ import com.unn.engine.session.Session;
 
 public class MiningScope implements IEnvironment, Serializable {
 	private ScopeConfig config;
-	private Miner miner;
+	private transient Miner miner;
 	private Model model;
 	
 	public MiningScope(ScopeConfig config) {

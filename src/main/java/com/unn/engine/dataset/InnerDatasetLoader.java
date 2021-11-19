@@ -10,7 +10,7 @@ import com.unn.engine.interfaces.IFeature;
 
 public class InnerDatasetLoader implements Serializable {
 	private ValueMapper mapper;
-	OuterDataset outerDataset;
+	transient OuterDataset outerDataset;
 	InnerDataset initialInnerDataset;
 	
 	public InnerDatasetLoader() {}
@@ -58,7 +58,7 @@ public class InnerDatasetLoader implements Serializable {
 		return this.initialInnerDataset;
 	}
 
-	public OuterDataset getOuterDataset() {
-		return this.outerDataset;
+	public void setOuterDataset(OuterDataset outerDataset) {
+		this.outerDataset = outerDataset;
 	}
 }
