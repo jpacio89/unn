@@ -128,8 +128,4 @@ public class ValueMapper implements Serializable {
 		}
 		return values;
 	}
-
-	public void setDataset(OuterDataset dataset) {
-		this.dataset = dataset;
-	}
 }

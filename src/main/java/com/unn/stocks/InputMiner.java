@@ -44,7 +44,6 @@ public class InputMiner {
         OuterDataset outerDataset = provider.load();
 
         Session session = MiningHelper.mine(outerDataset, outcomeFeature);
-        session.prepareToSerialize();
         Serializer.write(session, String.format("%s/predictor", this.inputFolder.getAbsolutePath()), "session");
 
         MiningHelper.writeReportToFile(this.inputFolder, session);

@@ -224,9 +224,4 @@ public class Session implements Serializable {
 	public void setInnerDatasetLoader(InnerDatasetLoader innerDatasetLoader) {
 		this.innerDatasetLoader = innerDatasetLoader;
 	}
-
-	public void prepareToSerialize() {
-		scopes.values().stream()
-			.forEach(scope -> scope.setMiner(null));
-	}
 }

@@ -137,10 +137,6 @@ public class Model implements Serializable {
 		return this.predicates;
 	}
 
-	public void setDataset(InnerDataset dataset) {
-		this.dataset = dataset;
-	}
-
 	private HashMap<IFeature, Integer> getInputsByTime(int time) {
 		HashMap<IFeature, Integer> inputs = new HashMap<>();
 

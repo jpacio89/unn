@@ -2,13 +2,9 @@ package com.unn.engine.mining;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import com.unn.engine.Config;
-import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.interfaces.IEnvironment;
 import com.unn.engine.interfaces.IFeature;
-import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.models.MiningStatusObservable;
 import com.unn.engine.mining.models.Model;
 import com.unn.engine.mining.models.ScopeConfig;
@@ -81,10 +77,6 @@ public class MiningScope implements IEnvironment, Serializable {
 
 	public Miner getMiner() {
 		return this.miner;
-	}
-
-	public void setMiner(Miner miner) {
-		this.miner = miner;
 	}
 
 	public Model getModel() {

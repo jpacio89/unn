@@ -57,8 +57,4 @@ public class InnerDatasetLoader implements Serializable {
 	public InnerDataset getInitialInnerDataset() {
 		return this.initialInnerDataset;
 	}
-
-	public void setOuterDataset(OuterDataset outerDataset) {
-		this.outerDataset = outerDataset;
-	}
 }
