@@ -131,7 +131,7 @@ public class PublishAction extends Action {
         for (Map.Entry<String, MiningScope> entry : this.getSession().getScopes().entrySet()) {
             ArrayList<Prediction> refPredictions = new ArrayList<>();
             MiningScope scope = entry.getValue();
-            ValueMapper mapper = scope.getMapper();
+            ValueMapper mapper = this.session.getInnerDatasetLoader().getValueMapper();
             InnerDataset innerDataset = Datasets.toInnerDataset(dataset, mapper);
             for (Integer time : innerDataset.getTimes()) {
                 HashMap<IFeature, Integer> input = innerDataset.bundleSample(time);

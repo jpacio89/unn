@@ -26,6 +26,7 @@ public class TestMiner {
     private void mine(OuterDataset outerDataset, String target) {
         Context context = new Context();
         AgentRole role = new AgentRole();
+
         Session session = new Session(context, role);
         session.setOuterDataset(outerDataset);
 

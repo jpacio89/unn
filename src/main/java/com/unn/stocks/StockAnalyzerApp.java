@@ -20,8 +20,11 @@ public class StockAnalyzerApp {
 
         System.out.println(String.format("|StockAnalyzerApp| Processing layer 2 inputs"));
 
-        // TODO: check if session was already persisted
         MiningHelper.mineOutputLayer(folderPath, targetInstrumentId);
+
+
+        //new RealtimePredictor().runAll(folderPath, targetInstrumentId);
+        //RealtimePredictor.runAll(folderPath, targetInstrumentId); --> layer 2
     }
 
 

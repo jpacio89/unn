@@ -10,17 +10,15 @@ import java.util.ArrayList;
 public class ScopeConfig implements Serializable {
     String outerFeature;
     IFeature innerFeature;
-    InnerDatasetLoader loader;
     InnerDataset dataset;
     ArrayList<IFeature> noMiningGroups;
     ArrayList<Integer> trainTimes;
     ArrayList<Integer> testTimes;
 
-    public ScopeConfig(InnerDatasetLoader loader, InnerDataset innerDataset,
+    public ScopeConfig(InnerDataset innerDataset,
                        String outerFeature, IFeature featureSelector, ArrayList<IFeature> rewardGroups,
                        ArrayList<Integer> trainTimes, ArrayList<Integer> testTimes) {
         this.innerFeature = featureSelector;
-        this.loader = loader;
         this.dataset = innerDataset;
         this.noMiningGroups = rewardGroups;
         this.outerFeature = outerFeature;
@@ -34,14 +32,6 @@ public class ScopeConfig implements Serializable {
 
     public void setInnerFeature(IFeature innerFeature) {
         this.innerFeature = innerFeature;
-    }
-
-    public InnerDatasetLoader getLoader() {
-        return loader;
-    }
-
-    public void setLoader(InnerDatasetLoader loader) {
-        this.loader = loader;
     }
 
     public InnerDataset getInnerDataset() {

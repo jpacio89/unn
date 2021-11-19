@@ -27,7 +27,7 @@ public class InputMiner {
         this.inputFolder = _inputFolder;
     }
 
-    public void start() {
+    public void run() {
         File sessionFile = new File(String.format("%s/predictor.v1.session", this.inputFolder.getAbsolutePath()));
 
         if (sessionFile.exists()) {
@@ -43,6 +43,7 @@ public class InputMiner {
         OuterDataset outerDataset = provider.load();
 
         Session session = MiningHelper.mine(outerDataset, outcomeFeature);
+        session.prepareToSerialize();
         Serializer.write(session, String.format("%s/predictor", this.inputFolder.getAbsolutePath()), "session");
 
         MiningHelper.writeReportToFile(this.inputFolder, session);
@@ -54,11 +55,11 @@ public class InputMiner {
 
         for (File inputFolder : folder.listFiles()) {
             if (!inputFolder.isDirectory() ||
-                    !inputFolder.getName().startsWith("input-")) {
+                !inputFolder.getName().startsWith("input-")) {
                 continue;
             }
             InputMiner inputMiner = new InputMiner(inputFolder);
-            inputMiner.start();
+            inputMiner.run();
         }
     }
 

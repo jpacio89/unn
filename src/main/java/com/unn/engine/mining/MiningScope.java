@@ -12,6 +12,7 @@ import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.models.MiningStatusObservable;
 import com.unn.engine.mining.models.Model;
 import com.unn.engine.mining.models.ScopeConfig;
+import com.unn.engine.session.Session;
 
 public class MiningScope implements IEnvironment, Serializable {
 	private ScopeConfig config;
@@ -40,23 +41,15 @@ public class MiningScope implements IEnvironment, Serializable {
 		}*/
 		return new MiningStatusObservable();
 	}
-
-	private InnerDataset getInnerDataset() {
-		return this.config.getInnerDataset();
-	}
-
-	public ValueMapper getMapper() {
-		return this.config.getLoader().getValueMapper();
-	}
 	
-	public void mine() throws Exception {
+	public void mine(Session session) throws Exception {
 		getStatusObservable().updateStatusLabel("BUFFERING");
 
 		System.out.println(String.format("|MiningEnvironment| Mining"));
 
 		this.model = null;
 		this.miner = new Miner (
-			getInnerDataset(),
+			session.getInnerDatasetLoader().getInitialInnerDataset(),
 			this.config.getInnerFeature(),
 			this.config.getNoMiningGroups(),
 			getStatusObservable()
@@ -89,7 +82,11 @@ public class MiningScope implements IEnvironment, Serializable {
 	public Miner getMiner() {
 		return this.miner;
 	}
-	
+
+	public void setMiner(Miner miner) {
+		this.miner = miner;
+	}
+
 	public Model getModel() {
 		return this.model;
 	}

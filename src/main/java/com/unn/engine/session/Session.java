@@ -11,6 +11,7 @@ import com.unn.common.server.services.DatacenterService;
 import com.unn.common.server.services.MaestroService;
 import com.unn.common.utils.Utils;
 import com.unn.engine.Config;
+import com.unn.engine.dataset.InnerDatasetLoader;
 import com.unn.engine.dataset.datacenter.DatacenterLocator;
 import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.mining.MiningScope;
@@ -23,12 +24,13 @@ import retrofit2.Response;
 
 public class Session implements Serializable {
 	private Context context;
-	private OuterDataset outerDataset;
 	private HashMap<String, MiningScope> scopes;
 	private JobConfig mineConfig;
 	private AgentRole role;
 	private Thread minerThread;
 	private ArrayList<Integer> makerTimes;
+	private InnerDatasetLoader innerDatasetLoader;
+	private OuterDataset outerDataset;
 
 	public Session(Context context, AgentRole role) {
 		this.scopes = new HashMap<>();
@@ -43,7 +45,7 @@ public class Session implements Serializable {
 			__action.setContext(this.context);
 			__action.setSession(this);
 			__action.act();
-			this.outerDataset = __action.getDataset();
+			this.setOuterDataset(__action.getDataset());
 		} else if (action instanceof MineAction) {
 			MineAction __action = (MineAction) action;
 			__action.setConf(this.getMineConfig());
@@ -55,9 +57,13 @@ public class Session implements Serializable {
 			__action.act();
 		}
 	}
-	
+
+	public void setOuterDataset(OuterDataset dataset) {
+		this.outerDataset = dataset;
+	}
+
 	public OuterDataset getOuterDataset() {
-		return outerDataset;
+		return this.outerDataset;
 	}
 	
 	public Context getContext() {
@@ -211,7 +217,16 @@ public class Session implements Serializable {
 		return makerTimes;
 	}
 
-	public void setOuterDataset(OuterDataset outerDataset) {
-		this.outerDataset = outerDataset;
+	public InnerDatasetLoader getInnerDatasetLoader() {
+		return innerDatasetLoader;
+	}
+
+	public void setInnerDatasetLoader(InnerDatasetLoader innerDatasetLoader) {
+		this.innerDatasetLoader = innerDatasetLoader;
+	}
+
+	public void prepareToSerialize() {
+		scopes.values().stream()
+			.forEach(scope -> scope.setMiner(null));
 	}
 }

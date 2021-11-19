@@ -21,6 +21,7 @@ public class MiningHelper {
     public static Session mine(OuterDataset outerDataset, String target) {
         Context context = new Context();
         AgentRole role = new AgentRole();
+
         Session session = new Session(context, role);
         session.setOuterDataset(outerDataset);
 
@@ -42,6 +43,15 @@ public class MiningHelper {
     }
 
     public static void mineOutputLayer(String folderPath, String targetInstrumentId) {
+        File sessionFile = new File(String.format("%s/target-%s/output/predictor.v1.session",
+            folderPath, targetInstrumentId));
+
+        if (sessionFile.exists()) {
+            System.out.println(String.format("Skipping %s", sessionFile.getAbsolutePath()));
+            // TODO: load serialized file
+            return;
+        }
+
         String dataSourcePath = String.format("%s/target-%s/output/dataset.csv",
                 folderPath, targetInstrumentId);
         DatasetLocator locator = new FilesystemLocator(dataSourcePath);

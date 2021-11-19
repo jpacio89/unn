@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 public class MineAction extends Action {
 	Session session;
+	OuterDataset outerDataset;
 	JobConfig conf;
 	
 	public MineAction() { }
@@ -53,6 +54,7 @@ public class MineAction extends Action {
 
 		InnerDatasetLoader loader = new InnerDatasetLoader();
 		loader.init(dataset);
+		this.session.setInnerDatasetLoader(loader);
 		InnerDataset innerDataset = loader.load();
 		ValueMapper mapper = loader.getValueMapper();
 		ValuesDescriptor valuesDescriptor = mapper.getValuesDescriptorByFeature(
@@ -75,7 +77,6 @@ public class MineAction extends Action {
 
 		for (IFeature func : targetGroups) {
 			ScopeConfig scopeConf = new ScopeConfig(
-				loader,
 				innerDataset,
 				config.targetFeature,
 				func,
@@ -94,7 +95,7 @@ public class MineAction extends Action {
 				String id = entry.getKey();
 				MiningScope scope = entry.getValue();
 				try {
-					scope.mine();
+					scope.mine(this.session);
 					if (scope.getModel() == null ||
 						scope.getModel().isEmpty()) {
 						return id;
@@ -129,7 +130,7 @@ public class MineAction extends Action {
 
 	private Integer getGroup(int time) {
 		// TODO: handle layer in some sort of config
-		int layer = 2;
+		int layer = 1;
 		int hashcode = Integer.toString(time).hashCode();
 
 		for (int i = 0; i < layer - 1; ++i) {
