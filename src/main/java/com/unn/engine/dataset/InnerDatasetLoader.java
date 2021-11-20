@@ -9,8 +9,10 @@ import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.interfaces.IFeature;
 
 public class InnerDatasetLoader implements Serializable {
+	private static final long serialVersionUID = 1087838554728974834L;
+
 	private ValueMapper mapper;
-	transient OuterDataset outerDataset;
+	OuterDataset outerDataset;
 	InnerDataset initialInnerDataset;
 	
 	public InnerDatasetLoader() {}
@@ -25,6 +27,17 @@ public class InnerDatasetLoader implements Serializable {
 		}
 		this.initialInnerDataset = this.buildDataset();
 		return this.initialInnerDataset;
+	}
+
+	public void shrink() {
+		this.initialInnerDataset.shrink();
+	}
+
+	public void reconstruct() {
+		if (outerDataset == null) {
+			return;
+		}
+		Datasets.toInnerDataset(this.outerDataset, this.mapper, this.initialInnerDataset);
 	}
 	
 	private InnerDataset buildDataset() {

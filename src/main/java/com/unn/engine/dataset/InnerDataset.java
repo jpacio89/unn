@@ -24,6 +24,7 @@ public class InnerDataset implements Serializable {
 	public void shrink() {
 		this.times.clear();
 		this.timedValues.clear();
+		this.args.clear();
 	}
 	
 	public void add(ValueTime vtr) {

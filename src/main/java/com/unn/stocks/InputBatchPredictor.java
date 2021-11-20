@@ -30,6 +30,7 @@ public class InputBatchPredictor {
             String.format("%s/target-%s/input-%s/predictor",
                 this.folderPath, this.targetInstrumentId,
                 this.targetInstrumentId), "session");
+        pivotSession.getInnerDatasetLoader().reconstruct();
 
         ArrayList<Integer> times = pivotSession.getInnerDatasetLoader()
             .getInitialInnerDataset().getTimes();
@@ -61,6 +62,11 @@ public class InputBatchPredictor {
 
             Session session = (Session) Serializer.read(String.format("%s/predictor",
                 inputFolder.getAbsolutePath()), "session");
+
+            if (session != null && session.getInnerDatasetLoader() != null) {
+                session.getInnerDatasetLoader().reconstruct();
+            }
+
             HashMap<Integer, HashMap<String, Double>> predictions = this.predictFromSession(times, session);
 
             if (predictions != null) {

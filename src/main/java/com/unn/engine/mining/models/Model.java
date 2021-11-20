@@ -147,4 +147,8 @@ public class Model implements Serializable {
 
 		return inputs;
 	}
+
+	public InnerDataset getInnerDataset() {
+		return dataset;
+	}
 }

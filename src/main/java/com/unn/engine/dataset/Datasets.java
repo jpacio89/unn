@@ -13,9 +13,16 @@ import java.util.*;
 public class Datasets {
 
     public static InnerDataset toInnerDataset(OuterDataset dataset, ValueMapper mapper) {
+        return toInnerDataset(dataset, mapper, null);
+    }
+
+    public static InnerDataset toInnerDataset(OuterDataset dataset, ValueMapper mapper, InnerDataset container) {
         // TODO: implement
         String timeFeatureName = "primer"; // job.getTimeFeatureName();
-        InnerDataset innerDataset = new InnerDataset();
+        InnerDataset innerDataset = container;
+        if (innerDataset == null) {
+            innerDataset = new InnerDataset();
+        }
         ArrayList<IFeature> rawFunctors = InnerDatasetLoader.getFunctorsByFeatures(mapper);
         innerDataset.setFunctors(rawFunctors);
 
