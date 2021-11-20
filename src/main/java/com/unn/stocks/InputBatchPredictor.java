@@ -187,20 +187,24 @@ public class InputBatchPredictor {
 
     private void processInnerDataset(Session session, String basePath) {
         if (this.isRealTime) {
-            ValueMapper mapper = session.getInnerDatasetLoader().getValueMapper();
-            InnerDataset realtimeDataset = this.loadRealtimeDataset(mapper, basePath);
-            session.getInnerDatasetLoader().getInitialInnerDataset().inject(realtimeDataset);
+            if (session.getInnerDatasetLoader() != null) {
+                ValueMapper mapper = session.getInnerDatasetLoader().getValueMapper();
+                OuterDataset realtimeDataset = this.loadRealtimeDataset(basePath);
+                InnerDataset realtimeInnerDataset = Datasets.toInnerDataset(realtimeDataset, mapper);
+                session.setOuterDataset(realtimeDataset);
+                session.getInnerDatasetLoader().getInitialInnerDataset().inject(realtimeInnerDataset);
+            }
         } else {
             session.getInnerDatasetLoader().reconstruct();
         }
     }
 
-    private InnerDataset loadRealtimeDataset(ValueMapper mapper, String datasetPath) {
+    private OuterDataset loadRealtimeDataset(String datasetPath) {
         try {
             String realtimeDatasetPath = String.format("%s/realtime.csv", datasetPath);
             OuterDataset realtimeOuterDataset = new OuterDatasetLoader()
                     .load(new FilesystemLocator(realtimeDatasetPath));
-            return Datasets.toInnerDataset(realtimeOuterDataset, mapper);
+            return realtimeOuterDataset;
         } catch (Exception e) {
             e.printStackTrace();
         }
