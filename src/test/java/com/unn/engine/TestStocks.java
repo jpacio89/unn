@@ -1,30 +1,21 @@
 package com.unn.engine;
 
-import com.unn.common.utils.Serializer;
-import com.unn.engine.dataset.DatasetLocator;
-import com.unn.engine.dataset.OuterDataset;
-import com.unn.engine.dataset.filesystem.FilesystemDatasetProvider;
-import com.unn.engine.dataset.filesystem.FilesystemLocator;
-import com.unn.engine.session.Session;
 import com.unn.stocks.InputBatchPredictor;
 import com.unn.stocks.InputMiner;
 import com.unn.stocks.MiningHelper;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 public class TestStocks {
     private static String folderPath = "/Volumes/Legatron/data/serializations/stock-market-crawler/batch-mining";
 
     @Test
-    public void testBatchMining_target1001_layer2() {
+    public void testInputBatchPredictor_target1001() {
         new InputBatchPredictor(folderPath, "1001")
             .start();
     }
 
     @Test
-    public void testBatchMining_target1001() {
+    public void testInputMiner_target1001() {
         InputMiner.runAll(folderPath, "1001");
     }
 
@@ -41,11 +32,7 @@ public class TestStocks {
     }*/
 
     @Test
-    public void testMineStockLayer2() {
-        String dataSourcePath = String.format("%s/target-1001/output/dataset.csv", folderPath);
-        DatasetLocator locator = new FilesystemLocator(dataSourcePath);
-        FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
-        OuterDataset outerDataset = provider.load();
-        MiningHelper.mine(outerDataset, "outcome");
+    public void testMineOutputLayer() {
+        MiningHelper.mineOutputLayer(folderPath, "1001");
     }
 }
