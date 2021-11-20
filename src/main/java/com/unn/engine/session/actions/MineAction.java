@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 public class MineAction extends Action {
 	Session session;
-	OuterDataset outerDataset;
 	JobConfig conf;
 	
 	public MineAction() { }
@@ -128,8 +127,7 @@ public class MineAction extends Action {
 	}
 
 	private Integer getGroup(int time) {
-		// TODO: handle layer in some sort of config
-		int layer = 1;
+		int layer = conf.layer;
 		int hashcode = Integer.toString(time).hashCode();
 
 		for (int i = 0; i < layer - 1; ++i) {

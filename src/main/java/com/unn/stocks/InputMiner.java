@@ -43,7 +43,7 @@ public class InputMiner {
         FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
         OuterDataset outerDataset = provider.load();
 
-        Session session = MiningHelper.mine(outerDataset, outcomeFeature);
+        Session session = MiningHelper.mine(outerDataset, outcomeFeature, 1);
 
         if (session != null && session.getInnerDatasetLoader() != null) {
             session.getInnerDatasetLoader().shrink();

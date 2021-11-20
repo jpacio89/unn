@@ -161,7 +161,7 @@ public class Session implements Serializable {
 			this.act(new LoadDatasetAction(locator));
 			System.out.println("|Context| Starting mining");
 			String target = role.getTarget().getFeature().split("@")[0];
-			JobConfig conf = new JobConfig(target, new ArrayList<>());
+			JobConfig conf = new JobConfig(target, new ArrayList<>(), role.getLayer());
 			this.setMineConfig(conf);
 			this.act(new MineAction());
 		} catch (Exception e) {

@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class MiningHelper {
-    public static Session mine(OuterDataset outerDataset, String target) {
+    public static Session mine(OuterDataset outerDataset, String target, int layer) {
         Context context = new Context();
         AgentRole role = new AgentRole();
 
@@ -27,7 +27,7 @@ public class MiningHelper {
 
         MineAction action = new MineAction();
         action.setSession(session);
-        action.setConf(new JobConfig(target, new ArrayList<>()));
+        action.setConf(new JobConfig(target, new ArrayList<>(), layer));
 
         action.act();
 
@@ -57,7 +57,7 @@ public class MiningHelper {
         DatasetLocator locator = new FilesystemLocator(dataSourcePath);
         FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
         OuterDataset outerDataset = provider.load();
-        Session session = MiningHelper.mine(outerDataset, "outcome");
+        Session session = MiningHelper.mine(outerDataset, "outcome", 2);
 
         //MiningHelper.writeReportToFile(this.inputFolder, session);
     }
