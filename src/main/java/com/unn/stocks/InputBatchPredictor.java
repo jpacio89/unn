@@ -18,10 +18,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-// TODO: add layer
 public class InputBatchPredictor {
     private String folderPath;
     private String targetInstrumentId;
@@ -35,18 +33,14 @@ public class InputBatchPredictor {
 
     public InputBatchPredictor start() {
         Session pivotSession = (Session) Serializer.read(
-            String.format("%s/target-%s/input-%s/predictor",
-                this.folderPath, this.targetInstrumentId,
-                this.targetInstrumentId), "session");
+            String.format("%s/input-%s/predictor",
+                this.folderPath, this.targetInstrumentId), "session");
 
         processInnerDataset(pivotSession,
-                String.format("%s/target-%s/input-%s", folderPath, targetInstrumentId, targetInstrumentId));
+                String.format("%s/input-%s", folderPath, targetInstrumentId));
         ArrayList<Integer> times = pivotSession.getInnerDatasetLoader().getInitialInnerDataset().getTimes();
 
-        String dataSourcePath = String.format("%s/target-%s",
-            this.folderPath, this.targetInstrumentId);
-
-        File folder = new File(dataSourcePath);
+        File folder = new File(this.folderPath);
 
         ArrayList<HashMap<Integer, HashMap<String, Double>>> predictionBatch = new ArrayList<>();
         ArrayList<File> croppedFiles = Arrays.stream(folder.listFiles())
@@ -177,23 +171,24 @@ public class InputBatchPredictor {
                         .toArray(String[]::new))));
 
         if (this.isRealTime) {
-            new CSVHelper().writeToFile(String.format("%s/target-%s/output/realtime.csv",
-                    this.folderPath, this.targetInstrumentId), dataset);
+            new CSVHelper().writeToFile(
+                    String.format("%s/output/input-1", this.folderPath), "realtime.csv", dataset);
         } else {
-            new CSVHelper().writeToFile(String.format("%s/target-%s/output/dataset.csv",
-                    this.folderPath, this.targetInstrumentId), dataset);
+            new CSVHelper().writeToFile(
+                    String.format("%s/output/input-1", this.folderPath), "dataset.csv", dataset);
         }
     }
 
     private void processInnerDataset(Session session, String basePath) {
+        if (session.getInnerDatasetLoader() == null) {
+            return;
+        }
         if (this.isRealTime) {
-            if (session.getInnerDatasetLoader() != null) {
-                ValueMapper mapper = session.getInnerDatasetLoader().getValueMapper();
-                OuterDataset realtimeDataset = this.loadRealtimeDataset(basePath);
-                InnerDataset realtimeInnerDataset = Datasets.toInnerDataset(realtimeDataset, mapper);
-                session.setOuterDataset(realtimeDataset);
-                session.getInnerDatasetLoader().getInitialInnerDataset().inject(realtimeInnerDataset);
-            }
+            ValueMapper mapper = session.getInnerDatasetLoader().getValueMapper();
+            OuterDataset realtimeDataset = this.loadRealtimeDataset(basePath);
+            InnerDataset realtimeInnerDataset = Datasets.toInnerDataset(realtimeDataset, mapper);
+            session.setOuterDataset(realtimeDataset);
+            session.getInnerDatasetLoader().getInitialInnerDataset().inject(realtimeInnerDataset);
         } else {
             session.getInnerDatasetLoader().reconstruct();
         }

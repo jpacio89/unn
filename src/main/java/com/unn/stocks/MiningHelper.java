@@ -2,6 +2,7 @@ package com.unn.stocks;
 
 import com.unn.common.mining.MiningReport;
 import com.unn.common.operations.AgentRole;
+import com.unn.common.utils.Serializer;
 import com.unn.engine.dataset.DatasetLocator;
 import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.dataset.filesystem.FilesystemDatasetProvider;
@@ -43,23 +44,28 @@ public class MiningHelper {
     }
 
     public static void mineOutputLayer(String folderPath, String targetInstrumentId) {
-        File sessionFile = new File(String.format("%s/target-%s/output/predictor.v1.session",
-            folderPath, targetInstrumentId));
+        File folder = new File(String.format("%s/target-%s/output/input-1", folderPath, targetInstrumentId));
+        File sessionFile = new File(String.format("%s/predictor.v1.session",
+                folder.getAbsolutePath()));
 
         if (sessionFile.exists()) {
             System.out.println(String.format("Skipping %s", sessionFile.getAbsolutePath()));
-            // TODO: load serialized file
             return;
         }
 
-        String dataSourcePath = String.format("%s/target-%s/output/dataset.csv",
+        String dataSourcePath = String.format("%s/target-%s/output/input-1/dataset.csv",
                 folderPath, targetInstrumentId);
         DatasetLocator locator = new FilesystemLocator(dataSourcePath);
         FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
         OuterDataset outerDataset = provider.load();
         Session session = MiningHelper.mine(outerDataset, "outcome", 2);
 
-        //MiningHelper.writeReportToFile(this.inputFolder, session);
+        if (session != null && session.getInnerDatasetLoader() != null) {
+            session.getInnerDatasetLoader().shrink();
+        }
+
+        Serializer.write(session, String.format("%s/predictor", folder.getAbsolutePath()), "session");
+        MiningHelper.writeReportToFile(folder, session);
     }
 
     public static void writeReportToFile(File inputFolder, Session session) {

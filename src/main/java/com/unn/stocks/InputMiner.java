@@ -23,9 +23,11 @@ import java.util.ArrayList;
 public class InputMiner {
     private final String outcomeFeature = "outcome";
     private File inputFolder;
+    private int layer;
 
-    public InputMiner(File _inputFolder) {
+    public InputMiner(File _inputFolder, int _layer) {
         this.inputFolder = _inputFolder;
+        this.layer = _layer;
     }
 
     public void run() {
@@ -43,7 +45,7 @@ public class InputMiner {
         FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
         OuterDataset outerDataset = provider.load();
 
-        Session session = MiningHelper.mine(outerDataset, outcomeFeature, 1);
+        Session session = MiningHelper.mine(outerDataset, outcomeFeature, this.layer);
 
         if (session != null && session.getInnerDatasetLoader() != null) {
             session.getInnerDatasetLoader().shrink();
@@ -54,8 +56,7 @@ public class InputMiner {
         MiningHelper.writeReportToFile(this.inputFolder, session);
     }
 
-    public static void runAll(String folderPath, String targetInstrumentId) {
-        String dataSourcePath = String.format("%s/target-%s", folderPath, targetInstrumentId);
+    public static void runAll(String dataSourcePath, int layer) {
         File folder = new File(dataSourcePath);
 
         for (File inputFolder : folder.listFiles()) {
@@ -63,7 +64,7 @@ public class InputMiner {
                 !inputFolder.getName().startsWith("input-")) {
                 continue;
             }
-            InputMiner inputMiner = new InputMiner(inputFolder);
+            InputMiner inputMiner = new InputMiner(inputFolder, layer);
             inputMiner.run();
         }
     }

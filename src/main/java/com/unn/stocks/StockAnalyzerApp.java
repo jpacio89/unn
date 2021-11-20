@@ -9,7 +9,7 @@ public class StockAnalyzerApp {
         System.out.println(String.format("|StockAnalyzerApp| Analyzing instrument %s", targetInstrumentId));
         System.out.println(String.format("|StockAnalyzerApp| Processing layer 1 inputs"));
 
-        InputMiner.runAll(folderPath, targetInstrumentId);
+        InputMiner.runAll(String.format("%s/target-%s", folderPath, targetInstrumentId), 1);
 
         System.out.println(String.format("|StockAnalyzerApp| Predicting using layer 1 inputs"));
 
