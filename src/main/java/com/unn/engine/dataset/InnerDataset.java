@@ -100,4 +100,13 @@ public class InnerDataset implements Serializable {
 		dataset.args = (ArrayList<IFeature>) args.clone();
 		return dataset;
 	}
+
+	public void inject(InnerDataset realtimeDataset) {
+		this.times.clear();
+		this.times.addAll(realtimeDataset.times);
+		this.timedValues.clear();
+		this.timedValues.putAll(realtimeDataset.timedValues);
+		this.args.clear();
+		this.args.addAll(realtimeDataset.args);
+	}
 }

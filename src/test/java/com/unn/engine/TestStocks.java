@@ -15,12 +15,18 @@ public class TestStocks {
 
     @Test
     public void testInputBatchPredictor_target1001() {
-        new InputBatchPredictor(folderPath, "1001")
+        new InputBatchPredictor(folderPath, "1001", false)
             .start();
     }
 
     @Test
     public void testMineOutputLayer() {
         MiningHelper.mineOutputLayer(folderPath, "1001");
+    }
+
+    @Test
+    public void testInputBatchRealtimePredictor_target1001() {
+        new InputBatchPredictor(folderPath, "1001", true)
+                .start();
     }
 }

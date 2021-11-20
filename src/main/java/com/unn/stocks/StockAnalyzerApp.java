@@ -14,7 +14,7 @@ public class StockAnalyzerApp {
         System.out.println(String.format("|StockAnalyzerApp| Predicting using layer 1 inputs"));
 
         if (!MiningHelper.hasOutputDataset(folderPath, targetInstrumentId)) {
-            new InputBatchPredictor(folderPath, targetInstrumentId)
+            new InputBatchPredictor(folderPath, targetInstrumentId, false)
                 .start();
         }
 

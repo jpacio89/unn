@@ -5,6 +5,12 @@ import com.unn.common.utils.CSVHelper;
 import com.unn.common.utils.Serializer;
 import com.unn.common.utils.SerializerGson;
 import com.unn.engine.Config;
+import com.unn.engine.dataset.Datasets;
+import com.unn.engine.dataset.InnerDataset;
+import com.unn.engine.dataset.OuterDataset;
+import com.unn.engine.dataset.OuterDatasetLoader;
+import com.unn.engine.dataset.filesystem.FilesystemLocator;
+import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.MiningScope;
 import com.unn.engine.session.Session;
 
@@ -19,10 +25,12 @@ import java.util.stream.Collectors;
 public class InputBatchPredictor {
     private String folderPath;
     private String targetInstrumentId;
+    private boolean isRealTime;
 
-    public InputBatchPredictor(String _folderPath, String _targetInstrumentId) {
+    public InputBatchPredictor(String _folderPath, String _targetInstrumentId, boolean _isRealTime) {
         this.folderPath = _folderPath;
         this.targetInstrumentId = _targetInstrumentId;
+        this.isRealTime = _isRealTime;
     }
 
     public InputBatchPredictor start() {
@@ -30,10 +38,10 @@ public class InputBatchPredictor {
             String.format("%s/target-%s/input-%s/predictor",
                 this.folderPath, this.targetInstrumentId,
                 this.targetInstrumentId), "session");
-        pivotSession.getInnerDatasetLoader().reconstruct();
 
-        ArrayList<Integer> times = pivotSession.getInnerDatasetLoader()
-            .getInitialInnerDataset().getTimes();
+        processInnerDataset(pivotSession,
+                String.format("%s/target-%s/input-%s", folderPath, targetInstrumentId, targetInstrumentId));
+        ArrayList<Integer> times = pivotSession.getInnerDatasetLoader().getInitialInnerDataset().getTimes();
 
         String dataSourcePath = String.format("%s/target-%s",
             this.folderPath, this.targetInstrumentId);
@@ -62,11 +70,7 @@ public class InputBatchPredictor {
 
             Session session = (Session) Serializer.read(String.format("%s/predictor",
                 inputFolder.getAbsolutePath()), "session");
-
-            if (session != null && session.getInnerDatasetLoader() != null) {
-                session.getInnerDatasetLoader().reconstruct();
-            }
-
+            processInnerDataset(session, inputFolder.getAbsolutePath());
             HashMap<Integer, HashMap<String, Double>> predictions = this.predictFromSession(times, session);
 
             if (predictions != null) {
@@ -172,7 +176,34 @@ public class InputBatchPredictor {
                     .withNames(featureNames.stream()
                         .toArray(String[]::new))));
 
-        new CSVHelper().writeToFile(String.format("%s/target-%s/output/dataset.csv",
-            this.folderPath, this.targetInstrumentId), dataset);
+        if (this.isRealTime) {
+            new CSVHelper().writeToFile(String.format("%s/target-%s/output/realtime.csv",
+                    this.folderPath, this.targetInstrumentId), dataset);
+        } else {
+            new CSVHelper().writeToFile(String.format("%s/target-%s/output/dataset.csv",
+                    this.folderPath, this.targetInstrumentId), dataset);
+        }
+    }
+
+    private void processInnerDataset(Session session, String basePath) {
+        if (this.isRealTime) {
+            ValueMapper mapper = session.getInnerDatasetLoader().getValueMapper();
+            InnerDataset realtimeDataset = this.loadRealtimeDataset(mapper, basePath);
+            session.getInnerDatasetLoader().getInitialInnerDataset().inject(realtimeDataset);
+        } else {
+            session.getInnerDatasetLoader().reconstruct();
+        }
+    }
+
+    private InnerDataset loadRealtimeDataset(ValueMapper mapper, String datasetPath) {
+        try {
+            String realtimeDatasetPath = String.format("%s/realtime.csv", datasetPath);
+            OuterDataset realtimeOuterDataset = new OuterDatasetLoader()
+                    .load(new FilesystemLocator(realtimeDatasetPath));
+            return Datasets.toInnerDataset(realtimeOuterDataset, mapper);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
