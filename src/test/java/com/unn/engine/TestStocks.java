@@ -5,7 +5,7 @@ import com.unn.stocks.InputMiner;
 import org.junit.Test;
 
 public class TestStocks {
-    private String instrumentId = "1003";
+    private String instrumentId = "1001";
     private static String folderPath = "/Volumes/Legatron/data/serializations/stock-market-crawler/batch-mining";
 
     @Test

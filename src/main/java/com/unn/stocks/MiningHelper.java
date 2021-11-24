@@ -80,8 +80,8 @@ public class MiningHelper {
         }
     }
 
-    public static boolean hasOutputDataset(String folderPath, String targetInstrumentId) {
-        String dataSourcePath = String.format("%s/target-%s/output", folderPath, targetInstrumentId);
+    public static boolean hasOutputDataset(String folderPath) {
+        String dataSourcePath = String.format("%s/output", folderPath);
         File folder = new File(dataSourcePath);
 
         if (!folder.exists()) {
