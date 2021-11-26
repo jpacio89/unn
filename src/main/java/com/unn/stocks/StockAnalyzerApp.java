@@ -11,7 +11,7 @@ public class StockAnalyzerApp {
     public static void main (String[] args) throws IOException, InterruptedException {
         basePath = args[0];
         String targetInstrumentId = args[1];
-        String uploadUrl = args[2];
+        String uploadUrl = String.format("%s?name=target-%s", args[2], targetInstrumentId);
         String folderPath = String.format("%s/target-%s", basePath, targetInstrumentId);
 
         System.out.println(String.format("|StockAnalyzerApp| Analyzing instrument %s", targetInstrumentId));
@@ -46,7 +46,7 @@ public class StockAnalyzerApp {
 
         System.out.println(String.format("|StockAnalyzerApp| Zipping deliverables"));
 
-        String zipPath = String.format("%s/target-%s.zip", folderPath, targetInstrumentId);
+        String zipPath = String.format("%s/../target-%s.zip", folderPath, targetInstrumentId);
         ZipHelper.zip(folderPath, zipPath);
 
         System.out.println(String.format("|StockAnalyzerApp| Uploading deliverables"));
