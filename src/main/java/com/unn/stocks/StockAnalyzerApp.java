@@ -35,7 +35,7 @@ public class StockAnalyzerApp {
         System.out.println(String.format("|StockAnalyzerApp| Gathering layer 1 realtime outputs"));
 
         new InputBatchPredictor(folderPath, targetInstrumentId, true)
-                .start();
+            .start();
 
         InputMiner.runAll(String.format("%s/output", folderPath), 2);
 
