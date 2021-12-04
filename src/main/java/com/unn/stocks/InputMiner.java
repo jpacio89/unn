@@ -1,25 +1,13 @@
 package com.unn.stocks;
 
-import com.unn.common.mining.MiningReport;
-import com.unn.common.operations.AgentRole;
 import com.unn.common.utils.Serializer;
-import com.unn.common.utils.SerializerGson;
 import com.unn.engine.dataset.DatasetLocator;
 import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.dataset.filesystem.FilesystemDatasetProvider;
 import com.unn.engine.dataset.filesystem.FilesystemLocator;
-import com.unn.engine.mining.models.JobConfig;
-import com.unn.engine.session.Context;
 import com.unn.engine.session.Session;
-import com.unn.engine.session.actions.MineAction;
-
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 
-// TODO: set layer
 public class InputMiner {
     private final String outcomeFeature = "outcome";
     private File inputFolder;
