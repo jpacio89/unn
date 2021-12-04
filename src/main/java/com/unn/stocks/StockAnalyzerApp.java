@@ -9,7 +9,7 @@ public class StockAnalyzerApp {
     private static String basePath = "/Volumes/Legatron/data/serializations/stock-market-crawler/batch-mining";
 
     public static void main (String[] args) throws IOException, InterruptedException {
-        basePath = args[0];
+        basePath = String.format("%s/batch-mining", args[0]);
         String targetInstrumentId = args[1];
         String uploadUrl = String.format("%s?name=target-%s", args[2], targetInstrumentId);
         String folderPath = String.format("%s/target-%s", basePath, targetInstrumentId);
