@@ -46,12 +46,14 @@ public class StockAnalyzerApp {
 
         System.out.println(String.format("|StockAnalyzerApp| Zipping deliverables"));
 
+        String reportPath = String.format("%s/output/input-1/performance.v1.report", folderPath);
         String zipPath = String.format("%s/../target-%s.zip", folderPath, targetInstrumentId);
         ZipHelper.zip(folderPath, zipPath);
 
         System.out.println(String.format("|StockAnalyzerApp| Uploading deliverables"));
 
-        uploadDeliverables(zipPath, uploadUrl);
+        uploadDeliverables(zipPath, String.format("%s.zip", uploadUrl));
+        uploadDeliverables(reportPath, String.format("%s.report", uploadUrl));
     }
 
     private static void uploadDeliverables(String zipPath, String uploadUrl) throws IOException, InterruptedException {

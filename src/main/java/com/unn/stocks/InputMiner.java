@@ -1,5 +1,6 @@
 package com.unn.stocks;
 
+import com.unn.common.mining.MiningReport;
 import com.unn.common.utils.Serializer;
 import com.unn.engine.dataset.DatasetLocator;
 import com.unn.engine.dataset.OuterDataset;
@@ -42,6 +43,7 @@ public class InputMiner {
         Serializer.write(session, String.format("%s/predictor", this.inputFolder.getAbsolutePath()), "session");
 
         MiningHelper.writeReportToFile(this.inputFolder, session);
+        Serializer.write(session.getReport(), String.format("%s/performance", this.inputFolder.getAbsolutePath()), "report");
     }
 
     public static void runAll(String dataSourcePath, int layer) {
