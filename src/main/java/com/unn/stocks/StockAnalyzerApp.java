@@ -53,7 +53,7 @@ public class StockAnalyzerApp {
         System.out.println(String.format("|StockAnalyzerApp| Uploading deliverables"));
 
         uploadDeliverables(zipPath, String.format("%s.zip", uploadUrl));
-        uploadDeliverables(reportPath, String.format("%s.report", uploadUrl));
+        uploadDeliverables(reportPath, String.format("%s.v1.report", uploadUrl));
     }
 
     private static void uploadDeliverables(String zipPath, String uploadUrl) throws IOException, InterruptedException {
