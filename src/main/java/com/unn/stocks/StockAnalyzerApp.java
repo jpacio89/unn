@@ -13,6 +13,7 @@ public class StockAnalyzerApp {
         String targetInstrumentId = args[1];
         String uploadUrl = String.format("%s?name=target-%s", args[2], targetInstrumentId);
         String folderPath = String.format("%s/target-%s", basePath, targetInstrumentId);
+        boolean isRealtimeOnly = args.length == 4 && "--realtimeOnly".equals(args[3]);
 
         System.out.println(String.format("|StockAnalyzerApp| Analyzing instrument %s", targetInstrumentId));
         System.out.println(String.format("|StockAnalyzerApp| Processing layer 1 inputs"));
@@ -44,16 +45,22 @@ public class StockAnalyzerApp {
         new InputBatchPredictor(String.format("%s/output", folderPath), "1", true)
             .start();
 
-        System.out.println(String.format("|StockAnalyzerApp| Zipping deliverables"));
+        if (isRealtimeOnly) {
+            System.out.println(String.format("|StockAnalyzerApp| Sending realtime prediction"));
+            String realtimeCsv = String.format("%s/output/output/input-1/realtime.csv", folderPath);
+            uploadDeliverables(realtimeCsv, String.format("%s.realtime.csv", uploadUrl));
+        } else {
+            System.out.println(String.format("|StockAnalyzerApp| Zipping deliverables"));
 
-        String reportPath = String.format("%s/output/input-1/performance.v1.report", folderPath);
-        String zipPath = String.format("%s/../target-%s.zip", folderPath, targetInstrumentId);
-        ZipHelper.zip(folderPath, zipPath);
+            String reportPath = String.format("%s/output/input-1/performance.v1.report", folderPath);
+            String zipPath = String.format("%s/../target-%s.zip", folderPath, targetInstrumentId);
+            ZipHelper.zip(folderPath, zipPath);
 
-        System.out.println(String.format("|StockAnalyzerApp| Uploading deliverables"));
+            System.out.println(String.format("|StockAnalyzerApp| Uploading deliverables"));
 
-        uploadDeliverables(zipPath, String.format("%s.zip", uploadUrl));
-        uploadDeliverables(reportPath, String.format("%s.v1.report", uploadUrl));
+            uploadDeliverables(zipPath, String.format("%s.zip", uploadUrl));
+            uploadDeliverables(reportPath, String.format("%s.v1.report", uploadUrl));
+        }
     }
 
     private static void uploadDeliverables(String zipPath, String uploadUrl) throws IOException, InterruptedException {
