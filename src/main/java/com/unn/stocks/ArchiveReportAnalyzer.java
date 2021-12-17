@@ -22,8 +22,8 @@ public class ArchiveReportAnalyzer {
             if (!ofInterest(report)) {
                 continue;
             }
-            System.out.println(reportFile.getAbsolutePath());
-            System.out.println(report.toString());
+            System.out.printf("%s,", reportFile.getName());
+            //System.out.println(report.toString());
         }
     }
 

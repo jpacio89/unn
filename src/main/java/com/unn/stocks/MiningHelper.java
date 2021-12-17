@@ -89,7 +89,7 @@ public class MiningHelper {
             return false;
         }
 
-        File outputDataset = new File(String.format("%s/dataset.csv", folder.getAbsolutePath()));
+        File outputDataset = new File(String.format("%s/input-1/dataset.csv", folder.getAbsolutePath()));
         return outputDataset.exists();
     }
 }
