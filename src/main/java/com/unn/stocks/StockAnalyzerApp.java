@@ -6,7 +6,7 @@ import com.unn.engine.Config;
 import java.io.*;
 
 public class StockAnalyzerApp {
-    private static String basePath = "/Volumes/Legatron/data/serializations/stock-market-crawler/batch-mining";
+    private static String basePath = "/Volumes/Gondor/data/serializations/stock-market-crawler/batch-mining";
 
     public static void main (String[] args) throws IOException, InterruptedException {
         basePath = String.format("%s/batch-mining", args[0].replaceFirst("^~", System.getProperty("user.home")));
