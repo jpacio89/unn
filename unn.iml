@@ -3,9 +3,6 @@
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
-    <content url="file://$MODULE_DIR$/../unn-common/src/main/java">
-      <sourceFolder url="file://$MODULE_DIR$/../unn-common/src/main/java" isTestSource="false" />
-    </content>
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
@@ -89,5 +86,6 @@
     <orderEntry type="library" name="Maven: org.apache.maven.wagon:wagon-provider-api:2.10" level="project" />
     <orderEntry type="library" name="Maven: org.apache.maven.shared:maven-shared-utils:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.unn:common:1.0-SNAPSHOT" level="project" />
   </component>
 </module>
