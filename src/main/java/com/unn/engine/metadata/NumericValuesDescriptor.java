@@ -68,9 +68,13 @@ public class NumericValuesDescriptor extends ValuesDescriptor implements Seriali
 
 	@Override
 	public ArrayList<String> getActivatedOutputFeatures(String outerValue) {
-		double parsedValue = Double.parseDouble(outerValue);
+		double parsedValue = 0;
+		try {
+			parsedValue = Double.parseDouble(outerValue);
+		} catch (Exception e) {}
+		double finalParsedValue = parsedValue;
 		return this.groups.keySet().stream()
-			.filter(group -> getInnerValue(group, parsedValue) == Config.get().STIM_MAX)
+			.filter(group -> getInnerValue(group, finalParsedValue) == Config.get().STIM_MAX)
 			.map(group -> String.format("%s_%s", group, getSuffix()))
 			.collect(Collectors.toCollection(ArrayList::new));
 	}

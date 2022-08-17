@@ -5,12 +5,15 @@ import com.unn.common.operations.Agent;
 import com.unn.common.operations.AgentRole;
 import com.unn.engine.data.Datasets;
 import com.unn.engine.dataset.DatasetLocator;
+import com.unn.engine.dataset.InnerDataset;
 import com.unn.engine.dataset.OuterDataset;
 import com.unn.engine.dataset.filesystem.FilesystemDatasetProvider;
 import com.unn.engine.dataset.filesystem.FilesystemDatasetSource;
 import com.unn.engine.dataset.filesystem.FilesystemLocator;
 import com.unn.engine.interfaces.IFeature;
+import com.unn.engine.metadata.ValueMapper;
 import com.unn.engine.mining.Miner;
+import com.unn.engine.mining.MiningScope;
 import com.unn.engine.mining.PredicateFactory;
 import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.session.Context;
@@ -19,11 +22,15 @@ import com.unn.engine.session.actions.MineAction;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertTrue;
 
 public class TestMiner {
-    private void mine(OuterDataset outerDataset, String target) {
+    private Session mine(OuterDataset outerDataset, String target) {
         Context context = new Context();
         AgentRole role = new AgentRole();
 
@@ -44,6 +51,36 @@ public class TestMiner {
         }
 
         checkNoMiningGroupsNotUsed(session);
+        return session;
+    }
+
+    private HashMap<Integer, HashMap<String, Double>> predict(Session session, OuterDataset dataset) {
+        ValueMapper mapper = session.getInnerDatasetLoader().getValueMapper();
+        InnerDataset realtimeInnerDataset = com.unn.engine.dataset.Datasets.toInnerDataset(dataset, mapper);
+        session.setOuterDataset(dataset);
+        session.getInnerDatasetLoader().getInitialInnerDataset().inject(realtimeInnerDataset);
+        ArrayList<Integer> times = session.getInnerDatasetLoader().getInitialInnerDataset().getTimes();
+
+        HashMap<Integer, HashMap<String, Double>> predictions = new HashMap();
+        ArrayList<String> featureNames = session.getScopes().keySet().stream().collect(Collectors.toCollection(ArrayList::new));
+        Iterator var5 = times.iterator();
+
+        while (var5.hasNext()) {
+            Integer time = (Integer)var5.next();
+            HashMap<String, Double> row = new HashMap();
+            Iterator var8 = featureNames.iterator();
+
+            while(var8.hasNext()) {
+                String featureName = (String)var8.next();
+                MiningScope scope = session.getScopes().get(featureName);
+                Double prediction = scope.getModel().predict(time);
+                row.put(featureName, prediction);
+            }
+
+            predictions.put(time, row);
+        }
+
+        return predictions;
     }
 
     private void checkNoMiningGroupsNotUsed(Session session) {
@@ -151,6 +188,33 @@ public class TestMiner {
         FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
         OuterDataset outerDataset = provider.load();
         mine(outerDataset, "outcome");
+    }
+
+    @Test
+    public void testFootball() {
+        DatasetLocator locatorTrain = new FilesystemLocator("/Volumes/Gondor/data/datasets/spaceship-train.csv");
+        FilesystemDatasetProvider providerTrain = new FilesystemDatasetProvider(locatorTrain);
+        OuterDataset outerDatasetTrain = providerTrain.load();
+
+        DatasetLocator locatorTest = new FilesystemLocator("/Volumes/Gondor/data/datasets/spaceship-test.csv");
+        FilesystemDatasetProvider providerTest = new FilesystemDatasetProvider(locatorTest);
+        OuterDataset outerDatasetTest = providerTest.load();
+
+        Session session = mine(outerDatasetTrain, "Transported");
+        HashMap<Integer, HashMap<String, Double>> predictions = predict (session, outerDatasetTest);
+
+        for (Integer key : predictions.keySet()) {
+            String passengerId = outerDatasetTest.getSampleAsMap(key).get("PassengerId");
+            String value = "False";
+            for (Map.Entry<String, Double> prediction : predictions.get(key).entrySet()) {
+                if (prediction.getKey().contains("discrete_True")) {
+                    value = prediction.getValue() != null && prediction.getValue() > 5.0 ? "True" : "False";
+                }
+            }
+            System.out.printf("%s,%s%n", passengerId, value);
+        }
+
+        // discrete_labelized_int_0_95a2fd7d72 -> {Double@1392} 10.0
     }
 
     // TODO: test MineAction.splitDataset()
