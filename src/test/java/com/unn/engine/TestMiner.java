@@ -184,37 +184,105 @@ public class TestMiner {
 
     @Test
     public void testStock4() {
-        DatasetLocator locator = new FilesystemLocator("/Volumes/Legatron/data/datasets/stock-test-4.csv");
+        DatasetLocator locator = new FilesystemLocator("/Volumes/Gondor/data/serializations/stock-market-crawler/targets-archive/target-1002/input-1002/dataset.csv");
         FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
         OuterDataset outerDataset = provider.load();
         mine(outerDataset, "outcome");
     }
 
     @Test
-    public void testFootball() {
+    public void testSpaceship() {
         DatasetLocator locatorTrain = new FilesystemLocator("/Volumes/Gondor/data/datasets/spaceship-train.csv");
         FilesystemDatasetProvider providerTrain = new FilesystemDatasetProvider(locatorTrain);
         OuterDataset outerDatasetTrain = providerTrain.load();
+        ArrayList<OuterDataset> outerDatasetsTrain = splitDataset(outerDatasetTrain, 100);
 
         DatasetLocator locatorTest = new FilesystemLocator("/Volumes/Gondor/data/datasets/spaceship-test.csv");
         FilesystemDatasetProvider providerTest = new FilesystemDatasetProvider(locatorTest);
         OuterDataset outerDatasetTest = providerTest.load();
 
-        Session session = mine(outerDatasetTrain, "Transported");
-        HashMap<Integer, HashMap<String, Double>> predictions = predict (session, outerDatasetTest);
+        ArrayList<HashMap<Integer, HashMap<String, Double>>> predictionCluster = new ArrayList<>();
+        for (OuterDataset dataset : outerDatasetsTrain) {
+            Session session = mine(dataset, "Transported");
+            predictionCluster.add(predict (session, outerDatasetTest));
+        }
 
-        for (Integer key : predictions.keySet()) {
+        for (Integer key : predictionCluster.get(0).keySet()) {
             String passengerId = outerDatasetTest.getSampleAsMap(key).get("PassengerId");
-            String value = "False";
-            for (Map.Entry<String, Double> prediction : predictions.get(key).entrySet()) {
-                if (prediction.getKey().contains("discrete_True")) {
-                    value = prediction.getValue() != null && prediction.getValue() > 5.0 ? "True" : "False";
+            int trueCount = 0;
+            int totalCount = 0;
+            for (HashMap<Integer, HashMap<String, Double>> predictions : predictionCluster) {
+                for (Map.Entry<String, Double> prediction : predictions.get(key).entrySet()) {
+                    if (prediction.getKey().contains("discrete_True")) {
+                        if (prediction.getValue() != null && prediction.getValue() == 10) {
+                            trueCount++;
+                        }
+                        totalCount++;
+                    }
                 }
             }
-            System.out.printf("%s,%s%n", passengerId, value);
+            String prediction = trueCount * 100 / totalCount > 15 ? "True" : "False";
+            System.out.printf("%s,%s%n", passengerId, prediction);
         }
 
         // discrete_labelized_int_0_95a2fd7d72 -> {Double@1392} 10.0
+    }
+
+    @Test
+    public void testTitanic() {
+        DatasetLocator locatorTrain = new FilesystemLocator("/Volumes/Gondor/data/datasets/titanic-train.csv");
+        FilesystemDatasetProvider providerTrain = new FilesystemDatasetProvider(locatorTrain);
+        OuterDataset outerDatasetTrain = providerTrain.load();
+        ArrayList<OuterDataset> outerDatasetsTrain = splitDataset(outerDatasetTrain, 300);
+
+        DatasetLocator locatorTest = new FilesystemLocator("/Volumes/Gondor/data/datasets/titanic-test.csv");
+        FilesystemDatasetProvider providerTest = new FilesystemDatasetProvider(locatorTest);
+        OuterDataset outerDatasetTest = providerTest.load();
+
+        ArrayList<HashMap<Integer, HashMap<String, Double>>> predictionCluster = new ArrayList<>();
+        for (OuterDataset dataset : outerDatasetsTrain) {
+            Session session = mine(dataset, "Survived");
+            predictionCluster.add(predict (session, outerDatasetTest));
+        }
+
+        for (Integer key : predictionCluster.get(0).keySet()) {
+            String passengerId = outerDatasetTest.getSampleAsMap(key).get("PassengerId");
+            int trueCount = 0;
+            int totalCount = 0;
+            for (HashMap<Integer, HashMap<String, Double>> predictions : predictionCluster) {
+                for (Map.Entry<String, Double> prediction : predictions.get(key).entrySet()) {
+                    if (prediction.getKey().contains("discrete_labelized_int_1")) {
+                        if (prediction.getValue() != null && prediction.getValue() == 10) {
+                            trueCount++;
+                        }
+                        totalCount++;
+                    }
+                }
+            }
+            String prediction = trueCount * 100 / totalCount > 0 ? "1" : "0";
+            System.out.printf("%s,%s%n", passengerId, prediction);
+        }
+
+        // discrete_labelized_int_0_95a2fd7d72 -> {Double@1392} 10.0
+    }
+
+    public ArrayList<OuterDataset> splitDataset(OuterDataset outerDataset, int chunkSize) {
+        int chunkCount = 1 + (outerDataset.sampleCount() / chunkSize);
+        ArrayList<OuterDataset> datasets = new ArrayList<>();
+
+        for (int i = 0; i < chunkCount; ++i) {
+            OuterDataset dataset = new OuterDataset();
+            dataset.setBody(new ArrayList<>());
+            dataset.setHeader(outerDataset.getHeader());
+            datasets.add(dataset);
+        }
+
+        for (int i = 0; i < outerDataset.sampleCount(); ++i) {
+            datasets.get(i % chunkCount).getBody()
+                .add(outerDataset.getBody().get(i));
+        }
+
+        return datasets;
     }
 
     // TODO: test MineAction.splitDataset()

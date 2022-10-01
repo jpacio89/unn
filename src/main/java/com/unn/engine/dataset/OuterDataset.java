@@ -19,6 +19,11 @@ public class OuterDataset implements Serializable {
 		this.header.clear();
 		Collections.addAll(this.header, features);
 	}
+
+	public void setHeader(ArrayList<String> features) {
+		this.header.clear();
+		this.header.addAll(features);
+	}
 	
 	public int featureCount() {
 		return this.header.size();

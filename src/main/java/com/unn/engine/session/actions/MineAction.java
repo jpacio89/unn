@@ -10,6 +10,8 @@ import com.unn.engine.metadata.ValuesDescriptor;
 import com.unn.engine.mining.models.JobConfig;
 import com.unn.engine.mining.MiningScope;
 import com.unn.engine.mining.models.ScopeConfig;
+import com.unn.engine.mining.splitters.HashSplitter;
+import com.unn.engine.mining.splitters.SimpleSplitter;
 import com.unn.engine.session.Session;
 import com.unn.engine.utils.Pair;
 
@@ -115,28 +117,9 @@ public class MineAction extends Action {
 	}
 
 	private Pair<ArrayList<Integer>, ArrayList<Integer>> splitDataset(InnerDataset dataset) {
-		ArrayList<Integer> allTimes = dataset.getTimes().stream()
-			.collect(Collectors.toCollection(ArrayList::new));
-		ArrayList<Integer> trainTimeSets = allTimes.stream()
-			.filter(time -> getGroup(time) == 0)
-			.collect(Collectors.toCollection(ArrayList::new));
-		ArrayList<Integer> testTimeSets = allTimes.stream()
-			.filter(time -> getGroup(time) == 1)
-			.collect(Collectors.toCollection(ArrayList::new));
-		return new Pair<>(trainTimeSets, testTimeSets);
+		// HashSplitter splitter = new HashSplitter(this.conf.layer);
+		SimpleSplitter splitter = new SimpleSplitter(3.0 / 4.0);
+		return splitter.split(dataset.getTimes());
 	}
 
-	private Integer getGroup(int time) {
-		int layer = conf.layer;
-		int hashcode = Integer.toString(time).hashCode();
-
-		for (int i = 0; i < layer - 1; ++i) {
-			if (hashcode % 2 == 0) {
-				return -1;
-			}
-			hashcode /= 2;
-		}
-
-		return hashcode % 2 == 0 ? 0 : 1;
-	}
 }
