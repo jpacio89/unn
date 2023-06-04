@@ -191,6 +191,22 @@ public class TestMiner {
     }
 
     @Test
+    public void testStock5() {
+        DatasetLocator locator = new FilesystemLocator("/Volumes/Gondor/data/serializations/stock-market-crawler/indicators/test-merged.csv");
+        FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
+        OuterDataset outerDataset = provider.load();
+        mine(outerDataset, "outcome");
+    }
+
+    @Test
+    public void testStock6() {
+        DatasetLocator locator = new FilesystemLocator("/Volumes/Gondor/data/serializations/stock-market-crawler/batch-mining/target-1802/input-1802/dataset.csv");
+        FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
+        OuterDataset outerDataset = provider.load();
+        mine(outerDataset, "outcome");
+    }
+
+    @Test
     public void testSpaceship() {
         DatasetLocator locatorTrain = new FilesystemLocator("/Volumes/Gondor/data/datasets/spaceship-train.csv");
         FilesystemDatasetProvider providerTrain = new FilesystemDatasetProvider(locatorTrain);

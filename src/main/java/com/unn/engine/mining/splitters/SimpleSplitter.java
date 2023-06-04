@@ -19,8 +19,8 @@ public class SimpleSplitter implements ISplitter {
         int trainSize = (int) Math.round(allTimes.size() * this.dividingRatio);
         ArrayList<Integer> trainTimes = allTimes.stream().limit(trainSize)
                 .collect(Collectors.toCollection(ArrayList::new));
-        ArrayList<Integer> ç = allTimes.stream().skip(trainSize)
+        ArrayList<Integer> testTimes = allTimes.stream().skip(trainSize)
                 .collect(Collectors.toCollection(ArrayList::new));
-        return new Pair<>(trainTimes, trainTimes);
+        return new Pair<>(trainTimes, testTimes);
     }
 }

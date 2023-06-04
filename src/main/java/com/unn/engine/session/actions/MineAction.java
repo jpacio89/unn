@@ -117,8 +117,8 @@ public class MineAction extends Action {
 	}
 
 	private Pair<ArrayList<Integer>, ArrayList<Integer>> splitDataset(InnerDataset dataset) {
-		// HashSplitter splitter = new HashSplitter(this.conf.layer);
-		SimpleSplitter splitter = new SimpleSplitter(3.0 / 4.0);
+		HashSplitter splitter = new HashSplitter(this.conf.layer);
+		//SimpleSplitter splitter = new SimpleSplitter(0.75);
 		return splitter.split(dataset.getTimes());
 	}
 
