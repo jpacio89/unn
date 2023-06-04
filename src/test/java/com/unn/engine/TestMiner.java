@@ -103,20 +103,20 @@ public class TestMiner {
     @Test
     public void testCircleWheats() {
         OuterDataset outerDataset = new OuterDataset();
-        String[] features = { "id", "primer", "x", "y", "distance", "reward" };
+        String[] features = { "id", "primer", "x", "y", /*"distance",*/ "reward" };
         outerDataset.setHeader(features);
 
-        for (int i = 0; i < 1000; ++i) {
+        for (int i = 0; i < 5000; ++i) {
             double x = Math.random();
             double y = Math.random();
             double distance = Math.sqrt(x * x + y * y);
             String reward = distance > 0.5 ? "T" : "F";
-            double uncertainty = Math.random();
-            if (uncertainty > .75) {
-                reward = reward.equals("T") ? "F" : "T";
-            }
+            //double uncertainty = Math.random();
+            //if (uncertainty > .75) {
+            //    reward = reward.equals("T") ? "F" : "T";
+            //}
             String[] row = { Integer.toString(i), Integer.toString(i),
-                Double.toString(x), Double.toString(y), Double.toString(distance), reward };
+                Double.toString(x), Double.toString(y), /*Double.toString(distance),*/ reward };
             outerDataset.addSample(row);
         }
 
@@ -127,6 +127,12 @@ public class TestMiner {
     public void testZoo() {
         OuterDataset outerDataset = Datasets.dummy3();
         mine(outerDataset, "type");
+    }
+
+    @Test
+    public void testIris() {
+        OuterDataset outerDataset = Datasets.dummy5();
+        mine(outerDataset, "class");
     }
 
     @Test
@@ -156,54 +162,6 @@ public class TestMiner {
         }
 
         mine(outerDataset, "reward");
-    }
-
-    @Test
-    public void testStock1() {
-        DatasetLocator locator = new FilesystemLocator("/Volumes/Legatron/data/datasets/stock-test-1.csv");
-        FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
-        OuterDataset outerDataset = provider.load();
-        mine(outerDataset, "outcome");
-    }
-
-    @Test
-    public void testStock2() {
-        DatasetLocator locator = new FilesystemLocator("/Volumes/Legatron/data/datasets/stock-test-2.csv");
-        FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
-        OuterDataset outerDataset = provider.load();
-        mine(outerDataset, "outcome");
-    }
-
-    @Test
-    public void testStock3() {
-        DatasetLocator locator = new FilesystemLocator("/Volumes/Legatron/data/datasets/stock+test+target=bitcoin+inputs=gold-spx500+memory=21d+future=14d.csv");
-        FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
-        OuterDataset outerDataset = provider.load();
-        mine(outerDataset, "outcome");
-    }
-
-    @Test
-    public void testStock4() {
-        DatasetLocator locator = new FilesystemLocator("/Volumes/Gondor/data/serializations/stock-market-crawler/targets-archive/target-1002/input-1002/dataset.csv");
-        FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
-        OuterDataset outerDataset = provider.load();
-        mine(outerDataset, "outcome");
-    }
-
-    @Test
-    public void testStock5() {
-        DatasetLocator locator = new FilesystemLocator("/Volumes/Gondor/data/serializations/stock-market-crawler/indicators/test-merged.csv");
-        FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
-        OuterDataset outerDataset = provider.load();
-        mine(outerDataset, "outcome");
-    }
-
-    @Test
-    public void testStock6() {
-        DatasetLocator locator = new FilesystemLocator("/Volumes/Gondor/data/serializations/stock-market-crawler/batch-mining/target-1802/input-1802/dataset.csv");
-        FilesystemDatasetProvider provider = new FilesystemDatasetProvider(locator);
-        OuterDataset outerDataset = provider.load();
-        mine(outerDataset, "outcome");
     }
 
     @Test

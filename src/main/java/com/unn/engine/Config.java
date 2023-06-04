@@ -12,7 +12,7 @@ public class Config {
 	public int STIM_MAX =  10;
 	public int STIM_NULL = 0;
 	public int STIM_RANGE = STIM_MAX - STIM_MIN;
-	public double MODEL_PREDICTION_ROUNDING_FACTOR = 0.8;
+	public double MODEL_PREDICTION_ROUNDING_FACTOR = 0.9;
 	public int MODEL_PREDICTION_PREDICATE_HIT_COUNT = 30;
 	public int MINING_TIME = 1 * 60 * 1000 / 2;
 	public Agent MYSELF = new Agent()
