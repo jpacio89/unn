@@ -27,6 +27,9 @@ public class RandomManager
 	
 	
 	public static <T> T getOne (ArrayList<T> vals) {
+		if (vals == null || vals.size() == 0) {
+			return null;
+		}
 		int rndIndex = rand(0, vals.size() - 1);
 		return vals.get (rndIndex);
 	}
